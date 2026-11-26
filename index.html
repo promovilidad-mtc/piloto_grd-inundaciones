@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Visor Territorial GRD — Inundabilidad y Movilidad Urbana</title>
+  <title>RadarMov-GRD — Asistencia Técnica Territorial y Movilidad Urbana</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     :root {
       --navy: #092a65;
@@ -29,48 +30,50 @@
 
     /* Cabecera compacta institucional */
     .mast {
-      height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      height: 58px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
       padding: 0 20px; background: #fff; border-bottom: 1px solid var(--line);
     }
     .brand { display: flex; align-items: center; gap: 12px; }
     .badge-om {
-      background: var(--navy); color: #fff; font-weight: 700; font-size: 13px;
-      padding: 6px 9px; border-radius: 7px; letter-spacing: 0.5px;
+      background: var(--navy); color: #fff; font-weight: 700; font-size: 12px;
+      padding: 6px 10px; border-radius: 7px; letter-spacing: 0.4px;
     }
     .brand h1 { font-size: 15px; font-weight: 700; color: var(--navy); line-height: 1.2; }
     .brand small { display: block; font-size: 11px; color: var(--blue); font-weight: 500; }
 
-    .mast-actions { display: flex; align-items: center; gap: 8px; }
+    .mast-actions { display: flex; align-items: center; gap: 7px; }
     .city-pill {
       display: flex; align-items: center; gap: 6px; background: #f0f5fd; border: 1px solid #cbdaf3;
       padding: 5px 10px; border-radius: 7px; color: var(--navy); font-weight: 600;
     }
     .city-pill select { border: none; background: transparent; color: var(--navy); font-weight: 600; outline: none; cursor: pointer; }
     .btn-ghost {
-      border: 1px solid var(--line); background: #fff; color: var(--navy); padding: 6px 11px;
-      border-radius: 7px; font-weight: 600; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
-      text-decoration: none;
+      border: 1px solid var(--line); background: #fff; color: var(--navy); padding: 6px 10px;
+      border-radius: 7px; font-weight: 600; font-size: 11.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+      text-decoration: none; transition: all 0.15s;
     }
     .btn-ghost:hover { background: #f2f7ff; border-color: #b8c9e4; }
+    .btn-ghost.highlight { background: #eef5ff; border-color: #b8c9e4; color: var(--blue); }
 
-    /* Workspace de 3 columnas a pantalla completa (sin scroll global) */
+    /* Workspace de 3 columnas a pantalla completa */
     .workspace {
       display: grid;
-      grid-template-columns: 310px minmax(400px, 1fr) 310px;
+      grid-template-columns: 315px minmax(400px, 1fr) 315px;
       height: calc(100vh - 58px);
     }
     .sidebar, .details {
-      background: #fff; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 14px;
+      background: #fff; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 13px;
     }
     .sidebar { border-right: 1px solid var(--line); }
     .details { border-left: 1px solid var(--line); }
 
     .sec-title {
       font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
-      color: var(--navy); display: flex; align-items: center; gap: 6px; margin-bottom: 8px;
+      color: var(--navy); display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px;
     }
+    .sec-title span.left { display: flex; align-items: center; gap: 6px; }
     .card-box {
-      background: #f8fbff; border: 1px solid #e1e9f4; border-radius: 9px; padding: 11px;
+      background: #f8fbff; border: 1px solid #e1e9f4; border-radius: 9px; padding: 10px;
     }
 
     /* Switches estilo Geoportal */
@@ -81,6 +84,9 @@
     .layerline:hover { background: #eef4fc; }
     .layer-lbl { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; color: #25374b; }
     .swatch { width: 13px; height: 13px; border-radius: 3px; flex: none; }
+    .geom-tag {
+      font-size: 9.5px; color: var(--muted); background: #edf2f8; padding: 1px 5px; border-radius: 4px; font-weight: 600;
+    }
     .layerline input[type=checkbox] {
       appearance: none; width: 30px; height: 17px; border-radius: 20px; background: #d5dce5;
       position: relative; flex: none; transition: background 0.15s; cursor: pointer;
@@ -107,10 +113,29 @@
     .upload-mini {
       display: flex; align-items: center; justify-content: space-between; font-size: 11px;
       color: var(--muted); padding: 6px 8px; border: 1px dashed #c4d5eb; border-radius: 6px;
-      background: #fff; cursor: pointer; margin-top: 6px;
+      background: #fff; cursor: pointer; margin-top: 2px;
     }
     .upload-mini:hover { border-color: var(--blue); color: var(--blue); }
     .upload-mini input { display: none; }
+
+    /* Lista de registros municipales */
+    .records-list {
+      display: flex; flex-direction: column; gap: 5px; max-height: 145px; overflow-y: auto;
+    }
+    .record-item {
+      display: flex; align-items: center; justify-content: space-between; gap: 6px;
+      background: #fff; border: 1px solid #dce6f3; border-radius: 6px; padding: 6px 8px; font-size: 11px;
+    }
+    .record-info { flex: 1; min-width: 0; }
+    .record-info strong { display: block; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .record-info span { color: var(--muted); font-size: 10px; }
+    .record-actions { display: flex; gap: 4px; flex: none; }
+    .icon-btn {
+      border: 1px solid #dce6f3; background: #f8fbff; color: var(--navy); width: 24px; height: 24px;
+      border-radius: 5px; cursor: pointer; display: grid; place-items: center; font-size: 11px;
+    }
+    .icon-btn:hover { background: #eaf2ff; color: var(--blue); }
+    .icon-btn.del:hover { background: #fef2f2; color: var(--red); border-color: #fecaca; }
 
     /* Mapa central */
     .mapwrap { position: relative; min-width: 0; height: 100%; }
@@ -119,7 +144,7 @@
     .maptools {
       position: absolute; z-index: 800; right: 12px; top: 12px; background: #fff;
       border: 1px solid var(--line); border-radius: 9px; box-shadow: 0 4px 16px rgba(9,42,101,0.1);
-      padding: 8px; display: flex; gap: 4px;
+      padding: 6px; display: flex; gap: 4px;
     }
     .base-btn {
       border: 1px solid transparent; background: #f3f6fa; color: var(--navy); padding: 5px 9px;
@@ -130,7 +155,7 @@
     .floating-legend {
       position: absolute; z-index: 800; left: 12px; bottom: 18px; background: rgba(255,255,255,0.96);
       border: 1px solid var(--line); border-radius: 9px; box-shadow: 0 4px 16px rgba(9,42,101,0.1);
-      padding: 10px 12px; width: 225px; font-size: 11px;
+      padding: 10px 12px; width: 235px; font-size: 11px;
     }
     .floating-legend strong { display: block; color: var(--navy); margin-bottom: 6px; font-size: 12px; }
     .leg-row { display: flex; align-items: center; gap: 7px; margin: 4px 0; color: #34475e; }
@@ -152,21 +177,44 @@
 
     .status-pill {
       font-size: 11px; color: var(--green); background: #ecfdf5; border: 1px solid #a7f3d0;
-      padding: 7px 9px; border-radius: 7px; line-height: 1.4;
+      padding: 7px 9px; border-radius: 7px; line-height: 1.4; margin-top: auto;
     }
 
-    /* Modal Metodología */
+    /* Modales (Ficha Técnica, Capacitación y Metodología) */
     .modal-bg {
-      position: fixed; inset: 0; background: rgba(9,42,101,0.45); z-index: 2000;
+      position: fixed; inset: 0; background: rgba(9,42,101,0.5); z-index: 2000;
       display: none; align-items: center; justify-content: center; padding: 16px;
     }
     .modal-bg.open { display: flex; }
     .modal-card {
-      background: #fff; max-width: 540px; width: 100%; border-radius: 11px; padding: 20px;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.2); border: 1px solid var(--line);
+      background: #fff; max-width: 780px; width: 100%; max-height: 90vh; overflow-y: auto;
+      border-radius: 12px; padding: 24px; box-shadow: 0 16px 40px rgba(0,0,0,0.25); border: 1px solid var(--line);
     }
-    .modal-card h2 { font-size: 16px; color: var(--navy); margin-bottom: 10px; }
-    .modal-card p { font-size: 12.5px; line-height: 1.55; color: #34475e; margin-bottom: 10px; }
+    .modal-head {
+      display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--navy);
+      padding-bottom: 12px; margin-bottom: 16px;
+    }
+    .modal-head h2 { font-size: 17px; color: var(--navy); }
+    .modal-head small { color: var(--blue); font-weight: 600; font-size: 11.5px; }
+
+    /* Grillas dentro de modales */
+    .steps-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0 18px; }
+    .step-box {
+      background: #f8fbff; border: 1px solid #dce6f3; border-top: 3px solid var(--blue);
+      border-radius: 8px; padding: 11px;
+    }
+    .step-box .num { font-size: 11px; font-weight: 700; color: var(--red); margin-bottom: 3px; }
+    .step-box strong { display: block; font-size: 12.5px; color: var(--navy); margin-bottom: 5px; }
+    .step-box p { font-size: 11px; color: #34475e; line-height: 1.45; }
+
+    .ficha-table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-size: 12px; }
+    .ficha-table th, .ficha-table td { border: 1px solid #dce6f3; padding: 7px 10px; text-align: left; }
+    .ficha-table th { background: #f0f5fd; color: var(--navy); font-weight: 600; width: 32%; }
+
+    .disclaimer-box {
+      background: #fffbeb; border-left: 3px solid var(--amber); padding: 10px 12px;
+      font-size: 11.5px; color: #78350f; border-radius: 5px; margin: 12px 0;
+    }
 
     .popup-form select, .popup-form input {
       width: 100%; padding: 6px; margin: 5px 0 8px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 12px;
@@ -175,10 +223,20 @@
       width: 100%; background: var(--blue); color: #fff; border: none; padding: 7px; border-radius: 5px; font-weight: 600; cursor: pointer;
     }
 
+    /* Estilos de impresión para Ficha Técnica PDF */
+    @media print {
+      body * { visibility: hidden; }
+      #modalFicha, #modalFicha * { visibility: visible; }
+      #modalFicha { position: absolute; left: 0; top: 0; background: #fff; padding: 0; display: block !important; }
+      #modalFicha .modal-card { box-shadow: none; border: none; max-width: 100%; max-height: none; }
+      .no-print { display: none !important; }
+    }
+
     @media (max-width: 1050px) {
       html, body { overflow: auto; height: auto; }
       .workspace { grid-template-columns: 1fr; height: auto; }
       .mapwrap { height: 60vh; }
+      .steps-4 { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -186,70 +244,82 @@
 
 <header class="mast">
   <div class="brand">
-    <div class="badge-om">PROMOVILIDAD</div>
+    <div class="badge-om">DFPM · PROMOVILIDAD</div>
     <div>
-      <h1>Herramienta GRD · Inundabilidad y Movilidad Urbana</h1>
-      <small>Módulo Territorial de Exposición y Reporte Municipal</small>
+      <h1>RadarMov-GRD · Asistencia Técnica Territorial</h1>
+      <small>Metodología de Evaluación de Exposición en la Movilidad Urbana</small>
     </div>
   </div>
   <div class="mast-actions">
     <div class="city-pill">
       <i class="fa-solid fa-city" style="color:var(--blue)"></i>
       <select id="citySelector" aria-label="Seleccionar ciudad">
-        <option value="TUMBES" selected>Tumbes · Piloto Marzo 2023</option>
-        <option value="PIURA">Piura (SICCEP)</option>
-        <option value="CHICLAYO-LAMBAYEQUE">Chiclayo (SICCEP)</option>
-        <option value="TRUJILLO">Trujillo (SICCEP)</option>
-        <option value="HUANCAYO">Huancayo (SICCEP)</option>
-        <option value="JULIACA">Juliaca (SICCEP)</option>
+        <option value="TUMBES" selected>Piloto: Tumbes (Marzo 2023)</option>
+        <option value="PIURA">Priorizada: Piura (SICCEP)</option>
+        <option value="CHICLAYO-LAMBAYEQUE">Priorizada: Chiclayo (SICCEP)</option>
+        <option value="TRUJILLO">Priorizada: Trujillo (SICCEP)</option>
+        <option value="HUANCAYO">Priorizada: Huancayo (SICCEP)</option>
+        <option value="JULIACA">Priorizada: Juliaca (SICCEP)</option>
       </select>
     </div>
-    <button type="button" class="btn-ghost" id="btnMetodologia"><i class="fa-solid fa-circle-info"></i> Metodología</button>
-    <a href="https://github.com/promovilidad-mtc/piloto_grd-inundaciones" target="_blank" rel="noopener" class="btn-ghost">
-      <i class="fa-brands fa-github"></i> Repo
-    </a>
+    <button type="button" class="btn-ghost" id="btnCapacitacion"><i class="fa-solid fa-chalkboard-user"></i> Ruta y Capacitación</button>
+    <button type="button" class="btn-ghost highlight" id="btnFicha"><i class="fa-solid fa-file-pdf"></i> Ficha Técnica</button>
+    <button type="button" class="btn-ghost" id="btnCaptureMap" title="Descargar imagen PNG del mapa actual"><i class="fa-solid fa-camera"></i> Mapa PNG</button>
   </div>
 </header>
 
 <main class="workspace">
-  <!-- PANEL IZQUIERDO: CAPAS Y HERRAMIENTAS MUNICIPALES -->
+  <!-- PANEL IZQUIERDO: CAPAS (PUNTO, LÍNEA, POLÍGONO) Y REGISTRO MUNICIPAL -->
   <aside class="sidebar">
     <div>
-      <div class="sec-title"><i class="fa-solid fa-layer-group"></i> Capas del escenario</div>
+      <div class="sec-title"><span class="left"><i class="fa-solid fa-layer-group"></i> Capas del escenario</span></div>
       <div class="card-box">
         <label class="layerline">
-          <span class="layer-lbl"><span class="swatch" style="border:2px solid #092a65; background:transparent;"></span>Ámbito urbano (SICCEP)</span>
-          <input type="checkbox" id="chkSiccep" checked>
+          <span class="layer-lbl"><span class="swatch" style="background:var(--purple); border-radius:50%;"></span>Incidencias y equipamientos <span class="geom-tag">Punto</span></span>
+          <input type="checkbox" id="chkPoints" checked>
         </label>
         <label class="layerline">
-          <span class="layer-lbl"><span class="swatch" style="background:rgba(7,88,201,0.35); border:1px solid #0758c9;"></span>Huella inundación (Sentinel-1)</span>
-          <input type="checkbox" id="chkFlood" checked>
-        </label>
-        <label class="layerline">
-          <span class="layer-lbl"><span class="swatch" style="background:var(--red);"></span>Red vial expuesta</span>
+          <span class="layer-lbl"><span class="swatch" style="background:var(--red);"></span>Red vial expuesta <span class="geom-tag">Línea</span></span>
           <input type="checkbox" id="chkRoads" checked>
         </label>
         <label class="layerline">
-          <span class="layer-lbl"><span class="swatch" style="background:var(--purple); border-radius:50%;"></span>Equipamientos / Reportes</span>
-          <input type="checkbox" id="chkAssets" checked>
+          <span class="layer-lbl"><span class="swatch" style="background:rgba(7,88,201,0.35); border:1px solid #0758c9;"></span>Áreas inundables <span class="geom-tag">Polígono</span></span>
+          <input type="checkbox" id="chkFlood" checked>
+        </label>
+        <label class="layerline">
+          <span class="layer-lbl"><span class="swatch" style="border:2px solid #092a65; background:transparent;"></span>Ámbito urbano SICCEP <span class="geom-tag">Polígono</span></span>
+          <input type="checkbox" id="chkSiccep" checked>
         </label>
       </div>
     </div>
 
     <div>
-      <div class="sec-title"><i class="fa-solid fa-pen-ruler"></i> Gestión Municipal (Campo)</div>
+      <div class="sec-title"><span class="left"><i class="fa-solid fa-building-shield"></i> Validación Municipal</span></div>
       <div class="card-box muni-grid">
+        <button type="button" class="btn-action" id="btnReportPoint">
+          <i class="fa-solid fa-location-dot"></i> Registrar punto crítico
+        </button>
         <button type="button" class="btn-action" id="btnDrawFlood">
           <i class="fa-solid fa-draw-polygon"></i> Dibujar área inundable
-        </button>
-        <button type="button" class="btn-action" id="btnReportPoint">
-          <i class="fa-solid fa-location-dot"></i> Registrar incidencia vial
         </button>
         <label class="upload-mini" title="Cargar GeoJSON en WGS84 (EPSG:4326)">
           <span><i class="fa-solid fa-upload"></i> Subir capa local (.geojson)</span>
           <span style="font-weight:600; color:var(--blue);">Explorar</span>
           <input type="file" id="fileUpload" accept=".json,.geojson,application/geo+json">
         </label>
+      </div>
+    </div>
+
+    <!-- BANDEJA DE REGISTROS MUNICIPALES -->
+    <div>
+      <div class="sec-title">
+        <span class="left"><i class="fa-solid fa-list-check"></i> Registros agregados (<span id="recCount">0</span>)</span>
+        <button type="button" id="btnClearAll" style="border:none;background:none;color:var(--red);font-size:10.5px;font-weight:600;cursor:pointer;display:none;">Borrar todo</button>
+      </div>
+      <div class="card-box records-list" id="recordsList">
+        <div style="font-size:11px; color:var(--muted); text-align:center; padding:6px 0;">
+          Aún no hay polígonos ni incidencias registradas. Usa los botones superiores para validar puntos críticos en el mapa.
+        </div>
       </div>
     </div>
 
@@ -261,28 +331,29 @@
   </aside>
 
   <!-- CENTRO: VISOR CARTOGRÁFICO -->
-  <section class="mapwrap">
+  <section class="mapwrap" id="mapCaptureArea">
     <div id="map"></div>
-    <div class="maptools">
+    <div class="maptools no-print">
       <button type="button" class="base-btn active" data-base="carto">Calles</button>
       <button type="button" class="base-btn" data-base="esri">Satélite</button>
       <button type="button" class="base-btn" data-base="osm">OSM</button>
     </div>
     <div class="floating-legend">
-      <strong>Simbología de Riesgo Vial</strong>
-      <div class="leg-row"><span class="swatch" style="border:2px solid #092a65; background:transparent;"></span> Límite ciudad (MVCS · SICCEP)</div>
-      <div class="leg-row"><span class="swatch" style="background:rgba(7,88,201,0.35); border:1px solid #0758c9;"></span> Área inundable</div>
+      <strong>Simbología · RadarMov-GRD</strong>
+      <div class="leg-row"><span class="swatch" style="background:#7c3aed; border-radius:50%;"></span> Punto crítico / Equipamiento</div>
       <div class="leg-row"><span class="swatch" style="background:#df1836;"></span> Criticidad Alta (Troncal / Primaria)</div>
       <div class="leg-row"><span class="swatch" style="background:#d97706;"></span> Criticidad Media (Secundaria / Terc.)</div>
       <div class="leg-row"><span class="swatch" style="background:#0758c9;"></span> Red Local (Residencial)</div>
-      <div class="leg-row"><span class="swatch" style="background:#7c3aed; border-radius:50%;"></span> Incidencia Municipal / Equipamiento</div>
+      <div class="leg-row"><span class="swatch" style="background:rgba(7,88,201,0.35); border:1px solid #0758c9;"></span> Huella inundable (Sentinel-1)</div>
+      <div class="leg-row"><span class="swatch" style="background:rgba(223,24,54,0.28); border:1.5px solid #df1836;"></span> Área inundable (Validación Muni)</div>
+      <div class="leg-row"><span class="swatch" style="border:2px solid #092a65; background:transparent;"></span> Límite ciudad (MVCS · SICCEP)</div>
     </div>
   </section>
 
   <!-- PANEL DERECHO: ANALÍTICA E INDICADORES -->
   <aside class="details">
     <div>
-      <div class="sec-title"><i class="fa-solid fa-chart-pie"></i> Resumen de Exposición</div>
+      <div class="sec-title"><span class="left"><i class="fa-solid fa-chart-pie"></i> Resumen de Exposición</span></div>
       <div class="kpi-grid">
         <div class="kpi-card">
           <strong id="kpiTotalKm">32.96 km</strong>
@@ -298,30 +369,132 @@
         </div>
         <div class="kpi-card">
           <strong id="kpiReports">0</strong>
-          <span>Incidencias / Equip.</span>
+          <span>Validaciones municipales</span>
         </div>
       </div>
     </div>
 
     <div>
-      <div class="sec-title"><i class="fa-solid fa-bars-staggered"></i> Exposición por Jerarquía Vial</div>
+      <div class="sec-title"><span class="left"><i class="fa-solid fa-bars-staggered"></i> Exposición por Jerarquía Vial</span></div>
       <div class="card-box bar-group" id="barsContainer"></div>
     </div>
 
     <div class="status-pill" id="statusBox">
-      Iniciando visor y conectando con servicio SICCEP (MVCS)...
+      Iniciando RadarMov-GRD y conectando con servicio SICCEP (MVCS)...
     </div>
   </aside>
 </main>
 
-<!-- MODAL METODOLOGÍA (COMPACTO Y NO INVASIVO) -->
-<div class="modal-bg" id="modalMetodologia">
+<!-- MODAL 1: RUTA DE ASISTENCIA TÉCNICA Y MÓDULOS DE CAPACITACIÓN -->
+<div class="modal-bg" id="modalCapacitacion">
   <div class="modal-card">
-    <h2>Metodología · Screening GRD y Movilidad Urbana</h2>
-    <p><b>1. Detección Satelital (UN-SPIDER / ONU):</b> Huella de inundación extraída mediante radar Sentinel-1 GRD (polarización VV, filtro speckle 50 m, umbral 1.25) en Google Earth Engine.</p>
-    <p><b>2. Ámbito Urbano (MVCS · SICCEP):</b> Polígono oficial de ciudad consumido en tiempo real desde el servicio REST del Sistema de Ciudades y Centros Poblados (MapServer/17).</p>
-    <p><b>3. Exposición Vial (Enfoque BID):</b> Cruce espacial en proyección UTM 17S (EPSG:32717) clasificando tramos según jerarquía funcional y criticidad operativa. Permite dibujo de polígonos y registro de incidencias municipales en campo.</p>
-    <button type="button" class="btn-action primary" id="btnCerrarModal">Entendido</button>
+    <div class="modal-head">
+      <div>
+        <h2>Asistencia Técnica Territorial y Capacitación Municipal</h2>
+        <small>Metodología RadarMov-GRD · Dirección de Fortalecimiento y Planificación de la Movilidad (DFPM)</small>
+      </div>
+      <button type="button" class="btn-ghost" onclick="closeModal('modalCapacitacion')">✕</button>
+    </div>
+
+    <div class="sec-title"><span class="left"><i class="fa-solid fa-route"></i> 1. Ruta de Ejecución del Piloto (4 Momentos)</span></div>
+    <div class="steps-4">
+      <div class="step-box">
+        <div class="num">MOMENTO 01</div>
+        <strong>Diagnóstico Territorial</strong>
+        <p>DFPM recopila capas oficiales (SICCEP, OSM) y procesa huellas de radar Sentinel-1 (UN-SPIDER) para mapear exposición preliminar.</p>
+      </div>
+      <div class="step-box">
+        <div class="num">MOMENTO 02</div>
+        <strong>Identificación de Prioridades</strong>
+        <p>Análisis de tramos críticos (ejes troncales y colectores), continuidad operativa y brechas que requieren validación local.</p>
+      </div>
+      <div class="step-box">
+        <div class="num">MOMENTO 03</div>
+        <strong>Asistencia y Capacitación</strong>
+        <p>Taller práctico con el equipo técnico de la Municipalidad Provincial de Tumbes para validar puntos críticos sobre el visor.</p>
+      </div>
+      <div class="step-box">
+        <div class="num">MOMENTO 04</div>
+        <strong>Resultados y Seguimiento</strong>
+        <p>Emisión de Ficha de Asistencia Técnica, registro de acuerdos y articulación con el Observatorio de Movilidad Urbana.</p>
+      </div>
+    </div>
+
+    <div class="sec-title"><span class="left"><i class="fa-solid fa-graduation-cap"></i> 2. Estructura del Módulo de Capacitación Municipal</span></div>
+    <div class="steps-4" style="margin-bottom:10px;">
+      <div class="step-box" style="border-top-color: var(--navy);">
+        <div class="num" style="color:var(--blue);">MÓDULO 1</div>
+        <strong>Conceptos y Metodología</strong>
+        <p>Fundamentos de GRD en movilidad urbana, alcance del screening RadarMov-GRD y diferencia con estudios hidráulicos oficiales.</p>
+      </div>
+      <div class="step-box" style="border-top-color: var(--navy);">
+        <div class="num" style="color:var(--blue);">MÓDULO 2</div>
+        <strong>Información Territorial</strong>
+        <p>Manejo de límites urbanos SICCEP, red vial jerarquizada, corredores de transporte y capas de peligros disponibles.</p>
+      </div>
+      <div class="step-box" style="border-top-color: var(--navy);">
+        <div class="num" style="color:var(--blue);">MÓDULO 3</div>
+        <strong>Aplicación Práctica</strong>
+        <p>Demostración interactiva con el caso Tumbes (32.96 km expuestos) e interpretación de criticidad por tipo de vía.</p>
+      </div>
+      <div class="step-box" style="border-top-color: var(--navy);">
+        <div class="num" style="color:var(--blue);">MÓDULO 4</div>
+        <strong>Validación Municipal</strong>
+        <p>Ejercicio en vivo: registro de incidencias, dibujo de áreas anegadas y exportación GeoJSON para planificación local.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 2: FICHA TÉCNICA EJECUTIVA (IMPRIMIBLE A PDF) -->
+<div class="modal-bg" id="modalFicha">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div>
+        <h2>Ficha Técnica · Asistencia Técnica Territorial GRD</h2>
+        <small>DFPM – PROMOVILIDAD | Metodología RadarMov-GRD (Estándar UN-SPIDER + Enfoque BID)</small>
+      </div>
+      <div style="display:flex; gap:6px;" class="no-print">
+        <button type="button" class="btn-ghost highlight" onclick="window.print()"><i class="fa-solid fa-print"></i> Guardar PDF / Imprimir</button>
+        <button type="button" class="btn-ghost" onclick="closeModal('modalFicha')">✕</button>
+      </div>
+    </div>
+
+    <p style="font-size:12px; line-height:1.5; margin-bottom:10px;">
+      <b>Objetivo:</b> Implementar un piloto de asistencia técnica que permita aplicar <b>RadarMov-GRD</b> para identificar elementos y servicios de movilidad potencialmente expuestos a peligros, orientar la priorización territorial y fortalecer las capacidades municipales.
+    </p>
+
+    <div class="disclaimer-box">
+      <b>Precisión Técnica:</b> Los resultados de RadarMov-GRD identifican exposición potencial mediante detección satelital de radar y análisis espacial (Fase 1 Screening BID). Orientan la priorización municipal, pero <b>no constituyen por sí solos una evaluación oficial de riesgo</b> ni reemplazan estudios hidrológicos o hidráulicos de detalle.
+    </div>
+
+    <div class="sec-title"><span class="left">1. Resultados Auditados — Caso Piloto Tumbes (Evento Marzo 2023 · EPSG:32717)</span></div>
+    <table class="ficha-table">
+      <thead>
+        <tr>
+          <th>Jerarquía Vial (OSM)</th>
+          <th>Nivel de Criticidad</th>
+          <th>Longitud Expuesta</th>
+          <th>Participación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Vía Troncal (<code>trunk</code>)</td><td>Alta (Eje estructurante)</td><td><b>0.55 km</b> (551.2 m)</td><td>1.67%</td></tr>
+        <tr><td>Vía Secundaria (<code>secondary</code>)</td><td>Media-Alta (Colectora)</td><td><b>0.12 km</b> (124.8 m)</td><td>0.38%</td></tr>
+        <tr><td>Vía Terciaria (<code>tertiary</code>)</td><td>Media (Alimentadora)</td><td><b>0.41 km</b> (411.0 m)</td><td>1.25%</td></tr>
+        <tr><td>Vía Residencial / Local</td><td>Local (Accesibilidad barrial)</td><td><b>31.88 km</b> (31,875.6 m)</td><td>96.70%</td></tr>
+        <tr style="background:#f0f5fd;"><td><b>TOTAL RED VIAL EXPUESTA</b></td><td><b>Área urbana SICCEP Tumbes</b></td><td><b>32.96 km (32,962.6 m)</b></td><td><b>100.00%</b></td></tr>
+      </tbody>
+    </table>
+
+    <div class="sec-title"><span class="left">2. Ficha de Registro de Asistencia Técnica Municipal</span></div>
+    <table class="ficha-table">
+      <tr><th>Ciudad / Municipalidad</th><td>Tumbes — Municipalidad Provincial de Tumbes (MPT)</td></tr>
+      <tr><th>Responsable Técnico</th><td>Dirección de Fortalecimiento y Planificación de la Movilidad (DFPM) – PROMOVILIDAD</td></tr>
+      <tr><th>Metodología Aplicada</th><td><b>RadarMov-GRD</b> (Sentinel-1 GRD UN-SPIDER + Cartografía Oficial SICCEP + Screening BID)</td></tr>
+      <tr><th>Actividad Desarrollada</th><td>Diagnóstico satelital, demostración en visor territorial y taller de validación municipal</td></tr>
+      <tr><th>Criterios de Réplica</th><td>Alertas de peligro, exposición de corredores, antecedentes de corte vial, data disponible y brecha técnica</td></tr>
+    </table>
   </div>
 </div>
 
@@ -339,12 +512,12 @@ const RISK_CONFIG = {
   unclassified: { label: 'No clasificada',            color: '#64748b', weight: 2 }
 };
 
-// 1. Mapa y capas base gratuitas (sin API Key)
-const map = L.map('map', { zoomControl: true }).setView([-3.565, -80.45], 13);
+// 1. Mapa y capas base gratuitas
+const map = L.map('map', { zoomControl: true, preferCanvas: true }).setView([-3.565, -80.45], 13);
 const bases = {
-  carto: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles © Esri', maxZoom: 19 }),
-  esri:  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles © Esri', maxZoom: 19 }),
-  osm:   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', maxZoom: 19 })
+  carto: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles © Esri', maxZoom: 19, crossOrigin: true }),
+  esri:  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles © Esri', maxZoom: 19, crossOrigin: true }),
+  osm:   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', maxZoom: 19, crossOrigin: true })
 };
 let activeBase = bases.carto.addTo(map);
 
@@ -357,20 +530,19 @@ document.querySelectorAll('.base-btn').forEach(btn => {
   });
 });
 
-// 2. Grupos de capas
+// 2. Grupos de capas ordenados (Puntos -> Líneas -> Polígonos)
+const pointsGroup = L.layerGroup().addTo(map);
+const roadsGroup = L.layerGroup().addTo(map);
+const floodGroup = L.layerGroup().addTo(map);
+const drawnFloodItems = new L.FeatureGroup().addTo(map);
 const siccepLayer = L.geoJSON(null, {
   style: { color: '#092a65', weight: 2.5, dashArray: '6 4', fillColor: '#092a65', fillOpacity: 0.04 }
 }).addTo(map);
 
-const floodGroup = L.layerGroup().addTo(map);
-const roadsGroup = L.layerGroup().addTo(map);
-const assetsGroup = L.layerGroup().addTo(map);
-const drawnFloodItems = new L.FeatureGroup().addTo(map);
-
 let state = {
   floodFeatures: [],
   roadFeatures: [],
-  municipalItems: []
+  municipalRecords: []
 };
 
 // 3. Consultar servicio REST SICCEP (MapServer/17)
@@ -386,9 +558,7 @@ async function loadSiccepCity(cityName) {
     const data = await res.json();
     if (data.features && data.features.length > 0) {
       siccepLayer.addData(data);
-      if (siccepLayer.getBounds().isValid()) {
-        map.fitBounds(siccepLayer.getBounds().pad(0.08));
-      }
+      if (siccepLayer.getBounds().isValid()) map.fitBounds(siccepLayer.getBounds().pad(0.08));
       const props = data.features[0].properties || {};
       const area = props.area_km2 || props.AREA_KM2 || '';
       setStatus(`Ámbito SICCEP activo: ${cityName}${area ? ' (' + Number(area).toFixed(2) + ' km²)' : ''}.`);
@@ -400,32 +570,86 @@ async function loadSiccepCity(cityName) {
   }
 }
 
-// 4. Actualizar gráficos, KPIs y mapas
+// 4. Bandeja de registros municipales
+function renderRecordsList() {
+  const listEl = document.getElementById('recordsList');
+  const countEl = document.getElementById('recCount');
+  const clearBtn = document.getElementById('btnClearAll');
+
+  countEl.textContent = state.municipalRecords.length;
+  clearBtn.style.display = state.municipalRecords.length > 0 ? 'inline' : 'none';
+
+  if (state.municipalRecords.length === 0) {
+    listEl.innerHTML = `<div style="font-size:11px; color:var(--muted); text-align:center; padding:6px 0;">
+      Aún no hay polígonos ni incidencias registradas. Usa los botones superiores para validar puntos críticos en el mapa.
+    </div>`;
+    return;
+  }
+
+  listEl.innerHTML = state.municipalRecords.map(rec => `
+    <div class="record-item">
+      <div class="record-info">
+        <strong>${rec.kind === 'polygon' ? '⬟' : '●'} ${rec.title}</strong>
+        <span>${rec.subtitle}</span>
+      </div>
+      <div class="record-actions">
+        <button type="button" class="icon-btn" title="Acercar en mapa" onclick="zoomRecord('${rec.id}')"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <button type="button" class="icon-btn del" title="Eliminar registro" onclick="deleteRecord('${rec.id}')"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>
+  `).join('');
+}
+
+window.zoomRecord = function(id) {
+  const rec = state.municipalRecords.find(r => r.id === id);
+  if (!rec) return;
+  if (rec.kind === 'polygon' && rec.layer.getBounds) map.fitBounds(rec.layer.getBounds().pad(0.2));
+  else if (rec.layer.getLatLng) map.setView(rec.layer.getLatLng(), 16);
+  rec.layer.openPopup();
+};
+
+window.deleteRecord = function(id) {
+  const idx = state.municipalRecords.findIndex(r => r.id === id);
+  if (idx === -1) return;
+  const rec = state.municipalRecords[idx];
+  if (rec.kind === 'polygon') drawnFloodItems.removeLayer(rec.layer);
+  else pointsGroup.removeLayer(rec.layer);
+  state.municipalRecords.splice(idx, 1);
+  renderRecordsList();
+  refreshDashboard();
+  setStatus(`Registro eliminado (${state.municipalRecords.length} restantes).`);
+};
+
+document.getElementById('btnClearAll').addEventListener('click', () => {
+  state.municipalRecords.forEach(rec => {
+    if (rec.kind === 'polygon') drawnFloodItems.removeLayer(rec.layer);
+    else pointsGroup.removeLayer(rec.layer);
+  });
+  state.municipalRecords = [];
+  renderRecordsList();
+  refreshDashboard();
+  setStatus('Todos los registros municipales de la sesión fueron eliminados.');
+});
+
+// 5. Actualizar gráficos, KPIs y mapas
 function refreshDashboard() {
   floodGroup.clearLayers();
   roadsGroup.clearLayers();
 
-  // Dibujar inundación satelital
   let totalAreaHa = 0;
   if (state.floodFeatures.length > 0) {
     const fc = { type: 'FeatureCollection', features: state.floodFeatures };
     L.geoJSON(fc, {
       style: { color: '#0758c9', weight: 1, fillColor: '#0758c9', fillOpacity: 0.32 }
     }).addTo(floodGroup);
-    try {
-      totalAreaHa = turf.area(fc) / 10000;
-    } catch (e) {}
+    try { totalAreaHa = turf.area(fc) / 10000; } catch (e) {}
   }
 
-  // Sumar área de polígonos dibujados por la municipalidad
   drawnFloodItems.eachLayer(layer => {
-    try {
-      totalAreaHa += turf.area(layer.toGeoJSON()) / 10000;
-    } catch (e) {}
+    try { totalAreaHa += turf.area(layer.toGeoJSON()) / 10000; } catch (e) {}
   });
   document.getElementById('kpiFloodHa').textContent = totalAreaHa > 0 ? `${totalAreaHa.toFixed(1)} ha` : '— ha';
 
-  // Dibujar vías y calcular métricas
   let totalKm = 0;
   let criticalKm = 0;
   const byType = {};
@@ -454,9 +678,8 @@ function refreshDashboard() {
   document.getElementById('kpiTotalKm').textContent = `${totalKm.toFixed(2)} km`;
   document.getElementById('kpiSegments').textContent = state.roadFeatures.length;
   document.getElementById('kpiCriticalKm').textContent = `${criticalKm.toFixed(2)} km`;
-  document.getElementById('kpiReports').textContent = state.municipalItems.length;
+  document.getElementById('kpiReports').textContent = state.municipalRecords.length;
 
-  // Renderizar barras horizontales
   const barsCont = document.getElementById('barsContainer');
   const sorted = Object.entries(byType).sort((a, b) => b[1] - a[1]);
   if (sorted.length === 0) {
@@ -478,7 +701,7 @@ function refreshDashboard() {
   }).join('');
 }
 
-// 5. Cargar datos iniciales del Piloto Tumbes
+// 6. Cargar Piloto Tumbes
 async function initTumbesPilot() {
   await loadSiccepCity('TUMBES');
   try {
@@ -486,23 +709,17 @@ async function initTumbesPilot() {
       fetch('data/tumbes_mancha_inundacion.geojson'),
       fetch('data/tumbes_vias_expuestas.geojson')
     ]);
-    if (rFlood.ok) {
-      const fData = await rFlood.json();
-      state.floodFeatures = fData.features || [];
-    }
-    if (rRoads.ok) {
-      const rData = await rRoads.json();
-      state.roadFeatures = rData.features || [];
-    }
+    if (rFlood.ok) state.floodFeatures = (await rFlood.json()).features || [];
+    if (rRoads.ok) state.roadFeatures = (await rRoads.json()).features || [];
     refreshDashboard();
   } catch (e) {
     refreshDashboard();
   }
 }
 
-// 6. Herramienta Municipal 1: Dibujar polígono de área inundable (Leaflet.draw)
+// 7. Dibujar polígono municipal
 const polygonDrawer = new L.Draw.Polygon(map, {
-  shapeOptions: { color: '#df1836', fillColor: '#df1836', fillOpacity: 0.25, weight: 2 }
+  shapeOptions: { color: '#df1836', fillColor: '#df1836', fillOpacity: 0.28, weight: 2 }
 });
 
 document.getElementById('btnDrawFlood').addEventListener('click', () => {
@@ -516,15 +733,22 @@ map.on(L.Draw.Event.CREATED, e => {
   const layer = e.layer;
   const gj = layer.toGeoJSON();
   const areaHa = (turf.area(gj) / 10000).toFixed(2);
-  gj.properties = { origen: 'Dibujo Municipal', tipo: 'Área inundable reportada', area_ha: Number(areaHa), fecha: new Date().toISOString().slice(0, 10) };
-  layer.bindPopup(`<b>Área inundable (Municipalidad)</b><br>Superficie: ${areaHa} ha`);
+  const id = 'poly_' + Date.now();
+  const fecha = new Date().toISOString().slice(0, 10);
+
+  gj.properties = { id, origen: 'Validación Municipal', tipo: 'Área inundable reportada', area_ha: Number(areaHa), fecha };
+  layer.bindPopup(`<b>Área inundable (Municipalidad)</b><br>Superficie: ${areaHa} ha<br><button type="button" onclick="deleteRecord('${id}')" style="margin-top:6px;padding:4px 8px;background:#df1836;color:#fff;border:none;border-radius:4px;cursor:pointer;">Eliminar polígono</button>`);
   drawnFloodItems.addLayer(layer);
-  state.municipalItems.push(gj);
+
+  state.municipalRecords.push({
+    id, kind: 'polygon', title: `Área inundable (${areaHa} ha)`, subtitle: `Polígono · ${fecha}`, feature: gj, layer
+  });
+  renderRecordsList();
   refreshDashboard();
-  setStatus(`Polígono municipal agregado (${areaHa} ha).`);
+  setStatus(`Área inundable guardada (${areaHa} ha). Puedes verla o borrarla en "Registros agregados".`);
 });
 
-// 7. Herramienta Municipal 2: Registrar incidencia puntual en mapa
+// 8. Registrar punto crítico municipal
 let reportMode = false;
 const btnReport = document.getElementById('btnReportPoint');
 
@@ -532,7 +756,7 @@ btnReport.addEventListener('click', () => {
   reportMode = !reportMode;
   btnReport.classList.toggle('active', reportMode);
   map.getContainer().style.cursor = reportMode ? 'crosshair' : '';
-  if (reportMode) setStatus('Haz clic sobre el punto afectado en el mapa para registrar la incidencia.');
+  if (reportMode) setStatus('Haz clic sobre el punto crítico en el mapa para registrar la incidencia.');
 });
 
 map.on('click', e => {
@@ -541,7 +765,7 @@ map.on('click', e => {
   const form = document.createElement('div');
   form.className = 'popup-form';
   form.innerHTML = `
-    <strong style="color:var(--navy);">Registrar Incidencia Municipal</strong>
+    <strong style="color:var(--navy);">Registrar Punto Crítico</strong>
     <select id="incTipo">
       <option value="Interrupción de vía">Interrupción / Corte de vía</option>
       <option value="Anegamiento pluvial">Anegamiento pluvial crítico</option>
@@ -549,36 +773,42 @@ map.on('click', e => {
       <option value="Equipamiento afectado">Equipamiento público afectado</option>
     </select>
     <input type="text" id="incDetalle" placeholder="Dirección o referencia (ej. Av. Tumbes)">
-    <button type="button" id="incGuardar">Guardar incidencia</button>
+    <button type="button" id="incGuardar">Guardar punto</button>
   `;
   L.popup().setLatLng(e.latlng).setContent(form).openOn(map);
 
   form.querySelector('#incGuardar').addEventListener('click', () => {
     const tipo = form.querySelector('#incTipo').value;
-    const detalle = form.querySelector('#incDetalle').value || 'Sin detalle';
+    const detalle = form.querySelector('#incDetalle').value || 'Sin referencia';
     const fecha = new Date().toISOString().slice(0, 10);
+    const id = 'pt_' + Date.now();
+
     const feat = {
       type: 'Feature',
       geometry: { type: 'Point', coordinates: [Number(lng.toFixed(6)), Number(lat.toFixed(6))] },
-      properties: { origen: 'Reporte Municipal', tipo_incidencia: tipo, detalle, fecha }
+      properties: { id, origen: 'Validación Municipal', tipo_incidencia: tipo, detalle, fecha }
     };
-    state.municipalItems.push(feat);
 
-    L.circleMarker([lat, lng], {
+    const marker = L.circleMarker([lat, lng], {
       radius: 7, fillColor: '#7c3aed', color: '#fff', weight: 2, fillOpacity: 1
-    }).bindPopup(`<b>Incidencia Municipal</b><br>Tipo: ${tipo}<br>Ref: ${detalle}<br>Fecha: ${fecha}`)
-      .addTo(assetsGroup);
+    }).bindPopup(`<b>Punto Crítico Municipal</b><br>Tipo: ${tipo}<br>Ref: ${detalle}<br><button type="button" onclick="deleteRecord('${id}')" style="margin-top:6px;padding:4px 8px;background:#df1836;color:#fff;border:none;border-radius:4px;cursor:pointer;">Eliminar punto</button>`)
+      .addTo(pointsGroup);
+
+    state.municipalRecords.push({
+      id, kind: 'point', title: tipo, subtitle: `${detalle} · ${fecha}`, feature: feat, layer: marker
+    });
 
     map.closePopup();
     reportMode = false;
     btnReport.classList.remove('active');
     map.getContainer().style.cursor = '';
+    renderRecordsList();
     refreshDashboard();
-    setStatus(`Incidencia registrada (${state.municipalItems.length} reportes acumulados).`);
+    setStatus(`Punto crítico registrado. Usa "Descargar GeoJSON consolidado" para exportarlo.`);
   });
 });
 
-// 8. Subir GeoJSON local (vías, inundación o equipamientos)
+// 9. Subir GeoJSON local
 document.getElementById('fileUpload').addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
@@ -598,10 +828,13 @@ document.getElementById('fileUpload').addEventListener('change', e => {
         L.geoJSON(gj, {
           pointToLayer: (f, ll) => L.circleMarker(ll, { radius: 6, fillColor: '#7c3aed', color: '#fff', weight: 1.5, fillOpacity: 0.9 }),
           onEachFeature: (f, l) => {
-            state.municipalItems.push(f);
-            l.bindPopup(`<b>${f.properties?.nombre || f.properties?.name || 'Equipamiento'}</b>`);
+            const id = 'up_' + Math.random().toString(36).slice(2, 8);
+            const nom = f.properties?.nombre || f.properties?.name || 'Equipamiento';
+            l.bindPopup(`<b>${nom}</b>`);
+            state.municipalRecords.push({ id, kind: 'point', title: nom, subtitle: file.name, feature: f, layer: l });
           }
-        }).addTo(assetsGroup);
+        }).addTo(pointsGroup);
+        renderRecordsList();
         setStatus(`Capa puntual "${file.name}" cargada (${feats.length} puntos).`);
       }
       refreshDashboard();
@@ -612,11 +845,25 @@ document.getElementById('fileUpload').addEventListener('change', e => {
   reader.readAsText(file);
 });
 
-// 9. Exportar GeoJSON consolidado
+// 10. Capturar Mapa como PNG
+document.getElementById('btnCaptureMap').addEventListener('click', () => {
+  setStatus('Generando captura PNG del mapa...');
+  html2canvas(document.getElementById('mapCaptureArea'), { useCORS: true }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = `mapa_radarmov_grd_${document.getElementById('citySelector').value.toLowerCase()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    setStatus('Imagen PNG del mapa descargada.');
+  }).catch(() => {
+    alert('Para capturar el mapa con capas satelitales externas, usa la herramienta de recorte de pantalla (Win + Shift + S).');
+  });
+});
+
+// 11. Exportar GeoJSON consolidado
 document.getElementById('btnExport').addEventListener('click', () => {
   const allFeatures = [
     ...state.roadFeatures.map(f => ({ ...f, properties: { ...f.properties, capa: 'via_expuesta' } })),
-    ...state.municipalItems
+    ...state.municipalRecords.map(r => r.feature)
   ];
   if (allFeatures.length === 0) {
     alert('No hay elementos para exportar.');
@@ -625,18 +872,18 @@ document.getElementById('btnExport').addEventListener('click', () => {
   const blob = new Blob([JSON.stringify({ type: 'FeatureCollection', features: allFeatures }, null, 2)], { type: 'application/geo+json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `grd_${document.getElementById('citySelector').value.toLowerCase()}_${new Date().toISOString().slice(0, 10)}.geojson`;
+  a.download = `radarmov_grd_${document.getElementById('citySelector').value.toLowerCase()}_${new Date().toISOString().slice(0, 10)}.geojson`;
   a.click();
 });
 
-// 10. Toggles de visibilidad y eventos UI
-document.getElementById('chkSiccep').addEventListener('change', e => e.target.checked ? map.addLayer(siccepLayer) : map.removeLayer(siccepLayer));
+// 12. Toggles y modales
+document.getElementById('chkPoints').addEventListener('change', e => e.target.checked ? map.addLayer(pointsGroup) : map.removeLayer(pointsGroup));
+document.getElementById('chkRoads').addEventListener('change', e => e.target.checked ? map.addLayer(roadsGroup) : map.removeLayer(roadsGroup));
 document.getElementById('chkFlood').addEventListener('change', e => {
   if (e.target.checked) { map.addLayer(floodGroup); map.addLayer(drawnFloodItems); }
   else { map.removeLayer(floodGroup); map.removeLayer(drawnFloodItems); }
 });
-document.getElementById('chkRoads').addEventListener('change', e => e.target.checked ? map.addLayer(roadsGroup) : map.removeLayer(roadsGroup));
-document.getElementById('chkAssets').addEventListener('change', e => e.target.checked ? map.addLayer(assetsGroup) : map.removeLayer(assetsGroup));
+document.getElementById('chkSiccep').addEventListener('change', e => e.target.checked ? map.addLayer(siccepLayer) : map.removeLayer(siccepLayer));
 
 document.getElementById('citySelector').addEventListener('change', e => {
   const city = e.target.value;
@@ -649,12 +896,13 @@ document.getElementById('citySelector').addEventListener('change', e => {
   }
 });
 
-document.getElementById('btnMetodologia').addEventListener('click', () => document.getElementById('modalMetodologia').classList.add('open'));
-document.getElementById('btnCerrarModal').addEventListener('click', () => document.getElementById('modalMetodologia').classList.remove('open'));
+document.getElementById('btnCapacitacion').addEventListener('click', () => document.getElementById('modalCapacitacion').classList.add('open'));
+document.getElementById('btnFicha').addEventListener('click', () => document.getElementById('modalFicha').classList.add('open'));
+window.closeModal = function(id) { document.getElementById(id).classList.remove('open'); };
 
 function setStatus(msg) { document.getElementById('statusBox').textContent = msg; }
 
-// Arranque inicial
+// Arranque
 initTumbesPilot();
 </script>
 </body>
