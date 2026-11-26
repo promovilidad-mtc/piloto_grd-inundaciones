@@ -1,213 +1,546 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Visor GRD — Exposición a Inundaciones</title>
-<meta name="description" content="Visor de gestión del riesgo de desastres: huella de inundación Sentinel-1 (UN-SPIDER) y exposición de infraestructura vial (BID).">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Herramienta de Inundabilidad y Movilidad Urbana | Tumbes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Librería ligera Turf.js para cruces espaciales reales en el navegador -->
+  <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+  <style>
+    :root {
+      --bg-app: #0b0f19;
+      --bg-panel: #111827;
+      --bg-card: #1f2937;
+      --border: #374151;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent: #38bdf8;
+      --risk-high: #ef4444;
+      --risk-med: #f97316;
+      --risk-low: #eab308;
+      --risk-local: #3b82f6;
+      --asset-color: #a855f7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'IBM Plex Sans', sans-serif; }
+    body { background: var(--bg-app); color: var(--text-main); line-height: 1.5; }
+    
+    /* Header */
+    .top {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+      padding: 14px 24px; background: #070a12; border-bottom: 1px solid var(--border);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .mark {
+      width: 40px; height: 40px; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--accent);
+      color: var(--accent); font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 1rem;
+    }
+    .brand small { display: block; font-size: 0.7rem; letter-spacing: 0.08em; color: var(--accent); font-weight: 600; }
+    .brand h1 { font-size: 1.15rem; font-weight: 600; color: #fff; }
+    .tag {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; padding: 4px 12px;
+      border-radius: 99px; background: rgba(56, 189, 248, 0.12); color: var(--accent); border: 1px solid rgba(56, 189, 248, 0.3);
+    }
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<style>
-  :root { --bg: #f8fafc; --panel: #ffffff; --borde: #e2e8f0; --texto: #0f172a; --sub: #64748b; --acento: #0284c7; }
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'IBM Plex Sans', sans-serif; }
-  body { display: flex; flex-direction: column; height: 100vh; color: var(--texto); background: var(--bg); }
-  .barra-sup { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: #0f172a; color: #fff; }
-  .marca { display: flex; align-items: center; gap: 10px; }
-  .marca h1 { font-size: 1rem; font-weight: 600; }
-  .version { font-size: 0.72rem; background: #0284c7; padding: 2px 8px; border-radius: 99px; }
-  .btn-volver { color: #e2e8f0; text-decoration: none; font-size: 0.82rem; display: flex; align-items: center; gap: 6px; border: 1px solid #334155; padding: 5px 10px; border-radius: 6px; }
-  .btn-volver:hover { background: #1e293b; }
-  .barra-ctrl { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 8px 16px; background: var(--panel); border-bottom: 1px solid var(--borde); }
-  .selector-ciudad { display: flex; align-items: center; gap: 6px; border: 1px solid var(--borde); padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; }
-  .selector-ciudad select { border: none; background: transparent; font-weight: 500; outline: none; }
-  .segmentado { display: flex; align-items: center; gap: 4px; background: #f1f5f9; padding: 3px; border-radius: 6px; }
-  .segmentado button { border: none; background: transparent; padding: 4px 10px; font-size: 0.8rem; border-radius: 4px; cursor: pointer; color: var(--sub); }
-  .segmentado button[aria-pressed="true"] { background: #fff; color: var(--texto); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
-  .cuerpo { display: flex; flex: 1; overflow: hidden; }
-  #panel { width: 340px; background: var(--panel); border-right: 1px solid var(--borde); display: flex; flex-direction: column; overflow-y: auto; padding: 14px; gap: 16px; }
-  .seccion h2 { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; color: var(--sub); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-  .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-  .kpi-card { background: #f8fafc; border: 1px solid var(--borde); border-radius: 8px; padding: 10px; }
-  .kpi-val { font-size: 1.25rem; font-weight: 600; color: #0f172a; }
-  .kpi-lbl { font-size: 0.72rem; color: var(--sub); margin-top: 2px; }
-  .capa-item { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; font-size: 0.85rem; border-bottom: 1px solid #f1f5f9; cursor: pointer; }
-  .barra-item { margin-bottom: 10px; }
-  .barra-cab { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px; }
-  .barra-track { height: 8px; background: #f1f5f9; border-radius: 99px; overflow: hidden; }
-  .barra-fill { height: 100%; border-radius: 99px; }
-  .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
-  .mapa-wrap { flex: 1; position: relative; }
-  #map { width: 100%; height: 100%; }
-  .panel-pie { margin-top: auto; font-size: 0.72rem; color: var(--sub); border-top: 1px solid var(--borde); padding-top: 10px; }
-  @media (max-width: 768px) {
-    .cuerpo { flex-direction: column-reverse; }
-    #panel { width: 100%; height: 45%; border-right: none; border-top: 1px solid var(--borde); }
-  }
-</style>
+    main { max-width: 1440px; margin: 0 auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 20px; }
+
+    /* Intro */
+    .intro {
+      display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: center;
+      background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px;
+    }
+    .intro h2 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; color: #fff; }
+    .intro p { font-size: 0.88rem; color: var(--text-muted); }
+    .notice {
+      background: rgba(245, 158, 11, 0.08); border-left: 3px solid #f59e0b; padding: 12px 14px;
+      border-radius: 6px; font-size: 0.8rem; color: #fcd34d;
+    }
+
+    /* Workspace */
+    .workspace { display: grid; grid-template-columns: 370px 1fr; gap: 20px; align-items: start; }
+    .panel {
+      background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px;
+      padding: 18px; display: flex; flex-direction: column; gap: 12px;
+    }
+    .panel h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); font-weight: 600; }
+    .panel label { display: flex; flex-direction: column; gap: 5px; font-size: 0.82rem; color: var(--text-muted); }
+    .panel input[type="text"], .panel input:disabled, .panel select {
+      background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main);
+      padding: 8px 10px; border-radius: 6px; font-size: 0.85rem; outline: none;
+    }
+    .panel input:disabled { opacity: 0.7; cursor: not-allowed; }
+    .rule { height: 1px; background: var(--border); margin: 4px 0; }
+    .help { font-size: 0.78rem; color: var(--text-muted); }
+
+    /* File inputs */
+    .file {
+      background: var(--bg-card); border: 1px dashed var(--border); padding: 8px 10px;
+      border-radius: 6px; cursor: pointer; transition: border-color 0.2s;
+    }
+    .file:hover { border-color: var(--accent); }
+    .file input[type="file"] { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* Buttons */
+    button {
+      background: var(--accent); color: #0b0f19; border: none; padding: 9px 14px;
+      border-radius: 6px; font-weight: 600; font-size: 0.83rem; cursor: pointer; transition: opacity 0.2s;
+    }
+    button:hover:not(:disabled) { opacity: 0.9; }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    button.secondary { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border); }
+    button.secondary:hover { border-color: var(--accent); color: var(--accent); }
+    button.report-btn { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); }
+    button.report-btn.active { background: #ef4444; color: #fff; }
+
+    /* Metrics */
+    .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .metrics > div {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 10px;
+    }
+    .metrics strong { display: block; font-size: 1.25rem; color: #fff; font-weight: 700; }
+    .metrics span { font-size: 0.73rem; color: var(--text-muted); }
+
+    /* Risk Bars */
+    .bars-box { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+    .bar-row { font-size: 0.76rem; }
+    .bar-top { display: flex; justify-content: space-between; margin-bottom: 3px; color: var(--text-main); }
+    .bar-bg { height: 6px; background: var(--bg-app); border-radius: 99px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 99px; }
+
+    .status { font-size: 0.78rem; color: #34d399; background: rgba(16, 185, 129, 0.1); padding: 7px 10px; border-radius: 6px; }
+    .tiny { font-size: 0.72rem; color: var(--text-muted); }
+
+    /* Map Wrap */
+    .mapwrap {
+      background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden; display: flex; flex-direction: column;
+    }
+    .maphead {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+      padding: 12px 16px; background: var(--bg-card); border-bottom: 1px solid var(--border); font-size: 0.85rem;
+    }
+    .map-controls { display: flex; gap: 6px; align-items: center; }
+    .base-btn {
+      padding: 4px 10px; font-size: 0.75rem; background: var(--bg-panel); color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .base-btn.active { background: var(--accent); color: #0b0f19; border-color: var(--accent); }
+    #map { width: 100%; height: 620px; background: #090d16; }
+
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 16px; padding: 12px 16px; background: var(--bg-card);
+      border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--text-muted);
+    }
+    .legend span { display: flex; align-items: center; gap: 6px; }
+    .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
+    .legend i.flood { background: rgba(56, 189, 248, 0.45); border: 1px solid #38bdf8; }
+    .legend i.r-high { background: var(--risk-high); }
+    .legend i.r-med { background: var(--risk-med); }
+    .legend i.r-low { background: var(--risk-low); }
+    .legend i.r-local { background: var(--risk-local); }
+    .legend i.asset { background: var(--asset-color); border-radius: 50%; }
+    .legend i.report { background: #ec4899; border-radius: 50%; border: 2px solid #fff; }
+
+    /* Bottom steps */
+    .bottom {
+      background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px;
+    }
+    .bottom h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin-bottom: 14px; }
+    .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .steps > div { background: var(--bg-card); border: 1px solid var(--border); padding: 14px; border-radius: 8px; }
+    .steps b { display: block; font-size: 0.85rem; color: #fff; margin-bottom: 4px; }
+    .steps p { font-size: 0.78rem; color: var(--text-muted); }
+
+    footer { text-align: center; padding: 18px; font-size: 0.78rem; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 10px; }
+
+    /* Dark Leaflet Popup */
+    .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: var(--bg-panel); color: var(--text-main); border: 1px solid var(--border); }
+    .popup-form input, .popup-form select {
+      width: 100%; margin: 4px 0 8px; padding: 5px; background: var(--bg-card); color: #fff; border: 1px solid var(--border); border-radius: 4px; font-size: 0.78rem;
+    }
+
+    @media (max-width: 960px) {
+      .intro, .workspace, .steps { grid-template-columns: 1fr; }
+      #map { height: 450px; }
+    }
+  </style>
 </head>
 <body>
 
-<header class="barra-sup">
-  <div class="marca">
-    <span class="marca-icono"><i class="fa-solid fa-water"></i></span>
-    <h1>Visor GRD — Exposición a Inundaciones</h1>
-    <span class="version">Piloto v1.00</span>
+<header class="top">
+  <div class="brand">
+    <div class="mark">OM</div>
+    <div>
+      <small>OBSERVATORIO DE MOVILIDAD URBANA SOSTENIBLE</small>
+      <h1>Análisis de inundabilidad y afectación de la movilidad</h1>
+    </div>
   </div>
-  <a href="https://github.com/promovilidad-mtc/piloto_grd-inundaciones" target="_blank" rel="noopener" class="btn-volver">
-    <i class="fa-brands fa-github"></i> Repositorio
-  </a>
+  <div class="tag">PROTOTIPO · PILOTO TUMBES</div>
 </header>
 
-<div class="barra-ctrl">
-  <label class="selector-ciudad">
-    <i class="fa-solid fa-location-dot" style="color:#0284c7"></i>
-    <select id="sel-ciudad" aria-label="Ciudad">
-      <option value="tumbes" selected>Tumbes (Evento Marzo 2023)</option>
-      <option value="piura" disabled>Piura (Próximamente)</option>
-      <option value="trujillo" disabled>Trujillo (Próximamente)</option>
-    </select>
-  </label>
+<main>
+  <section class="intro">
+    <div>
+      <h2>Explora escenarios de inundación y sus posibles efectos sobre la movilidad urbana</h2>
+      <p>Visualiza la huella satelital de inundación (Sentinel-1 / UN-SPIDER), incorpora capas geográficas de red vial o equipamientos y registra puntos críticos municipales en campo.</p>
+    </div>
+    <div class="notice">
+      <b>Nota metodológica (Screening BID)</b><br>
+      Los datos precargados corresponden al piloto satelital de Tumbes (marzo 2023). Evalúa exposición espacial; no reemplaza un modelamiento hidráulico de profundidad o velocidad.
+    </div>
+  </section>
 
-  <div class="segmentado" role="group" aria-label="Modo de mapa">
-    <button type="button" data-fondo="claro" aria-pressed="true">Claro</button>
-    <button type="button" data-fondo="oscuro" aria-pressed="false">Oscuro</button>
-    <button type="button" data-fondo="satelite" aria-pressed="false">Satélite</button>
-    <button type="button" data-fondo="osm" aria-pressed="false">OSM</button>
-  </div>
-</div>
-
-<main class="cuerpo">
-  <aside id="panel" aria-label="Capas e indicadores GRD">
-    <section class="seccion">
-      <h2><i class="fa-solid fa-layer-group"></i> Capas espaciales</h2>
-      <label class="capa-item">
-        <span><span class="swatch" style="background:rgba(14,165,233,0.45); border:1px solid #0284c7;"></span>Huella inundación (Sentinel-1)</span>
-        <input type="checkbox" id="chk-inundacion" checked>
+  <section class="workspace">
+    <aside class="panel">
+      <h3>1. Configuración del análisis</h3>
+      <label>Ciudad <input value="Tumbes (UTM 17S · EPSG:32717)" disabled></label>
+      <label>Tipo de amenaza
+        <select id="hazard">
+          <option value="fluvial">Inundación fluvial (Desborde río Tumbes)</option>
+          <option value="pluvial">Inundación pluvial (Lluvias extremas)</option>
+        </select>
       </label>
-      <label class="capa-item">
-        <span><span class="swatch" style="background:#d7191c;"></span>Red vial expuesta (OSM)</span>
-        <input type="checkbox" id="chk-vias" checked>
+      <label>Escenario
+        <select id="scenario">
+          <option value="piloto2023">Piloto Satelital Marzo 2023 (Sentinel-1)</option>
+          <option value="esc1">Escenario 1 · Personalizado</option>
+        </select>
       </label>
-    </section>
 
-    <section class="seccion">
-      <h2><i class="fa-solid fa-chart-simple"></i> Indicadores de exposición</h2>
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-val" id="kpi-km">32.96 km</div>
-          <div class="kpi-lbl">Red vial expuesta</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-val" id="kpi-critica">0.55 km</div>
-          <div class="kpi-lbl">Vía troncal (Trunk)</div>
+      <div class="rule"></div>
+      <h3>2. Incorporar información geográfica</h3>
+      <p class="help">Carga tus propios archivos GeoJSON en WGS84 (EPSG:4326) o usa los resultados precargados del piloto.</p>
+      <label class="file">Área inundable (.geojson)<input id="floodFile" type="file" accept=".json,.geojson,application/geo+json"></label>
+      <label class="file">Red vial (.geojson)<input id="roadsFile" type="file" accept=".json,.geojson,application/geo+json"></label>
+      <label class="file">Equipamientos críticos (.geojson)<input id="assetsFile" type="file" accept=".json,.geojson,application/geo+json"></label>
+      <button id="demoBtn" class="secondary"><i class="fa-solid fa-rotate"></i> Recargar datos Piloto Tumbes</button>
+
+      <div class="rule"></div>
+      <h3>3. Resultados de exposición</h3>
+      <div class="metrics">
+        <div><strong id="roadKm">32.96 km</strong><span>vías expuestas (<span id="roadCount">—</span> tramos)</span></div>
+        <div><strong id="assetCount">0</strong><span>equipamientos expuestos</span></div>
+      </div>
+
+      <!-- Desglose visual por criticidad vial -->
+      <div class="bars-box" id="riskBars"></div>
+
+      <p id="status" class="status">Cargando capas del piloto Tumbes...</p>
+
+      <div class="rule"></div>
+      <h3>4. Registro municipal (Campo)</h3>
+      <p class="help">Activa el modo reporte y haz clic en el mapa para registrar puntos críticos o emergencias reportadas por la municipalidad.</p>
+      <button id="reportModeBtn" class="report-btn"><i class="fa-solid fa-location-crosshairs"></i> Activar registro en mapa</button>
+      <button id="exportBtn"><i class="fa-solid fa-download"></i> Exportar resultados + reportes (.geojson)</button>
+      <p class="tiny">Exporta en un solo GeoJSON las vías expuestas, equipamientos interceptados y puntos críticos registrados.</p>
+    </aside>
+
+    <section class="mapwrap">
+      <div class="maphead">
+        <div><b>Visor territorial · Tumbes</b> · <span id="layerStatus" style="color:#9ca3af;">Iniciando...</span></div>
+        <div class="map-controls">
+          <button type="button" class="base-btn active" data-base="oscuro">Oscuro</button>
+          <button type="button" class="base-btn" data-base="satelite">Satélite</button>
+          <button type="button" class="base-btn" data-base="osm">OSM</button>
         </div>
       </div>
-      <div id="grafico-vias"></div>
+      <div id="map"></div>
+      <div class="legend">
+        <span><i class="flood"></i> Huella inundación</span>
+        <span><i class="r-high"></i> Vía Troncal (Criticidad Alta)</span>
+        <span><i class="r-med"></i> Secundaria (Media-Alta)</span>
+        <span><i class="r-low"></i> Terciaria (Media)</span>
+        <span><i class="r-local"></i> Residencial / Local</span>
+        <span><i class="asset"></i> Equipamientos</span>
+        <span><i class="report"></i> Reporte Municipal</span>
+      </div>
     </section>
+  </section>
 
-    <footer class="panel-pie">
-      Metodología: Radar Sentinel-1 (UN-SPIDER / ONU) y Screening de Exposición (BID). Proyección: EPSG:32717.
-    </footer>
-  </aside>
-
-  <div class="mapa-wrap">
-    <div id="map" role="application" aria-label="Mapa de exposición a inundaciones"></div>
-  </div>
+  <section class="bottom">
+    <h3>Flujo metodológico propuesto</h3>
+    <div class="steps">
+      <div><b>01 · Preparar</b><p>Topografía SRTM, red vial OSM, drenaje y capas urbanas validadas en proyección UTM.</p></div>
+      <div><b>02 · Detectar / Modelar</b><p>Radar Sentinel-1 (UN-SPIDER) para huella histórica; HEC-RAS / SWMM para modelación hidráulica.</p></div>
+      <div><b>03 · Analizar</b><p>Cruce espacial de exposición (Screening BID) sobre vías, rutas, paraderos y equipamientos.</p></div>
+      <div><b>04 · Publicar y Reportar</b><p>Visualización en el Observatorio y registro colaborativo de ocurrencias municipales.</p></div>
+    </div>
+  </section>
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<footer>Propuesta de herramienta independiente para el módulo Herramientas del Observatorio · PROMOVILIDAD</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const SIMBOLOGIA_VIAS = {
-  trunk:        { nombre: 'Troncal (Trunk)', color: '#d7191c', km: 0.55 },
-  secondary:    { nombre: 'Secundaria',      color: '#fdae61', km: 0.12 },
-  tertiary:     { nombre: 'Terciaria',       color: '#eab308', km: 0.41 },
-  residential:  { nombre: 'Residencial',     color: '#2b83ba', km: 31.87 },
-  unclassified: { nombre: 'No clasificada',  color: '#999999', km: 0.01 }
+// 1. Configuración de estilos de criticidad vial
+const RISK_STYLES = {
+  trunk:        { label: 'Troncal (Criticidad Alta)', color: '#ef4444', weight: 4.5 },
+  primary:      { label: 'Primaria (Alta)',           color: '#ef4444', weight: 4 },
+  secondary:    { label: 'Secundaria (Media-Alta)',   color: '#f97316', weight: 3.5 },
+  tertiary:     { label: 'Terciaria (Media)',         color: '#eab308', weight: 3 },
+  residential:  { label: 'Residencial (Local)',       color: '#3b82f6', weight: 2 },
+  unclassified: { label: 'No clasificada',            color: '#6b7280', weight: 2 }
 };
 
-function renderizarGrafico() {
-  const cont = document.getElementById('grafico-vias');
-  const totalKm = Object.values(SIMBOLOGIA_VIAS).reduce((acc, v) => acc + v.km, 0);
-  const ordenados = Object.entries(SIMBOLOGIA_VIAS).sort((a, b) => b[1].km - a[1].km);
-
-  cont.innerHTML = ordenados.map(([clave, info]) => {
-    const pct = ((info.km / totalKm) * 100).toFixed(1);
-    return `
-      <div class="barra-item">
-        <div class="barra-cab">
-          <span><span class="swatch" style="background:${info.color}"></span>${info.nombre}</span>
-          <strong>${info.km.toFixed(2)} km (${pct}%)</strong>
-        </div>
-        <div class="barra-track">
-          <div class="barra-fill" style="width:${Math.max(pct, 2)}%; background:${info.color}"></div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
+// 2. Inicializar mapa y capas base gratuitas (sin API Key)
 const map = L.map('map').setView([-3.565, -80.45], 13);
 
-const fondos = {
-  claro:    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' }),
-  oscuro:   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: '© CARTO' }),
-  satelite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri' }),
-  osm:      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' })
+const baseLayers = {
+  oscuro: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 19
+  }),
+  satelite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: '&copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics', maxZoom: 19
+  }),
+  osm: L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors', maxZoom: 19
+  })
 };
-let fondoActivo = fondos.claro.addTo(map);
 
-document.querySelectorAll('.segmentado button').forEach(btn => {
+let currentBase = baseLayers.oscuro.addTo(map);
+
+document.querySelectorAll('.base-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.segmentado button').forEach(b => b.setAttribute('aria-pressed', 'false'));
-    btn.setAttribute('aria-pressed', 'true');
-    map.removeLayer(fondoActivo);
-    fondoActivo = fondos[btn.dataset.fondo].addTo(map);
+    document.querySelectorAll('.base-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    map.removeLayer(currentBase);
+    currentBase = baseLayers[btn.dataset.base].addTo(map);
   });
 });
 
-let capaInundacion = L.layerGroup().addTo(map);
-let capaVias = L.layerGroup().addTo(map);
+// Grupos de capas
+const floodGroup = L.layerGroup().addTo(map);
+const roadsGroup = L.layerGroup().addTo(map);
+const assetsGroup = L.layerGroup().addTo(map);
+const reportsGroup = L.layerGroup().addTo(map);
 
-fetch('data/tumbes_mancha_inundacion.geojson')
-  .then(r => r.json())
-  .then(data => {
-    const layerInund = L.geoJSON(data, {
-      style: { color: '#0284c7', weight: 1, fillColor: '#0ea5e9', fillOpacity: 0.35 }
-    }).addTo(capaInundacion);
-    if (layerInund.getBounds().isValid()) {
-      map.fitBounds(layerInund.getBounds());
-    }
-  }).catch(() => console.warn('No se encontró data/tumbes_mancha_inundacion.geojson'));
+// Estado global de datos
+let state = {
+  floodGeoJSON: null,
+  roadsGeoJSON: null,
+  assetsGeoJSON: null,
+  municipalReports: []
+};
 
-fetch('data/tumbes_vias_expuestas.geojson')
-  .then(r => r.json())
-  .then(data => {
-    L.geoJSON(data, {
+// 3. Renderizar capas y calcular métricas dinámicas
+function updateVisuals() {
+  floodGroup.clearLayers();
+  roadsGroup.clearLayers();
+  assetsGroup.clearLayers();
+
+  // Dibujar inundación
+  if (state.floodGeoJSON) {
+    const fLayer = L.geoJSON(state.floodGeoJSON, {
+      style: { color: '#38bdf8', weight: 1, fillColor: '#0284c7', fillOpacity: 0.35 }
+    }).addTo(floodGroup);
+    if (fLayer.getBounds().isValid()) map.fitBounds(fLayer.getBounds());
+  }
+
+  // Dibujar vías y sumar longitudes por jerarquía
+  let totalKm = 0;
+  let totalSegments = 0;
+  const byType = {};
+
+  if (state.roadsGeoJSON) {
+    L.geoJSON(state.roadsGeoJSON, {
       style: feat => {
-        const tipo = feat.properties.tipo_via || 'unclassified';
-        const cfg = SIMBOLOGIA_VIAS[tipo] || SIMBOLOGIA_VIAS.unclassified;
-        return { color: cfg.color, weight: tipo === 'trunk' ? 4 : 2.5, opacity: 0.95 };
+        const t = feat.properties.tipo_via || feat.properties.highway || 'unclassified';
+        const st = RISK_STYLES[t] || RISK_STYLES.unclassified;
+        return { color: st.color, weight: st.weight, opacity: 0.92 };
+      },
+      onEachFeature: (feat, layer) => {
+        totalSegments++;
+        const p = feat.properties;
+        const t = p.tipo_via || p.highway || 'unclassified';
+        // Usar longitud_m si viene del GPKG/GeoJSON o calcular con Turf.js
+        const lenKm = p.longitud_m ? (Number(p.longitud_m) / 1000) : turf.length(feat, { units: 'kilometers' });
+        totalKm += lenKm;
+        byType[t] = (byType[t] || 0) + lenKm;
+
+        const name = Array.isArray(p.name) ? p.name.join(' / ') : (p.name || 'Tramo vial sin nombre');
+        layer.bindPopup(`<b>${name}</b><br>Jerarquía: ${t}<br>Longitud expuesta: ${(lenKm * 1000).toFixed(1)} m`);
+      }
+    }).addTo(roadsGroup);
+  }
+
+  document.getElementById('roadKm').textContent = `${totalKm.toFixed(2)} km`;
+  document.getElementById('roadCount').textContent = totalSegments;
+
+  // Renderizar barras de criticidad
+  const barsCont = document.getElementById('riskBars');
+  const sortedTypes = Object.entries(byType).sort((a, b) => b[1] - a[1]);
+  barsCont.innerHTML = sortedTypes.map(([t, km]) => {
+    const st = RISK_STYLES[t] || RISK_STYLES.unclassified;
+    const pct = totalKm > 0 ? ((km / totalKm) * 100).toFixed(1) : 0;
+    return `
+      <div class="bar-row">
+        <div class="bar-top"><span>${st.label}</span><b>${km.toFixed(2)} km (${pct}%)</b></div>
+        <div class="bar-bg"><div class="bar-fill" style="width:${Math.max(pct, 3)}%; background:${st.color}"></div></div>
+      </div>
+    `;
+  }).join('');
+
+  // Evaluar equipamientos (si el usuario carga una capa de puntos/polígonos)
+  let exposedAssets = 0;
+  if (state.assetsGeoJSON) {
+    L.geoJSON(state.assetsGeoJSON, {
+      pointToLayer: (feat, latlng) => {
+        let isExposed = false;
+        if (state.floodGeoJSON && typeof turf !== 'undefined') {
+          try {
+            isExposed = state.floodGeoJSON.features.some(poly => turf.booleanPointInPolygon(feat, poly));
+          } catch (e) { isExposed = true; }
+        }
+        if (isExposed) exposedAssets++;
+        return L.circleMarker(latlng, {
+          radius: 7,
+          fillColor: isExposed ? '#a855f7' : '#4b5563',
+          color: '#fff',
+          weight: 1.5,
+          fillOpacity: 0.9
+        });
       },
       onEachFeature: (feat, layer) => {
         const p = feat.properties;
-        const nombre = Array.isArray(p.name) ? p.name.join(' / ') : (p.name || 'Vía sin nombre');
-        layer.bindPopup(`<strong>${nombre}</strong><br>Tipo: ${p.tipo_via}<br>Tramo expuesto: ${Number(p.longitud_m).toFixed(1)} m`);
+        layer.bindPopup(`<b>${p.nombre || p.name || 'Equipamiento'}</b><br>Tipo: ${p.tipo || p.amenity || 'Infraestructura'}`);
       }
-    }).addTo(capaVias);
-  }).catch(() => console.warn('No se encontró data/tumbes_vias_expuestas.geojson'));
+    }).addTo(assetsGroup);
+  }
+  document.getElementById('assetCount').textContent = exposedAssets;
+}
 
-document.getElementById('chk-inundacion').addEventListener('change', e => {
-  e.target.checked ? map.addLayer(capaInundacion) : map.removeLayer(capaInundacion);
-});
-document.getElementById('chk-vias').addEventListener('change', e => {
-  e.target.checked ? map.addLayer(capaVias) : map.removeLayer(capaVias);
+// 4. Cargar datos precargados del Piloto Tumbes (desde carpeta data/)
+async function loadPilotData() {
+  document.getElementById('status').textContent = 'Cargando capas del Piloto Tumbes...';
+  try {
+    const [rFlood, rRoads] = await Promise.all([
+      fetch('data/tumbes_mancha_inundacion.geojson'),
+      fetch('data/tumbes_vias_expuestas.geojson')
+    ]);
+    if (!rFlood.ok || !rRoads.ok) throw new Error('Archivos no encontrados en data/');
+    state.floodGeoJSON = await rFlood.json();
+    state.roadsGeoJSON = await rRoads.json();
+    updateVisuals();
+    document.getElementById('layerStatus').textContent = 'Piloto Tumbes activo (Marzo 2023)';
+    document.getElementById('status').textContent = 'Capas del piloto cargadas. Listo para análisis o reporte.';
+  } catch (err) {
+    document.getElementById('layerStatus').textContent = 'Modo manual (carga tus GeoJSON)';
+    document.getElementById('status').textContent = 'Sube tus GeoJSON en el panel izquierdo para visualizar.';
+  }
+}
+
+// 5. Lectura de archivos GeoJSON subidos por el usuario
+function bindFileInput(inputId, stateKey, label) {
+  document.getElementById(inputId).addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        state[stateKey] = JSON.parse(ev.target.result);
+        updateVisuals();
+        document.getElementById('status').textContent = `Capa "${label}" cargada correctamente.`;
+      } catch (err) {
+        alert('El archivo no es un GeoJSON válido en EPSG:4326.');
+      }
+    };
+    reader.readAsText(file);
+  });
+}
+
+bindFileInput('floodFile', 'floodGeoJSON', 'Área inundable');
+bindFileInput('roadsFile', 'roadsGeoJSON', 'Red vial');
+bindFileInput('assetsFile', 'assetsGeoJSON', 'Equipamientos');
+document.getElementById('demoBtn').addEventListener('click', loadPilotData);
+
+// 6. Módulo de Registro Municipal de Ocurrencias en el Mapa
+let reportMode = false;
+const reportBtn = document.getElementById('reportModeBtn');
+
+reportBtn.addEventListener('click', () => {
+  reportMode = !reportMode;
+  reportBtn.classList.toggle('active', reportMode);
+  reportBtn.innerHTML = reportMode
+    ? '<i class="fa-solid fa-xmark"></i> Cancelar modo registro (Haz clic en el mapa)'
+    : '<i class="fa-solid fa-location-crosshairs"></i> Activar registro en mapa';
+  map.getContainer().style.cursor = reportMode ? 'crosshair' : '';
 });
 
-renderizarGrafico();
+map.on('click', e => {
+  if (!reportMode) return;
+  const { lat, lng } = e.latlng;
+  const popupDiv = document.createElement('div');
+  popupDiv.className = 'popup-form';
+  popupDiv.innerHTML = `
+    <b>Registrar ocurrencia GRD</b>
+    <select id="repType">
+      <option value="Interrupción vial">Interrupción / Corte de vía</option>
+      <option value="Anegamiento pluvial">Anegamiento pluvial</option>
+      <option value="Desborde fluvial">Desborde de cauce / quebrada</option>
+      <option value="Equipamiento afectado">Equipamiento afectado</option>
+    </select>
+    <input type="text" id="repDesc" placeholder="Ej. Av. Tumbes cuadra 4 intransitable">
+    <button type="button" id="saveRepBtn" style="width:100%;">Guardar punto</button>
+  `;
+
+  const popup = L.popup().setLatLng(e.latlng).setContent(popupDiv).openOn(map);
+
+  popupDiv.querySelector('#saveRepBtn').addEventListener('click', () => {
+    const tipo = popupDiv.querySelector('#repType').value;
+    const desc = popupDiv.querySelector('#repDesc').value || 'Sin descripción adicional';
+    const fecha = new Date().toISOString().slice(0, 10);
+
+    const feature = {
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [Number(lng.toFixed(6)), Number(lat.toFixed(6))] },
+      properties: { origen: 'Reporte Municipal', tipo_evento: tipo, descripcion: desc, fecha }
+    };
+    state.municipalReports.push(feature);
+
+    L.circleMarker([lat, lng], {
+      radius: 8, fillColor: '#ec4899', color: '#fff', weight: 2, fillOpacity: 1
+    }).bindPopup(`<b>Reporte Municipal</b><br>Evento: ${tipo}<br>Detalle: ${desc}<br>Fecha: ${fecha}`)
+      .addTo(reportsGroup);
+
+    map.closePopup();
+    reportMode = false;
+    reportBtn.classList.remove('active');
+    reportBtn.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> Activar registro en mapa';
+    map.getContainer().style.cursor = '';
+    document.getElementById('status').textContent = `Ocurrencia registrada (${state.municipalReports.length} reportes en sesión).`;
+  });
+});
+
+// 7. Exportar resultados y reportes a GeoJSON descargable
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const features = [];
+  if (state.roadsGeoJSON && state.roadsGeoJSON.features) {
+    state.roadsGeoJSON.features.forEach(f => {
+      features.push({ ...f, properties: { ...f.properties, capa_export: 'via_expuesta' } });
+    });
+  }
+  state.municipalReports.forEach(r => features.push(r));
+
+  if (features.length === 0) {
+    alert('No hay datos cargados o reportes registrados para exportar.');
+    return;
+  }
+
+  const blob = new Blob([JSON.stringify({ type: 'FeatureCollection', features }, null, 2)], { type: 'application/geo+json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `tumbes_grd_exposicion_${new Date().toISOString().slice(0, 10)}.geojson`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+// Iniciar cargando el piloto
+loadPilotData();
 </script>
 </body>
 </html>
