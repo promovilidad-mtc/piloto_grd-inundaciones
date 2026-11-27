@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://unpkg.com/sql.js@1.10.3/dist/sql-wasm.js"></script>
   <style>
     :root {
       --navy: #092a65;
@@ -75,7 +76,7 @@
     /* Workspace de 3 columnas */
     .workspace {
       display: grid;
-      grid-template-columns: 330px minmax(400px, 1fr) 345px;
+      grid-template-columns: 330px minmax(400px, 1fr) 350px;
       height: calc(100vh - 62px);
     }
     .sidebar, .details {
@@ -255,7 +256,7 @@
     }
     .modal-bg.open { display: flex; }
     .modal-card {
-      background: #fff; max-width: 840px; width: 100%; max-height: 90vh; overflow-y: auto;
+      background: #fff; max-width: 880px; width: 100%; max-height: 90vh; overflow-y: auto;
       border-radius: 12px; padding: 22px; box-shadow: 0 16px 40px rgba(0,0,0,0.25); border: 1px solid var(--line);
     }
     .modal-head {
@@ -264,15 +265,6 @@
     }
     .modal-head h2 { font-size: 16.5px; color: var(--navy); }
     .modal-head small { color: var(--blue); font-weight: 600; font-size: 11px; }
-
-    .steps-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0 16px; }
-    .step-box {
-      background: #f8fbff; border: 1px solid #dce6f3; border-top: 3px solid var(--blue);
-      border-radius: 8px; padding: 10px;
-    }
-    .step-box .num { font-size: 10.5px; font-weight: 700; color: var(--red); margin-bottom: 3px; }
-    .step-box strong { display: block; font-size: 12px; color: var(--navy); margin-bottom: 4px; }
-    .step-box p { font-size: 10.5px; color: #34475e; line-height: 1.4; }
 
     .ficha-table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 11.5px; }
     .ficha-table th, .ficha-table td { border: 1px solid #dce6f3; padding: 6px 9px; text-align: left; }
@@ -304,7 +296,6 @@
       .mast { height: auto; flex-wrap: wrap; padding: 8px 14px; }
       .workspace { grid-template-columns: 1fr; height: auto; }
       .mapwrap { height: 60vh; }
-      .steps-4 { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -332,11 +323,11 @@
     <div class="city-pill">
       <i class="fa-solid fa-city" style="color:var(--blue)"></i>
       <select id="citySelector" aria-label="Seleccionar ciudad">
-        <option value="TUMBES" selected>Alerta: Tumbes (SICCEP)</option>
-        <option value="PIURA">Alerta: Piura (SICCEP)</option>
-        <option value="SULLANA">Alerta: Sullana (SICCEP)</option>
-        <option value="TALARA">Alerta: Talara (SICCEP)</option>
-        <option value="CHICLAYO-LAMBAYEQUE">Alerta: Chiclayo (SICCEP)</option>
+        <option value="TUMBES" selected>Tumbes (SICCEP)</option>
+        <option value="PIURA">Piura (SICCEP)</option>
+        <option value="SULLANA">Sullana (SICCEP)</option>
+        <option value="TALARA">Talara (SICCEP)</option>
+        <option value="CHICLAYO-LAMBAYEQUE">Chiclayo (SICCEP)</option>
         <option value="TRUJILLO">Trujillo (SICCEP)</option>
       </select>
     </div>
@@ -352,7 +343,7 @@
     <div>
       <div class="sec-title"><span class="left"><i class="fa-solid fa-layer-group"></i> Capas Territoriales y Alertas</span></div>
 
-      <!-- 1. CAPAS BASE DEL ANÁLISIS (ACTIVAS AL INICIAR) -->
+      <!-- 1. CAPAS BASE DEL ANÁLISIS -->
       <details class="layer-group" open>
         <summary>1. Escenario Urbano y Exposición</summary>
         <div class="group-body">
@@ -379,26 +370,26 @@
       <details class="layer-group" open>
         <summary>2. Peligros y Alertas Oficiales</summary>
         <div class="group-body">
-          <label class="layerline" title="Servicio WMS oficial SENAMHI / GeoPerú">
+          <label class="layerline">
             <span class="layer-lbl"><span class="sym-poly" style="background:rgba(14,165,233,0.45); border:1px solid #0284c7;"></span>Susceptibilidad inundación <span class="src-tag inst">SENAMHI</span></span>
             <input type="checkbox" id="chkSenamhi">
           </label>
-          <label class="layerline" title="Servicio WMS oficial ANA">
+          <label class="layerline">
             <span class="layer-lbl"><span class="sym-dot" style="background:#0284c7;"></span>Puntos críticos hídricos <span class="src-tag inst">ANA</span></span>
             <input type="checkbox" id="chkAna">
           </label>
-          <label class="layerline" title="Servicio WMS oficial ANA - Fajas marginales">
+          <label class="layerline">
             <span class="layer-lbl"><span class="sym-poly" style="background:rgba(6,182,212,0.35); border:1px solid #0891b2;"></span>Fajas marginales <span class="src-tag inst">ANA</span></span>
             <input type="checkbox" id="chkFaja">
           </label>
-          <label class="layerline" title="Servicio WMS oficial GeoPerú - Movimientos en masa">
+          <label class="layerline">
             <span class="layer-lbl"><span class="sym-poly" style="background:rgba(234,88,12,0.4); border:1px solid #ea580c;"></span>Movimientos en masa <span class="src-tag inst">GeoPerú</span></span>
             <input type="checkbox" id="chkMasa">
           </label>
         </div>
       </details>
 
-      <!-- 3. JERARQUÍA VIAL Y LOGÍSTICA (DESACTIVADAS AL INICIAR, UNA POR CADA UNA) -->
+      <!-- 3. RED VIAL NACIONAL Y SUBNACIONAL (DESACTIVADAS AL INICIAR, UNA POR CADA UNA) -->
       <details class="layer-group">
         <summary>3. Red Vial Nacional y Subnacional</summary>
         <div class="group-body">
@@ -449,9 +440,9 @@
       </details>
     </div>
 
-    <!-- BLOQUE DE REGISTRO EN VIVO -->
+    <!-- BLOQUE DE REGISTRO EN VIVO Y CARGA DE ARCHIVOS (.gpkg / .geojson) -->
     <div>
-      <div class="sec-title"><span class="left"><i class="fa-solid fa-tower-broadcast"></i> Registrar Incidencia en Vivo</span></div>
+      <div class="sec-title"><span class="left"><i class="fa-solid fa-tower-broadcast"></i> Registrar Incidencia y Capas</span></div>
       <div class="card-box muni-grid">
         <button type="button" class="btn-action" id="btnReportPoint">
           <i class="fa-solid fa-location-dot"></i> Marcar punto afectado en mapa
@@ -459,10 +450,10 @@
         <button type="button" class="btn-action" id="btnDrawFlood">
           <i class="fa-solid fa-draw-polygon"></i> Delimitar zona anegada
         </button>
-        <label class="upload-mini" title="Cargar GeoJSON en WGS84 (EPSG:4326)">
-          <span><i class="fa-solid fa-upload"></i> Importar GeoJSON (.geojson)</span>
+        <label class="upload-mini" title="Cargar archivo GeoPackage (.gpkg) o GeoJSON (.geojson)">
+          <span><i class="fa-solid fa-upload"></i> Subir capa (.gpkg / .geojson)</span>
           <span style="font-weight:600; color:var(--blue);">Subir</span>
-          <input type="file" id="fileUpload" accept=".json,.geojson,application/geo+json">
+          <input type="file" id="fileUpload" accept=".gpkg,.json,.geojson,application/geo+json,application/geopackage+sqlite3">
         </label>
         <a href="https://alertasviales.sutran.gob.pe/" target="_blank" rel="noopener" class="upload-mini" style="text-decoration:none; color:var(--navy); border-style:solid; background:#f0f5fd;">
           <span><i class="fa-solid fa-road-barrier" style="color:var(--orange);"></i> Alertas Viales Nacionales (SUTRAN)</span>
@@ -628,13 +619,13 @@
   </aside>
 </main>
 
-<!-- MODAL 1: REPORTE SITUACIONAL DIARIO FEN (SITREP + DATOS SUTRAN/SENAMHI) -->
+<!-- MODAL 1: REPORTE SITUACIONAL FEN MEJORADO (CON CONTEXTO SENAMHI, ENFEN Y SUTRAN) -->
 <div class="modal-bg" id="modalSitrep">
   <div class="modal-card">
     <div class="modal-head">
       <div>
-        <h2>Reporte Situacional FEN — Movilidad Urbana (SITREP)</h2>
-        <small id="sitrepDate">PROMOVILIDAD – MTC · Consolidado de Transitabilidad Urbana</small>
+        <h2>Reporte Situacional FEN — Movilidad Urbana y Asistencia Territorial</h2>
+        <small id="sitrepDate">PROMOVILIDAD – MTC · Consolidado Operativo de Transitabilidad</small>
       </div>
       <div style="display:flex; gap:6px;" class="no-print">
         <button type="button" class="btn-ghost highlight" onclick="window.print()"><i class="fa-solid fa-print"></i> Exportar PDF</button>
@@ -643,28 +634,31 @@
     </div>
 
     <div class="disclaimer-box" style="margin-top:0;">
-      <b>Contexto ENFEN Vigente (Comunicado 13 Nov):</b> El Niño costero se mantendría con magnitud extraordinaria hasta febrero 2027. En el marco del MOF/LOF de PROMOVILIDAD, este reporte consolida la afectación en vías urbanas y transporte público en ciudades bajo alerta, complementando el monitoreo de Red Vial Nacional de SUTRAN.
+      <b>Marco Climático y Normativo (ENFEN / SENAMHI / SUTRAN / MOF-LOF PROMOVILIDAD):</b><br>
+      • <b>Contexto ENFEN (Com. 13 Nov):</b> El Niño costero se mantendría con magnitud extraordinaria hasta febrero 2027.<br>
+      • <b>Alertas SENAMHI:</b> Pronósticos de lluvias moderadas a extremas en costa norte (Piura con acumulados de 117.6 mm y El Chira 103.0 mm).<br>
+      • <b>Competencia PROMOVILIDAD:</b> Monitoreo de transitabilidad en vías urbanas y transporte público en ciudades SICCEP, articulado con alertas de Red Vial Nacional (SUTRAN).
     </div>
 
-    <div class="sec-title"><span class="left">1. Estado Situacional por Ciudad en Alerta (SENAMHI / PROMOVILIDAD)</span></div>
+    <div class="sec-title"><span class="left">1. Matriz de Situación por Ciudad (Clima SENAMHI · Transitabilidad · Exposición)</span></div>
     <table class="ficha-table" id="sitrepCitiesTable">
       <thead>
         <tr>
           <th>Ciudad</th>
-          <th>Reporte / Aviso SENAMHI</th>
-          <th>Estado de Transitabilidad Urbana</th>
-          <th>Incidencias Registradas</th>
+          <th>Aviso / Dato SENAMHI</th>
+          <th>Estado de Transitabilidad</th>
+          <th>Incidencias en Sesión</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
 
-    <div class="sec-title"><span class="left">2. Detalle de Incidencias Urbanas Reportadas en el Turno</span></div>
+    <div class="sec-title"><span class="left">2. Registro Detallado de Incidencias en Vivo</span></div>
     <table class="ficha-table" id="sitrepIncidentsTable">
       <thead>
         <tr>
           <th>Ciudad</th>
-          <th>Estado / Afectación</th>
+          <th>Tipo de Afectación</th>
           <th>Ubicación / Referencia Vial</th>
           <th>Fuente y Hora</th>
         </tr>
@@ -674,7 +668,7 @@
   </div>
 </div>
 
-<!-- MODAL 2: FICHA TÉCNICA COMPLETA (RECUPERADA) -->
+<!-- MODAL 2: FICHA TÉCNICA COMPLETA -->
 <div class="modal-bg" id="modalFicha">
   <div class="modal-card">
     <div class="modal-head">
@@ -780,7 +774,7 @@ document.querySelectorAll('.base-btn').forEach(btn => {
   });
 });
 
-// 2. Capas WMS Oficiales (Mismas URLs verificadas en tu Geoportal)
+// 2. Capas WMS Oficiales
 const wmsLayers = {
   senamhi: L.tileLayer.wms('https://espacialg.geoperu.gob.pe/geoserver/geoperu/peru_inundacion_group_/wms', {
     layers: 'geoperu:peru_inundacion_group_', format: 'image/png', transparent: true, version: '1.1.1', opacity: 0.65, attribution: 'SENAMHI / GeoPerú'
@@ -814,7 +808,6 @@ const wmsLayers = {
   })
 };
 
-// Capas ArcGIS REST del MVCS (RVD, RVV, Corredores Logísticos)
 const restSpecs = {
   rvd: { service: 'DGPRVU/Capas_Externas_SICCEP', id: 13 },
   rvv: { service: 'DGPRVU/Capas_Externas_SICCEP', id: 14 },
@@ -854,7 +847,7 @@ let state = {
   municipalRecords: []
 };
 
-// 4. Consultar SICCEP
+// 4. Consultar SICCEP + cargar capas base de la carpeta data/
 async function loadSiccepCity(cityName) {
   siccepLayer.clearLayers();
   document.getElementById('kpiCityLabel').textContent = cityName;
@@ -876,7 +869,32 @@ async function loadSiccepCity(cityName) {
   }
 }
 
-// 5. Sincronizar desplegable de Ciudades en Alerta con el mapa y KPIs
+async function initTumbesPilot() {
+  await loadSiccepCity('TUMBES');
+  const candidatesFlood = ['data/tumbes_mancha_inundacion.geojson', 'tumbes_mancha_inundacion.geojson'];
+  const candidatesRoads = ['data/tumbes_vias_expuestas.geojson', 'tumbes_vias_expuestas.geojson'];
+
+  for (const path of candidatesFlood) {
+    try {
+      const r = await fetch(path);
+      if (r.ok) { state.floodFeatures = (await r.json()).features || []; break; }
+    } catch (e) {}
+  }
+  for (const path of candidatesRoads) {
+    try {
+      const r = await fetch(path);
+      if (r.ok) { state.roadFeatures = (await r.json()).features || []; break; }
+    } catch (e) {}
+  }
+  refreshDashboard();
+  if (state.floodFeatures.length || state.roadFeatures.length) {
+    setStatus(`Capas base cargadas (${state.roadFeatures.length} tramos viales expuestos).`);
+  } else {
+    setStatus('Ámbito Tumbes cargado. Sube tu archivo .gpkg o .geojson en "Registrar Incidencia y Capas".');
+  }
+}
+
+// 5. Sincronizar desplegable de Ciudades en Alerta con el mapa
 window.selectCityFromAlert = function(cityCode) {
   document.querySelectorAll('.fen-city-row').forEach(r => r.classList.remove('active-city'));
   const row = document.getElementById('row-' + cityCode);
@@ -986,13 +1004,13 @@ function refreshDashboard() {
   if (state.roadFeatures.length > 0) {
     L.geoJSON({ type: 'FeatureCollection', features: state.roadFeatures }, {
       style: feat => {
-        const t = feat.properties.tipo_via || feat.properties.highway || 'unclassified';
+        const t = String(feat.properties?.tipo_via || feat.properties?.highway || 'unclassified').toLowerCase();
         const cfg = RISK_CONFIG[t] || RISK_CONFIG.unclassified;
         return { color: cfg.color, weight: cfg.weight, opacity: 0.95 };
       },
       onEachFeature: (feat, layer) => {
-        const p = feat.properties;
-        const t = p.tipo_via || p.highway || 'unclassified';
+        const p = feat.properties || {};
+        const t = String(p.tipo_via || p.highway || 'unclassified').toLowerCase();
         const cfg = RISK_CONFIG[t] || RISK_CONFIG.unclassified;
         const km = p.longitud_m ? (Number(p.longitud_m) / 1000) : turf.length(feat, { units: 'kilometers' });
         totalKm += km;
@@ -1033,7 +1051,7 @@ function refreshDashboard() {
   const barsCont = document.getElementById('barsContainer');
   const sorted = Object.entries(byType).sort((a, b) => b[1] - a[1]);
   if (sorted.length === 0) {
-    barsCont.innerHTML = '<div style="font-size:10.5px; color:var(--muted);">Sin capa vial preprocesada para esta ciudad. Activa capas WMS o marca incidencias en el mapa.</div>';
+    barsCont.innerHTML = '<div style="font-size:10.5px; color:var(--muted);">Sin capa vial preprocesada para esta ciudad. Activa capas WMS o sube tu .gpkg / .geojson.</div>';
     return;
   }
   barsCont.innerHTML = sorted.map(([t, km]) => {
@@ -1052,23 +1070,7 @@ function refreshDashboard() {
   }).join('');
 }
 
-// 8. Cargar Tumbes
-async function initTumbesPilot() {
-  await loadSiccepCity('TUMBES');
-  try {
-    const [rFlood, rRoads] = await Promise.all([
-      fetch('data/tumbes_mancha_inundacion.geojson'),
-      fetch('data/tumbes_vias_expuestas.geojson')
-    ]);
-    if (rFlood.ok) state.floodFeatures = (await rFlood.json()).features || [];
-    if (rRoads.ok) state.roadFeatures = (await rRoads.json()).features || [];
-    refreshDashboard();
-  } catch (e) {
-    refreshDashboard();
-  }
-}
-
-// 9. Dibujar zona anegada
+// 8. Dibujar zona anegada
 const polygonDrawer = new L.Draw.Polygon(map, {
   shapeOptions: { color: '#dc2626', fillColor: '#dc2626', fillOpacity: 0.28, weight: 2 }
 });
@@ -1100,7 +1102,7 @@ map.on(L.Draw.Event.CREATED, e => {
   setStatus(`Zona anegada agregada (${areaHa} ha).`);
 });
 
-// 10. Registrar incidencia en vivo
+// 9. Registrar incidencia en vivo
 let reportMode = false;
 const btnReport = document.getElementById('btnReportPoint');
 
@@ -1171,7 +1173,7 @@ map.on('click', e => {
   });
 });
 
-// 11. Generar Reporte Situacional Diario (SITREP)
+// 10. Generar Reporte Situacional FEN Mejorado (SITREP)
 document.getElementById('btnSitrep').addEventListener('click', () => {
   const nowStr = new Date().toLocaleString('es-PE', { dateStyle: 'full', timeStyle: 'short' });
   document.getElementById('sitrepDate').textContent = `PROMOVILIDAD – MTC · Corte al ${nowStr}`;
@@ -1183,7 +1185,7 @@ document.getElementById('btnSitrep').addEventListener('click', () => {
     const cityName = sel.dataset.city;
     const senamhiInfo = sel.dataset.senamhi;
     const statusText = sel.options[sel.selectedIndex].text;
-    const count = state.municipalRecords.filter(r => r.ciudad.toUpperCase().includes(cityName.toUpperCase())).length;
+    const count = state.municipalRecords.filter(r => String(r.ciudad || '').toUpperCase().includes(cityName.toUpperCase())).length;
     return `<tr><td><b>${cityName}</b></td><td>${senamhiInfo}</td><td><b>${statusText}</b></td><td>${count} incidencia(s)</td></tr>`;
   }).join('');
 
@@ -1204,38 +1206,135 @@ document.getElementById('btnSitrep').addEventListener('click', () => {
   document.getElementById('modalSitrep').classList.add('open');
 });
 
-// 12. Subir GeoJSON, Captura PNG y Exportar
-document.getElementById('fileUpload').addEventListener('change', e => {
+// 11. Soporte real para cargar GeoPackage (.gpkg via SQLite/sql.js) y GeoJSON (.geojson)
+function parseWkbPoint(bytes) {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const le = view.getUint8(0) === 1;
+  const x = view.getFloat64(1, le);
+  const y = view.getFloat64(9, le);
+  return { type: 'Point', coordinates: [x, y] };
+}
+
+async function readGeoPackageFile(file) {
+  const SQL = await initSqlJs({ locateFile: f => `https://unpkg.com/sql.js@1.10.3/dist/${f}` });
+  const buf = new Uint8Array(await file.arrayBuffer());
+  const db = new SQL.Database(buf);
+
+  const tablesRes = db.exec("SELECT table_name, geometry_type_name FROM gpkg_geometry_columns");
+  if (!tablesRes.length || !tablesRes[0].values.length) {
+    throw new Error('El GeoPackage no contiene tablas geométricas registradas.');
+  }
+
+  const allFeatures = [];
+  for (const [tableName] of tablesRes[0].values) {
+    const colsRes = db.exec(`PRAGMA table_info("${tableName}")`);
+    const cols = colsRes[0].values.map(c => c[1]);
+    const geomCol = cols.find(c => /geom/i.test(c)) || 'geom';
+    const dataRes = db.exec(`SELECT * FROM "${tableName}"`);
+    if (!dataRes.length) continue;
+
+    for (const row of dataRes[0].values) {
+      const props = {};
+      let geometry = null;
+      row.forEach((val, idx) => {
+        const colName = cols[idx];
+        if (colName === geomCol && val instanceof Uint8Array && val.length >= 29) {
+          // Cabecera GeoPackage estándar: 2 bytes 'GP' + 1 byte version + 1 byte flags + 4 bytes srs_id
+          const flags = val[3];
+          const envType = (flags >> 1) & 0x07;
+          const envBytes = envType === 1 ? 32 : envType === 2 ? 48 : envType === 3 ? 48 : envType === 4 ? 64 : 0;
+          const wkbStart = 8 + envBytes;
+          const wkb = val.slice(wkbStart);
+          const view = new DataView(wkb.buffer, wkb.byteOffset, wkb.byteLength);
+          const le = view.getUint8(0) === 1;
+          const gType = view.getUint32(1, le) & 0xff;
+          if (gType === 1 && wkb.length >= 21) {
+            geometry = { type: 'Point', coordinates: [view.getFloat64(5, le), view.getFloat64(13, le)] };
+          } else if (gType === 2 && wkb.length >= 9) {
+            const nPts = view.getUint32(5, le);
+            const coords = [];
+            let off = 9;
+            for (let i = 0; i < nPts && off + 16 <= wkb.length; i++) {
+              coords.push([view.getFloat64(off, le), view.getFloat64(off + 8, le)]);
+              off += 16;
+            }
+            geometry = { type: 'LineString', coordinates: coords };
+          } else if (gType === 3 && wkb.length >= 13) {
+            const nRings = view.getUint32(5, le);
+            const rings = [];
+            let off = 9;
+            for (let r = 0; r < nRings && off + 4 <= wkb.length; r++) {
+              const nPts = view.getUint32(off, le);
+              off += 4;
+              const ring = [];
+              for (let i = 0; i < nPts && off + 16 <= wkb.length; i++) {
+                ring.push([view.getFloat64(off, le), view.getFloat64(off + 8, le)]);
+                off += 16;
+              }
+              rings.push(ring);
+            }
+            geometry = { type: 'Polygon', coordinates: rings };
+          }
+        } else if (colName !== geomCol) {
+          props[colName] = val;
+        }
+      });
+      if (geometry) allFeatures.push({ type: 'Feature', geometry, properties: props });
+    }
+  }
+  return { type: 'FeatureCollection', features: allFeatures };
+}
+
+function ingestGeoJsonData(gj, sourceLabel) {
+  const feats = gj.features || [gj];
+  if (!feats.length) throw new Error('Archivo sin entidades válidas.');
+
+  const lines = feats.filter(f => f.geometry?.type?.includes('Line'));
+  const polys = feats.filter(f => f.geometry?.type?.includes('Polygon'));
+  const pts   = feats.filter(f => f.geometry?.type?.includes('Point'));
+
+  if (lines.length) state.roadFeatures = lines;
+  if (polys.length) state.floodFeatures = polys;
+
+  if (pts.length) {
+    const fcPts = { type: 'FeatureCollection', features: pts };
+    L.geoJSON(fcPts, {
+      pointToLayer: (f, ll) => L.circleMarker(ll, { radius: 6.5, fillColor: '#7c3aed', color: '#fff', weight: 1.5, fillOpacity: 0.92 }),
+      onEachFeature: (f, l) => {
+        const id = 'up_' + Math.random().toString(36).slice(2, 8);
+        const nom = f.properties?.nombre || f.properties?.name || f.properties?.tipo_incidencia || 'Punto cargado';
+        const ciu = f.properties?.ciudad || document.getElementById('citySelector').value;
+        l.bindPopup(`<b>${nom}</b><br>Fuente: ${sourceLabel}`);
+        state.municipalRecords.push({
+          id, kind: 'point', ciudad: ciu, detalle: nom, badgeClass: 'pb-purple', badgeText: 'Capa cargada', fuente: sourceLabel, hora: 'Importado', feature: f, layer: l
+        });
+      }
+    }).addTo(pointsGroup);
+    renderRecordsList();
+  }
+
+  refreshDashboard();
+  const tempLayer = L.geoJSON(gj);
+  if (tempLayer.getBounds().isValid()) map.fitBounds(tempLayer.getBounds().pad(0.1));
+}
+
+document.getElementById('fileUpload').addEventListener('change', async e => {
   const file = e.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    try {
-      const gj = JSON.parse(ev.target.result);
-      const feats = gj.features || [gj];
-      const geomType = feats[0]?.geometry?.type || '';
-      if (geomType.includes('Polygon')) state.floodFeatures = feats;
-      else if (geomType.includes('Line')) state.roadFeatures = feats;
-      else {
-        L.geoJSON(gj, {
-          pointToLayer: (f, ll) => L.circleMarker(ll, { radius: 6, fillColor: '#7c3aed', color: '#fff', weight: 1.5, fillOpacity: 0.9 }),
-          onEachFeature: (f, l) => {
-            const id = 'up_' + Math.random().toString(36).slice(2, 8);
-            const nom = f.properties?.nombre || f.properties?.tipo_incidencia || 'Punto importado';
-            const ciu = f.properties?.ciudad || document.getElementById('citySelector').value;
-            l.bindPopup(`<b>${nom}</b>`);
-            state.municipalRecords.push({ id, kind: 'point', ciudad: ciu, detalle: nom, badgeClass: 'pb-purple', badgeText: 'Importado', fuente: file.name, hora: 'Importado', feature: f, layer: l });
-          }
-        }).addTo(pointsGroup);
-        renderRecordsList();
-      }
-      refreshDashboard();
-      setStatus(`Archivo "${file.name}" cargado correctamente.`);
-    } catch (err) {
-      alert('El archivo no es un GeoJSON válido en WGS84 (EPSG:4326).');
+  try {
+    setStatus(`Procesando "${file.name}"...`);
+    let gj;
+    if (file.name.toLowerCase().endsWith('.gpkg')) {
+      gj = await readGeoPackageFile(file);
+    } else {
+      gj = JSON.parse(await file.text());
     }
-  };
-  reader.readAsText(file);
+    ingestGeoJsonData(gj, file.name);
+    setStatus(`Capa "${file.name}" cargada correctamente.`);
+  } catch (err) {
+    setStatus(`Aviso al cargar "${file.name}": ${err.message}`);
+    alert(`No se pudo cargar "${file.name}". Verifica que esté en coordenadas geográficas (EPSG:4326) o súbelo como GeoJSON.`);
+  }
 });
 
 document.getElementById('btnCaptureMap').addEventListener('click', () => {
@@ -1260,7 +1359,7 @@ document.getElementById('btnExport').addEventListener('click', () => {
   a.click();
 });
 
-// 13. Enlazar switches de capas WMS y REST
+// 12. Enlazar switches de capas WMS y REST
 function bindWmsToggle(chkId, layerObj, label) {
   document.getElementById(chkId).addEventListener('change', e => {
     if (e.target.checked) {
@@ -1268,19 +1367,20 @@ function bindWmsToggle(chkId, layerObj, label) {
       setStatus(`Capa "${label}" activada.`);
     } else {
       map.removeLayer(layerObj);
+      setStatus(`Capa "${label}" desactivada.`);
     }
   });
 }
-bindWmsToggle('chkSenamhi', wmsSenamhi, 'Susceptibilidad inundación (SENAMHI)');
-bindWmsToggle('chkAna', wmsAna, 'Puntos críticos hídricos (ANA)');
-bindWmsToggle('chkFaja', wmsFaja, 'Fajas marginales (ANA)');
-bindWmsToggle('chkMasa', wmsMasa, 'Movimientos en masa (GeoPerú)');
-bindWmsToggle('chkRvn', wmsRvn, 'Red Vial Nacional (MTC)');
-bindWmsToggle('chkTerminales', wmsTerminales, 'Terminales terrestres (MTC)');
-bindWmsToggle('chkPuentes', wmsPuentes, 'Puentes (MTC)');
-bindWmsToggle('chkSalud', wmsSalud, 'Establecimientos de salud (GeoPerú)');
-bindWmsToggle('chkEducacion', wmsEducacion, 'Instituciones educativas (GeoPerú)');
-bindWmsToggle('chkComisarias', wmsComisarias, 'Comisarías (GeoPerú)');
+bindWmsToggle('chkSenamhi', wmsLayers.senamhi, 'Susceptibilidad inundación (SENAMHI)');
+bindWmsToggle('chkAna', wmsLayers.ana, 'Puntos críticos hídricos (ANA)');
+bindWmsToggle('chkFaja', wmsLayers.faja, 'Fajas marginales (ANA)');
+bindWmsToggle('chkMasa', wmsLayers.masa, 'Movimientos en masa (GeoPerú)');
+bindWmsToggle('chkRvn', wmsLayers.rvn, 'Red Vial Nacional (MTC)');
+bindWmsToggle('chkTerminales', wmsLayers.terminales, 'Terminales terrestres (MTC)');
+bindWmsToggle('chkPuentes', wmsLayers.puentes, 'Puentes (MTC)');
+bindWmsToggle('chkSalud', wmsLayers.salud, 'Establecimientos de salud (GeoPerú)');
+bindWmsToggle('chkEducacion', wmsLayers.educacion, 'Instituciones educativas (GeoPerú)');
+bindWmsToggle('chkComisarias', wmsLayers.comisarias, 'Comisarías (GeoPerú)');
 
 ['rvd', 'rvv', 'corredores'].forEach(k => {
   const chkId = 'chk' + k.charAt(0).toUpperCase() + k.slice(1);
