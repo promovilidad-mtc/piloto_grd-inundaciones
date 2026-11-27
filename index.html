@@ -556,7 +556,7 @@
       <div>
         <div class="sec-title"><span class="left"><i class="fa-solid fa-tower-broadcast"></i> Registrar Incidencia y Capas</span></div>
         <div class="card-box muni-grid">
-          <a href="reporte.html?city=TUMBES" id="btnOpenFormLink" class="btn-action" style="text-decoration:none;">
+          <a href="reporte.html" id="btnOpenFormLink" class="btn-action" style="text-decoration:none;">
             <i class="fa-solid fa-location-dot"></i> Registrar punto (Formulario)
           </a>
           <button type="button" class="btn-action" id="btnDrawFlood">
@@ -1225,7 +1225,7 @@ function updateStatusTrio() {
 window.selectCityFromAlert = function(cityCode) {
   document.querySelectorAll('.fen-city-row').forEach(r => r.classList.remove('active-city'));
   const row = document.getElementById('row-' + cityCode);
-  if (row) row.classList.add('active-city'); const fLink = document.getElementById('btnOpenFormLink'); if (fLink) fLink.href = 'reporte.html?city=' + encodeURIComponent(city);
+  if (row) row.classList.add('active-city'); const fLink = document.getElementById('btnOpenFormLink'); if (fLink) fLink.href = 'reporte.html';
 
   const sel = document.getElementById('citySelector');
   sel.value = cityCode;
@@ -1297,6 +1297,7 @@ window.deleteRecord = function(id) {
 };
 
 document.getElementById('btnClearAll').addEventListener('click', () => {
+  localStorage.removeItem('radarmov_fen_reports');
   state.municipalRecords.forEach(rec => {
     if (rec.kind === 'polygon') drawnFloodItems.removeLayer(rec.layer);
     else pointsGroup.removeLayer(rec.layer);
@@ -1304,6 +1305,11 @@ document.getElementById('btnClearAll').addEventListener('click', () => {
   state.municipalRecords = [];
   renderRecordsList();
   refreshDashboard();
+  if (GOOGLE_SHEET_CSV_URL) {
+    loadFormIncidents();
+  } else {
+    setStatus('Vista y reportes locales limpiados.');
+  }
 });
 
 // 9. Actualizar Dashboard y Desglose Detallado
@@ -1720,7 +1726,7 @@ document.getElementById('citySelector').addEventListener('change', e => {
   const city = e.target.value;
   document.querySelectorAll('.fen-city-row').forEach(r => r.classList.remove('active-city'));
   const row = document.getElementById('row-' + city);
-  if (row) row.classList.add('active-city'); const fLink = document.getElementById('btnOpenFormLink'); if (fLink) fLink.href = 'reporte.html?city=' + encodeURIComponent(city);
+  if (row) row.classList.add('active-city'); const fLink = document.getElementById('btnOpenFormLink'); if (fLink) fLink.href = 'reporte.html';
 
   if (city === 'TUMBES') initTumbesPilot();
   else {
@@ -1759,7 +1765,7 @@ window.closeModal = function(id) { document.getElementById(id).classList.remove(
 function setStatus(msg) { document.getElementById('statusBox').textContent = msg; }
 
 
-const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRIw-IV8Tlxe9wxbmUPMVcAbMfJFVoBgTzVDNoUWHcFB7Keicdwi35Q1a9QI8e9gCbWFgOV4P3GoWr9/pub?gid=0&single=true&output=csv"; // Enlace CSV publicado de Google Sheet
+const GOOGLE_SHEET_CSV_URL = ""; // Pega aquí el enlace CSV publicado de tu Google Sheet
 
 function parseCsvRows(csvText) {
   const rows = [];
@@ -1777,8 +1783,21 @@ function parseCsvRows(csvText) {
   return rows;
 }
 
+
+function normalizeCoord(val) {
+  if (typeof val === 'number') return val;
+  let s = String(val || '').trim();
+  if (!s) return NaN;
+  // Si tiene más de un punto (formato miles como -3.566.500), deja solo el primer punto
+  const parts = s.split('.');
+  if (parts.length > 2) {
+    s = parts[0] + '.' + parts.slice(1).join('');
+  }
+  return parseFloat(s);
+}
+
 function addIncidentToMap(item, isExternal = false) {
-  const lat = parseFloat(item.lat), lng = parseFloat(item.lng);
+  const lat = normalizeCoord(item.lat), lng = normalizeCoord(item.lng);
   if (isNaN(lat) || isNaN(lng)) return;
 
   const estVia = item.estado_via || 'Restringida';
@@ -1823,38 +1842,65 @@ function addIncidentToMap(item, isExternal = false) {
     id, kind: 'point', ciudad, tipo: estVia, transporte_publico: tp,
     rutas_afectadas: item.rutas_afectadas || '', reportante: item.reportante || '',
     fuente: `${item.reportante || ''} (${item.fuente || ''})`, detalle, hora,
-    badgeClass: badge, badgeText: `${estVia} · TP ${tp}`, feature: feat, layer: marker
+    badgeClass: badge, badgeText: `${estVia} · TP ${tp}`, fromForm: true, feature: feat, layer: marker
   });
 }
 
 async function loadFormIncidents() {
+  // Limpiar puntos previos de form/sheet antes de recargar para no duplicar
+  state.municipalRecords
+    .filter(r => r.kind === 'point' && r.fromForm)
+    .forEach(r => pointsGroup.removeLayer(r.layer));
+  state.municipalRecords = state.municipalRecords.filter(r => !(r.kind === 'point' && r.fromForm));
+
+  const seenKeys = new Set();
+
   // 1. Cargar reportes guardados localmente desde reporte.html
   try {
     const localItems = JSON.parse(localStorage.getItem('radarmov_fen_reports') || '[]');
-    localItems.forEach(it => addIncidentToMap(it, false));
+    localItems.forEach(it => {
+      const k = `${it.fecha_hora || ''}|${it.via_referencia || ''}|${it.lat}|${it.lng}`;
+      if (!seenKeys.has(k)) {
+        seenKeys.add(k);
+        addIncidentToMap(it, false);
+      }
+    });
   } catch (e) {}
 
   // 2. Cargar reportes en vivo desde Google Sheets (CSV publicado)
   if (GOOGLE_SHEET_CSV_URL) {
     try {
-      const res = await fetch(GOOGLE_SHEET_CSV_URL);
+      const sep = GOOGLE_SHEET_CSV_URL.includes('?') ? '&' : '?';
+      const res = await fetch(GOOGLE_SHEET_CSV_URL + sep + '_t=' + Date.now());
       const text = await res.text();
       const rows = parseCsvRows(text);
+      let loadedSheet = 0;
       if (rows.length > 1) {
         const headers = rows[0].map(h => h.toLowerCase().trim());
         for (let i = 1; i < rows.length; i++) {
           const obj = {};
           headers.forEach((h, idx) => { obj[h] = rows[i][idx] || ''; });
-          addIncidentToMap(obj, true);
+          const k = `${obj.fecha_hora || ''}|${obj.via_referencia || ''}|${obj.lat}|${obj.lng}`;
+          if (!seenKeys.has(k) && obj.lat && obj.lng) {
+            seenKeys.add(k);
+            addIncidentToMap(obj, true);
+            loadedSheet++;
+          }
         }
       }
+      setStatus(`Sincronizado con Google Sheets: ${loadedSheet} reporte(s) cargado(s).`);
     } catch (e) {
-      setStatus('No se pudo leer la hoja de Google Sheets. Verifica el enlace CSV publicado.');
+      setStatus('No se pudo leer la hoja de Google Sheets. Verifica que esté publicada como CSV y accesible.');
     }
   }
   renderRecordsList();
   refreshDashboard();
 }
+
+window.syncFromSheetNow = function() {
+  setStatus('Sincronizando reportes desde Google Sheets...');
+  loadFormIncidents();
+};
 
 // Arranque
 initTumbesPilot();
