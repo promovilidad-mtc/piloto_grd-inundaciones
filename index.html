@@ -16,137 +16,171 @@
   <style>
     :root {
       --navy: #092a65;
-      --blue: #0758c9;
+      --blue: #0b4eb8;
       --red: #dc2626;
       --orange: #ea580c;
-      --amber: #eab308;
+      --amber: #d97706;
       --green: #16a34a;
       --purple: #7c3aed;
-      --line: #dfe6f0;
-      --bg: #f5f8fc;
-      --text: #1b3557;
-      --muted: #60718a;
+      --line: #e2e8f0;
+      --bg: #f6f8fb;
+      --text: #1e293b;
+      --muted: #64748b;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', Arial, sans-serif; }
     html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-size: 13px; }
 
-    /* Cabecera institucional */
+    /* Cabecera sobria con degradado institucional MTC / PROMOVILIDAD */
     .mast {
-      height: 62px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
-      padding: 0 18px; background: #fff; border-bottom: 1px solid var(--line);
+      height: 62px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 0 20px;
+      background: linear-gradient(105deg, #071e49 0%, #092a65 52%, #0e469e 100%);
+      color: #fff;
+      border-bottom: 2px solid var(--red);
     }
     .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
     .logos-inst {
-      display: flex; align-items: center; gap: 10px; padding-right: 12px;
-      border-right: 2px solid var(--red); flex: none;
+      display: flex; align-items: center; gap: 8px; background: #fff;
+      padding: 4px 10px; border-radius: 7px; flex: none;
     }
-    .logos-inst img { height: 36px; width: auto; max-width: 145px; object-fit: contain; display: block; }
+    .logos-inst img { height: 30px; width: auto; max-width: 130px; object-fit: contain; display: block; }
     .brand-title { min-width: 0; }
-    .brand h1 { font-size: 14px; font-weight: 700; color: var(--navy); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .brand small { display: block; font-size: 10.5px; color: var(--blue); font-weight: 500; }
+    .brand h1 { font-size: 14px; font-weight: 700; color: #fff; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .brand small { display: block; font-size: 10.5px; color: #bfdbfe; font-weight: 400; }
 
-    /* Selector de Modo Operativo */
+    /* Selector de Modo Operativo sobrio sobre cabecera oscura */
     .mode-switch {
-      display: flex; background: #edf2f8; padding: 3px; border-radius: 8px; border: 1px solid #d5e0ee; flex: none;
+      display: flex; background: rgba(255,255,255,0.12); padding: 3px; border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.18); flex: none;
     }
     .mode-btn {
       border: none; background: transparent; padding: 5px 10px; border-radius: 6px;
-      font-size: 11px; font-weight: 600; color: var(--navy); cursor: pointer; display: flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 600; color: #e2e8f0; cursor: pointer; display: flex; align-items: center; gap: 5px;
+      transition: all 0.15s;
     }
-    .mode-btn.active { background: #fff; color: var(--blue); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .mode-btn.active { background: #fff; color: var(--navy); box-shadow: 0 1px 3px rgba(0,0,0,0.18); }
     .mode-btn.active.fen { background: var(--red); color: #fff; }
 
-    .mast-actions { display: flex; align-items: center; gap: 6px; flex: none; }
+    .mast-actions { display: flex; align-items: center; gap: 7px; flex: none; }
     .city-pill {
-      display: flex; align-items: center; gap: 6px; background: #f0f5fd; border: 1px solid #cbdaf3;
-      padding: 5px 9px; border-radius: 7px; color: var(--navy); font-weight: 600;
+      display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.22); padding: 5px 9px; border-radius: 7px; color: #fff; font-weight: 600;
     }
-    .city-pill select { border: none; background: transparent; color: var(--navy); font-weight: 600; outline: none; cursor: pointer; font-size: 11.5px; }
+    .city-pill select { border: none; background: transparent; color: #fff; font-weight: 600; outline: none; cursor: pointer; font-size: 11.5px; }
+    .city-pill select option { color: var(--navy); background: #fff; }
     .btn-ghost {
-      border: 1px solid var(--line); background: #fff; color: var(--navy); padding: 6px 10px;
+      border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px;
       border-radius: 7px; font-weight: 600; font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
       text-decoration: none; transition: all 0.15s;
     }
-    .btn-ghost:hover { background: #f2f7ff; border-color: #b8c9e4; }
-    .btn-ghost.highlight { background: #eef5ff; border-color: #b8c9e4; color: var(--blue); }
-    .btn-ghost.fen-report { background: #fef2f2; border-color: #fecaca; color: var(--red); }
-    .btn-ghost.fen-report:hover { background: #fee2e2; }
+    .btn-ghost:hover { background: rgba(255,255,255,0.2); }
+    .btn-ghost.fen-report { background: var(--red); border-color: #f87171; color: #fff; }
+    .btn-ghost.fen-report:hover { background: #b91c1c; }
+    .btn-ghost.highlight { background: #fff; color: var(--navy); border-color: #fff; }
     .hidden { display: none !important; }
 
-    /* Workspace de 3 columnas */
+    /* Workspace de 3 columnas limpias */
     .workspace {
       display: grid;
-      grid-template-columns: 330px minmax(400px, 1fr) 350px;
+      grid-template-columns: 325px minmax(400px, 1fr) 340px;
       height: calc(100vh - 62px);
     }
     .sidebar, .details {
-      background: #fff; overflow-y: auto; padding: 12px 13px; display: flex; flex-direction: column; gap: 10px;
+      background: #fff; overflow-y: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 11px;
     }
     .sidebar { border-right: 1px solid var(--line); }
     .details { border-left: 1px solid var(--line); }
 
+    /* Pestañas superiores del panel izquierdo (Capas | Leyenda) */
+    .panel-tabs {
+      display: grid; grid-template-columns: 1fr 1fr; background: #f1f5f9; padding: 3px;
+      border-radius: 8px; border: 1px solid var(--line);
+    }
+    .tab-btn {
+      border: none; background: transparent; padding: 6px 8px; border-radius: 6px;
+      font-size: 11.5px; font-weight: 600; color: var(--muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s;
+    }
+    .tab-btn.active { background: #fff; color: var(--navy); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+
     .sec-title {
       font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
-      color: var(--navy); display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;
+      color: var(--muted); display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;
     }
-    .sec-title span.left { display: flex; align-items: center; gap: 6px; }
+    .sec-title span.left { display: flex; align-items: center; gap: 6px; color: var(--navy); }
     .card-box {
-      background: #f8fbff; border: 1px solid #e1e9f4; border-radius: 9px; padding: 8px 9px;
+      background: #f8fafc; border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px;
     }
 
-    /* Acordeones limpios para grupos de capas */
+    /* Acordeones minimalistas para grupos de capas */
     details.layer-group {
-      border: 1px solid #e1e9f4; border-radius: 8px; background: #f8fbff; margin-bottom: 6px;
+      border: 1px solid var(--line); border-radius: 8px; background: #fff; margin-bottom: 6px;
     }
     details.layer-group summary {
-      padding: 7px 9px; font-size: 11px; font-weight: 700; color: var(--navy); cursor: pointer;
-      list-style: none; display: flex; align-items: center; justify-content: space-between;
+      padding: 7px 10px; font-size: 11px; font-weight: 600; color: var(--navy); cursor: pointer;
+      list-style: none; display: flex; align-items: center; justify-content: space-between; background: #f8fafc;
+      border-radius: 8px;
     }
+    details.layer-group[open] summary { border-radius: 8px 8px 0 0; border-bottom: 1px solid #f1f5f9; }
     details.layer-group summary::-webkit-details-marker { display: none; }
-    details.layer-group summary::after { content: '▸'; font-size: 12px; color: var(--blue); transition: transform 0.15s; }
+    details.layer-group summary::after { content: '▸'; font-size: 11px; color: var(--muted); transition: transform 0.15s; }
     details.layer-group[open] summary::after { transform: rotate(90deg); }
-    details.layer-group .group-body { padding: 4px 7px 7px; border-top: 1px solid #e8eef6; background: #fff; border-radius: 0 0 8px 8px; }
+    details.layer-group .group-body { padding: 4px 8px 7px; }
 
-    /* Switches con etiqueta de Fuente Institucional */
+    .group-quick-actions {
+      display: flex; justify-content: flex-end; gap: 8px; padding: 2px 4px 4px; border-bottom: 1px dashed #e2e8f0; margin-bottom: 3px;
+    }
+    .mini-link {
+      border: none; background: none; color: var(--blue); font-size: 10px; font-weight: 600; cursor: pointer; padding: 0;
+    }
+    .mini-link:hover { text-decoration: underline; }
+
+    /* Switches limpios */
     .layerline {
       display: flex; align-items: center; justify-content: space-between; gap: 6px;
-      padding: 4.5px 5px; border-radius: 6px; transition: background 0.15s; cursor: pointer;
+      padding: 4.5px 4px; border-radius: 6px; transition: background 0.15s; cursor: pointer;
     }
-    .layerline:hover { background: #f1f6fd; }
-    .layer-lbl { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; color: #25374b; line-height: 1.25; }
-    .sym-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; border: 1.5px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,0.2); }
+    .layerline:hover { background: #f1f5f9; }
+    .layer-lbl { display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 500; color: #334155; line-height: 1.25; }
+    .sym-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; border: 1.5px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,0.2); }
     .sym-line { width: 14px; height: 3.5px; border-radius: 2px; flex: none; }
     .sym-poly { width: 12px; height: 10px; border-radius: 2px; flex: none; }
     .src-tag {
-      font-size: 8.5px; color: var(--navy); background: #e2e8f0; padding: 1px 4px; border-radius: 3px; font-weight: 600; white-space: nowrap;
+      font-size: 8.5px; color: var(--muted); background: #f1f5f9; border: 1px solid #e2e8f0;
+      padding: 0.5px 4px; border-radius: 4px; font-weight: 600; white-space: nowrap;
     }
-    .src-tag.inst { background: #dbeafe; color: var(--blue); }
     .layerline input[type=checkbox] {
-      appearance: none; width: 26px; height: 15px; border-radius: 20px; background: #d5dce5;
+      appearance: none; width: 26px; height: 15px; border-radius: 20px; background: #cbd5e1;
       position: relative; flex: none; transition: background 0.15s; cursor: pointer;
     }
     .layerline input[type=checkbox]::before {
       content: ''; position: absolute; width: 11px; height: 11px; top: 2px; left: 2px;
-      background: #fff; border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,0.2); transition: left 0.15s;
+      background: #fff; border-radius: 50%; box-shadow: 0 1px 2px rgba(0,0,0,0.18); transition: left 0.15s;
     }
     .layerline input[type=checkbox]:checked { background: var(--blue); }
     .layerline input[type=checkbox]:checked::before { left: 13px; }
 
+    /* Leyenda integrada en pestaña (sin tapar el mapa) */
+    .legend-section { margin-bottom: 10px; }
+    .legend-section h4 { font-size: 11px; font-weight: 700; color: var(--navy); margin-bottom: 5px; }
+    .leg-row { display: flex; align-items: center; gap: 8px; margin: 5px 0; font-size: 11px; color: #334155; line-height: 1.3; }
+    .leg-sep { height: 1px; background: var(--line); margin: 8px 0; }
+
     /* Botones operativos */
     .muni-grid { display: grid; grid-template-columns: 1fr; gap: 6px; }
     .btn-action {
-      width: 100%; border: 1px solid #b8c9e4; background: #eaf2ff; color: var(--blue);
+      width: 100%; border: 1px solid #cbd5e1; background: #fff; color: var(--navy);
       padding: 7px 10px; border-radius: 7px; font-weight: 600; font-size: 11.5px; cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 7px; transition: all 0.15s;
     }
-    .btn-action:hover { background: #dceaff; }
+    .btn-action:hover { background: #f1f5f9; border-color: #94a3b8; }
     .btn-action.active { background: var(--red); color: #fff; border-color: var(--red); }
-    .btn-action.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
-    .btn-action.primary:hover { background: #0648a6; }
+    .btn-action.primary { background: var(--navy); color: #fff; border-color: var(--navy); }
+    .btn-action.primary:hover { background: #0b4eb8; }
 
     .upload-mini {
       display: flex; align-items: center; justify-content: space-between; font-size: 11px;
-      color: var(--muted); padding: 6px 8px; border: 1px dashed #c4d5eb; border-radius: 6px;
+      color: var(--muted); padding: 6px 8px; border: 1px dashed #cbd5e1; border-radius: 6px;
       background: #fff; cursor: pointer; margin-top: 2px;
     }
     .upload-mini:hover { border-color: var(--blue); color: var(--blue); }
@@ -154,14 +188,13 @@
 
     /* Feed estilo SUTRAN ("Actividad en vivo") */
     .live-feed {
-      display: flex; flex-direction: column; gap: 6px; max-height: 175px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 6px; max-height: 170px; overflow-y: auto;
     }
     .feed-card {
-      background: #fff; border: 1px solid #dce6f3; border-radius: 8px; padding: 7px 9px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.03); position: relative;
+      background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px;
     }
     .feed-top { display: flex; justify-content: space-between; align-items: center; font-size: 9.5px; color: var(--muted); margin-bottom: 3px; }
-    .feed-title { font-size: 11px; font-weight: 700; color: var(--navy); margin-bottom: 4px; line-height: 1.25; }
+    .feed-title { font-size: 11px; font-weight: 600; color: var(--navy); margin-bottom: 4px; line-height: 1.25; }
     .feed-footer { display: flex; align-items: center; justify-content: space-between; gap: 5px; font-size: 10px; }
     .pill-badge { padding: 2px 6px; border-radius: 99px; font-weight: 600; font-size: 9.5px; }
     .pb-red { background: #fee2e2; color: #b91c1c; }
@@ -169,45 +202,48 @@
     .pb-green { background: #dcfce7; color: #15803d; }
     .pb-purple { background: #f3e8ff; color: #6d28d9; }
 
-    /* Mapa central */
+    /* Mapa central despejado */
     .mapwrap { position: relative; min-width: 0; height: 100%; }
     #map { width: 100%; height: 100%; background: #e6eef8; }
 
     .maptools {
-      position: absolute; z-index: 800; right: 12px; top: 12px; background: #fff;
-      border: 1px solid var(--line); border-radius: 9px; box-shadow: 0 4px 16px rgba(9,42,101,0.1);
-      padding: 5px; display: flex; gap: 4px;
+      position: absolute; z-index: 800; right: 12px; top: 12px; background: rgba(255,255,255,0.95);
+      border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 2px 10px rgba(15,23,42,0.08);
+      padding: 4px; display: flex; gap: 3px;
     }
     .base-btn {
-      border: 1px solid transparent; background: #f3f6fa; color: var(--navy); padding: 4px 8px;
-      border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;
+      border: none; background: transparent; color: var(--muted); padding: 4px 8px;
+      border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer;
     }
-    .base-btn.active { background: var(--blue); color: #fff; }
+    .base-btn.active { background: var(--navy); color: #fff; }
 
-    .floating-legend {
-      position: absolute; z-index: 800; left: 12px; bottom: 18px; background: rgba(255,255,255,0.97);
-      border: 1px solid var(--line); border-radius: 9px; box-shadow: 0 4px 16px rgba(9,42,101,0.12);
-      padding: 9px 11px; width: 280px; font-size: 10.5px;
-    }
-    .floating-legend strong { display: block; color: var(--navy); margin-bottom: 2px; font-size: 11.5px; }
-    .leg-sub { font-size: 9.5px; color: var(--muted); margin-bottom: 5px; line-height: 1.3; }
-    .leg-row { display: flex; align-items: center; gap: 7px; margin: 4px 0; color: #34475e; line-height: 1.25; }
-    .leg-sep { height: 1px; background: #e2e8f0; margin: 5px 0; }
-
-    /* Panel derecho */
-    .enfen-box {
-      background: #fffbeb; border: 1px solid #fde68a; border-left: 3.5px solid #d97706;
-      border-radius: 8px; padding: 8px 10px; font-size: 11px; color: #78350f;
+    /* Panel derecho sobrio */
+    .enfen-banner {
+      background: linear-gradient(120deg, #0f172a 0%, #1e293b 100%);
+      color: #f8fafc; border-radius: 9px; padding: 9px 11px; font-size: 11px;
+      border-left: 3.5px solid #f59e0b;
     }
     .enfen-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
-    .enfen-head strong { color: #92400e; font-size: 11px; }
-    .enfen-box p { line-height: 1.35; font-size: 10.5px; }
-    .enfen-box a { color: #b45309; font-weight: 600; text-decoration: underline; font-size: 10px; }
+    .enfen-head strong { color: #fbbf24; font-size: 11px; }
+    .enfen-banner p { line-height: 1.35; font-size: 10.5px; color: #cbd5e1; }
+    .enfen-banner a { color: #93c5fd; font-weight: 600; text-decoration: none; font-size: 10px; }
+    .enfen-banner a:hover { text-decoration: underline; }
+
+    /* 3 Tarjetas de resumen rápido estilo SUTRAN (compactas) */
+    .status-trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .trio-card {
+      border-radius: 8px; padding: 7px 6px; text-align: center; border: 1px solid transparent;
+    }
+    .trio-card strong { display: block; font-size: 16px; font-weight: 700; line-height: 1.1; }
+    .trio-card span { display: block; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; margin-top: 3px; }
+    .trio-red { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+    .trio-amber { background: #fffbeb; border-color: #fde68a; color: #b45309; }
+    .trio-green { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
 
     .fen-cities { display: flex; flex-direction: column; gap: 4px; }
     .fen-city-row {
       display: flex; align-items: center; justify-content: space-between; gap: 6px;
-      background: #fff; border: 1px solid #dce6f3; border-radius: 6px; padding: 4px 7px; font-size: 11px;
+      background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 4.5px 8px; font-size: 11px;
     }
     .fen-city-row.active-city { border-color: var(--blue); background: #eff6ff; }
     .fen-city-row .city-link { cursor: pointer; flex: 1; }
@@ -222,9 +258,9 @@
 
     .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .kpi-card {
-      background: #f3f7fd; border: 1px solid #dce6f3; border-radius: 8px; padding: 7px 9px;
+      background: #f8fafc; border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px;
     }
-    .kpi-card strong { display: block; font-size: 15px; color: var(--navy); font-weight: 700; }
+    .kpi-card strong { display: block; font-size: 14.5px; color: var(--navy); font-weight: 700; }
     .kpi-card span { font-size: 9.5px; color: var(--muted); line-height: 1.25; display: block; margin-top: 1px; }
     .kpi-card.alert strong { color: var(--red); }
 
@@ -233,42 +269,42 @@
     .bar-item { font-size: 11px; }
     .bar-head { display: flex; justify-content: space-between; margin-bottom: 1px; font-weight: 600; color: var(--navy); }
     .bar-desc { font-size: 9.5px; color: var(--muted); margin-bottom: 3px; }
-    .bar-track { height: 6px; background: #edf2f8; border-radius: 99px; overflow: hidden; }
+    .bar-track { height: 5px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 99px; transition: width 0.3s; }
 
     /* Barra apilada GRD */
     .grd-stacked-bar {
-      display: flex; height: 13px; border-radius: 6px; overflow: hidden; margin: 4px 0 6px; background: #e2e8f0;
+      display: flex; height: 11px; border-radius: 6px; overflow: hidden; margin: 4px 0 6px; background: #e2e8f0;
     }
     .grd-seg { height: 100%; transition: width 0.3s; }
     .grd-legend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 10px; }
-    .grd-leg-item { display: flex; align-items: center; gap: 5px; color: #34475e; }
+    .grd-leg-item { display: flex; align-items: center; gap: 5px; color: #475569; }
 
     .status-pill {
-      font-size: 10.5px; color: var(--green); background: #ecfdf5; border: 1px solid #a7f3d0;
-      padding: 6px 8px; border-radius: 7px; line-height: 1.35; margin-top: auto;
+      font-size: 10.5px; color: #334155; background: #f1f5f9; border: 1px solid var(--line);
+      padding: 6px 9px; border-radius: 7px; line-height: 1.35; margin-top: auto;
     }
 
     /* Modales */
     .modal-bg {
-      position: fixed; inset: 0; background: rgba(9,42,101,0.5); z-index: 2000;
+      position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 2000;
       display: none; align-items: center; justify-content: center; padding: 16px;
     }
     .modal-bg.open { display: flex; }
     .modal-card {
       background: #fff; max-width: 880px; width: 100%; max-height: 90vh; overflow-y: auto;
-      border-radius: 12px; padding: 22px; box-shadow: 0 16px 40px rgba(0,0,0,0.25); border: 1px solid var(--line);
+      border-radius: 12px; padding: 22px; box-shadow: 0 16px 40px rgba(0,0,0,0.22); border: 1px solid var(--line);
     }
     .modal-head {
       display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--navy);
       padding-bottom: 10px; margin-bottom: 14px;
     }
-    .modal-head h2 { font-size: 16.5px; color: var(--navy); }
+    .modal-head h2 { font-size: 16px; color: var(--navy); }
     .modal-head small { color: var(--blue); font-weight: 600; font-size: 11px; }
 
     .ficha-table { width: 100%; border-collapse: collapse; margin: 8px 0 14px; font-size: 11.5px; }
-    .ficha-table th, .ficha-table td { border: 1px solid #dce6f3; padding: 6px 9px; text-align: left; }
-    .ficha-table th { background: #f0f5fd; color: var(--navy); font-weight: 600; }
+    .ficha-table th, .ficha-table td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; }
+    .ficha-table th { background: #f8fafc; color: var(--navy); font-weight: 600; }
 
     .disclaimer-box {
       background: #fffbeb; border-left: 3px solid var(--amber); padding: 9px 11px;
@@ -280,7 +316,7 @@
       width: 100%; padding: 5px 6px; margin: 3px 0 6px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 11.5px;
     }
     .popup-form button {
-      width: 100%; background: var(--blue); color: #fff; border: none; padding: 7px; border-radius: 5px; font-weight: 600; cursor: pointer; margin-top: 4px;
+      width: 100%; background: var(--navy); color: #fff; border: none; padding: 7px; border-radius: 5px; font-weight: 600; cursor: pointer; margin-top: 4px;
     }
 
     @media print {
@@ -304,7 +340,7 @@
 <header class="mast">
   <div class="brand">
     <div class="logos-inst">
-      <img id="imgLogoMtc" src="logo_mtc.png" alt="Ministerio de Transportes y Comunicaciones">
+      <img id="imgLogoMtc" src="logo_mtc.png" alt="MTC">
       <img id="imgLogoProm" src="logo_promovilidad.png" alt="PROMOVILIDAD">
     </div>
     <div class="brand-title">
@@ -313,7 +349,7 @@
     </div>
   </div>
 
-  <!-- Selector de Modo Operativo Funcional -->
+  <!-- Selector de Modo Operativo -->
   <div class="mode-switch" role="group" aria-label="Modo operativo">
     <button type="button" class="mode-btn active fen" id="modeFenBtn"><i class="fa-solid fa-triangle-exclamation"></i> Monitoreo FEN</button>
     <button type="button" class="mode-btn" id="modePrepBtn"><i class="fa-solid fa-shield-halved"></i> Preparación GRD</button>
@@ -321,7 +357,7 @@
 
   <div class="mast-actions">
     <div class="city-pill">
-      <i class="fa-solid fa-city" style="color:var(--blue)"></i>
+      <i class="fa-solid fa-city"></i>
       <select id="citySelector" aria-label="Seleccionar ciudad">
         <option value="TUMBES" selected>Tumbes (SICCEP)</option>
         <option value="PIURA">Piura (SICCEP)</option>
@@ -338,151 +374,209 @@
 </header>
 
 <main class="workspace">
-  <!-- PANEL IZQUIERDO: CATÁLOGO ESTRUCTURADO Y REGISTRO EN VIVO -->
+  <!-- PANEL IZQUIERDO: PESTAÑAS (CAPAS | LEYENDA) + REGISTRO -->
   <aside class="sidebar">
-    <div>
-      <div class="sec-title"><span class="left"><i class="fa-solid fa-layer-group"></i> Capas Territoriales y Alertas</span></div>
-
-      <!-- 1. CAPAS BASE DEL ANÁLISIS -->
-      <details class="layer-group" open>
-        <summary>1. Escenario Urbano y Exposición</summary>
-        <div class="group-body">
-          <label class="layerline">
-            <span class="layer-lbl"><span class="sym-dot" style="background:var(--purple);"></span>Incidencias movilidad FEN <span class="src-tag">Sesión</span></span>
-            <input type="checkbox" id="chkPoints" checked>
-          </label>
-          <label class="layerline">
-            <span class="layer-lbl"><span class="sym-line" style="background:var(--red);"></span>Red vial urbana expuesta <span class="src-tag">OSM / BID</span></span>
-            <input type="checkbox" id="chkRoads" checked>
-          </label>
-          <label class="layerline">
-            <span class="layer-lbl"><span class="sym-poly" style="background:rgba(7,88,201,0.35); border:1px solid #0758c9;"></span>Huella inundable <span class="src-tag">Sentinel-1</span></span>
-            <input type="checkbox" id="chkFlood" checked>
-          </label>
-          <label class="layerline">
-            <span class="layer-lbl"><span class="sym-poly" style="border:2px dashed #092a65; background:transparent;"></span>Ámbito urbano <span class="src-tag inst">MVCS · SICCEP</span></span>
-            <input type="checkbox" id="chkSiccep" checked>
-          </label>
-        </div>
-      </details>
-
-      <!-- 2. PELIGROS Y ALERTAS OFICIALES (DESACTIVADAS AL INICIAR) -->
-      <details class="layer-group" open>
-        <summary>2. Peligros y Alertas Oficiales</summary>
-        <div class="group-body">
-          <label class="layerline">
-            <span class="layer-lbl"><span class="sym-poly" style="background:rgba(14,165,233,0.45); border:1px solid #0284c7;"></span>Susceptibilidad inundación <span class="src-tag inst">SENAMHI</span></span>
-            <input type="checkbox" id="chkSenamhi">
-          </label>
-          <label class="layerline">
-            <span class="layer-lbl"><span class="sym-dot" style="background:#0284c7;"></span>Puntos críticos hídricos <span class="src-tag inst">ANA</span></span>
-            <input type="checkbox" id="chkAna">
-          </label>
-          <label class="layerline">
-            <span class="layer-lbl"><span class="sym-poly" style="background:rgba(6,182,212,0.35); border:1px solid #0891b2;"></span>Fajas marginales <span class="src-tag inst">ANA</span></span>
-            <input type="checkbox" id="chkFaja">
-          </label>
-          <label class="layerline">
-            <span class="layer-lbl"><span class="sym-poly" style="background:rgba(234,88,12,0.4); border:1px solid #ea580c;"></span>Movimientos en masa <span class="src-tag inst">GeoPerú</span></span>
-            <input type="checkbox" id="chkMasa">
-          </label>
-        </div>
-      </details>
-
-      <!-- 3. RED VIAL NACIONAL Y SUBNACIONAL (DESACTIVADAS AL INICIAR, UNA POR CADA UNA) -->
-      <details class="layer-group">
-        <summary>3. Red Vial Nacional y Subnacional</summary>
-        <div class="group-body">
-          <label class="layerline">
-            <span class="layer-lbl"><span class="sym-line" style="background:#dc2626;"></span>Red Vial Nacional (RVN) <span class="src-tag inst">MTC</span></span>
-            <input type="checkbox" id="chkRvn">
-          </label>
-          <label class="layerline">
-            <span class="layer-lbl"><span class="sym-line" style="background:#ea580c;"></span>Red Vial Departamental (RVD) <span class="src-tag inst">MVCS / MTC</span></span>
-            <input type="checkbox" id="chkRvd">
-          </label>
-          <label class="layerline">
-            <span class="layer-lbl"><span class="sym-line" style="background:#eab308;"></span>Red Vial Vecinal (RVV) <span class="src-tag inst">MVCS / MTC</span></span>
-            <input type="checkbox" id="chkRvv">
-          </label>
-          <label class="layerline">
-            <span class="layer-lbl"><span class="sym-line" style="background:#7c3aed;"></span>Corredores logísticos <span class="src-tag inst">MVCS · SICCEP</span></span>
-            <input type="checkbox" id="chkCorredores">
-          </label>
-          <label class="layerline">
-            <span class="layer-lbl"><span class="sym-dot" style="background:#0f172a;"></span>Terminales terrestres <span class="src-tag inst">MTC</span></span>
-            <input type="checkbox" id="chkTerminales">
-          </label>
-          <label class="layerline">
-            <span class="layer-lbl"><span class="sym-dot" style="background:#64748b;"></span>Puentes <span class="src-tag inst">MTC</span></span>
-            <input type="checkbox" id="chkPuentes">
-          </label>
-        </div>
-      </details>
-
-      <!-- 4. INFRAESTRUCTURA CRÍTICA URBANA (DESACTIVADAS AL INICIAR - PREPARACIÓN GRD) -->
-      <details class="layer-group" id="infraGroupDetails">
-        <summary>4. Infraestructura Crítica Urbana</summary>
-        <div class="group-body">
-          <label class="layerline">
-            <span class="layer-lbl"><span class="sym-dot" style="background:#ef4444;"></span>Establecimientos de salud <span class="src-tag inst">GeoPerú</span></span>
-            <input type="checkbox" id="chkSalud">
-          </label>
-          <label class="layerline">
-            <span class="layer-lbl"><span class="sym-dot" style="background:#2563eb;"></span>Instituciones educativas <span class="src-tag inst">GeoPerú</span></span>
-            <input type="checkbox" id="chkEducacion">
-          </label>
-          <label class="layerline">
-            <span class="layer-lbl"><span class="sym-dot" style="background:#15803d;"></span>Comisarías <span class="src-tag inst">GeoPerú</span></span>
-            <input type="checkbox" id="chkComisarias">
-          </label>
-        </div>
-      </details>
-    </div>
-
-    <!-- BLOQUE DE REGISTRO EN VIVO Y CARGA DE ARCHIVOS (.gpkg / .geojson) -->
-    <div>
-      <div class="sec-title"><span class="left"><i class="fa-solid fa-tower-broadcast"></i> Registrar Incidencia y Capas</span></div>
-      <div class="card-box muni-grid">
-        <button type="button" class="btn-action" id="btnReportPoint">
-          <i class="fa-solid fa-location-dot"></i> Marcar punto afectado en mapa
-        </button>
-        <button type="button" class="btn-action" id="btnDrawFlood">
-          <i class="fa-solid fa-draw-polygon"></i> Delimitar zona anegada
-        </button>
-        <label class="upload-mini" title="Cargar archivo GeoPackage (.gpkg) o GeoJSON (.geojson)">
-          <span><i class="fa-solid fa-upload"></i> Subir capa (.gpkg / .geojson)</span>
-          <span style="font-weight:600; color:var(--blue);">Subir</span>
-          <input type="file" id="fileUpload" accept=".gpkg,.json,.geojson,application/geo+json,application/geopackage+sqlite3">
-        </label>
-        <a href="https://alertasviales.sutran.gob.pe/" target="_blank" rel="noopener" class="upload-mini" style="text-decoration:none; color:var(--navy); border-style:solid; background:#f0f5fd;">
-          <span><i class="fa-solid fa-road-barrier" style="color:var(--orange);"></i> Alertas Viales Nacionales (SUTRAN)</span>
-          <span style="font-weight:600; color:var(--blue);">Abrir ↗</span>
-        </a>
-      </div>
-    </div>
-
-    <!-- FEED ESTILO SUTRAN ("ACTIVIDAD EN VIVO") -->
-    <div>
-      <div class="sec-title">
-        <span class="left"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#16a34a;"></span> Actividad en vivo (<span id="recCount">0</span>)</span>
-        <button type="button" id="btnClearAll" style="border:none;background:none;color:var(--red);font-size:10px;font-weight:600;cursor:pointer;display:none;">Limpiar</button>
-      </div>
-      <div class="card-box live-feed" id="recordsList">
-        <div style="font-size:10px; color:var(--muted); text-align:center; padding:6px 0;">
-          Sin incidencias registradas aún. Usa <b>"Marcar punto afectado en mapa"</b> para alimentar este panel y el Reporte FEN.
-        </div>
-      </div>
-    </div>
-
-    <div style="margin-top:auto;">
-      <button type="button" class="btn-action primary" id="btnExport">
-        <i class="fa-solid fa-file-export"></i> Descargar GeoJSON consolidado
+    <div class="panel-tabs">
+      <button type="button" class="tab-btn active" id="tabCapasBtn" onclick="switchLeftTab('capas')">
+        <i class="fa-solid fa-layer-group"></i> Capas
       </button>
+      <button type="button" class="tab-btn" id="tabLeyendaBtn" onclick="switchLeftTab('leyenda')">
+        <i class="fa-solid fa-list-ul"></i> Leyenda
+      </button>
+    </div>
+
+    <!-- VISTA 1: CAPAS Y REGISTRO -->
+    <div id="leftTabCapas" style="display:flex; flex-direction:column; gap:10px; flex:1;">
+      <div>
+        <!-- 1. ESCENARIO URBANO Y EXPOSICIÓN -->
+        <details class="layer-group" open>
+          <summary>Escenario Urbano y Exposición</summary>
+          <div class="group-body">
+            <label class="layerline">
+              <span class="layer-lbl"><span class="sym-dot" style="background:var(--purple);"></span>Incidencias movilidad FEN <span class="src-tag">Sesión</span></span>
+              <input type="checkbox" id="chkPoints" checked>
+            </label>
+            <label class="layerline">
+              <span class="layer-lbl"><span class="sym-line" style="background:var(--red);"></span>Red vial urbana expuesta <span class="src-tag">OSM / BID</span></span>
+              <input type="checkbox" id="chkRoads" checked>
+            </label>
+            <label class="layerline">
+              <span class="layer-lbl"><span class="sym-poly" style="background:rgba(11,78,184,0.3); border:1px solid #0b4eb8;"></span>Huella inundable <span class="src-tag">Sentinel-1</span></span>
+              <input type="checkbox" id="chkFlood" checked>
+            </label>
+            <label class="layerline">
+              <span class="layer-lbl"><span class="sym-poly" style="border:2px dashed #092a65; background:transparent;"></span>Ámbito urbano <span class="src-tag">MVCS · SICCEP</span></span>
+              <input type="checkbox" id="chkSiccep" checked>
+            </label>
+          </div>
+        </details>
+
+        <!-- 2. PELIGROS Y ALERTAS OFICIALES (DESACTIVADAS AL INICIAR) -->
+        <details class="layer-group">
+          <summary>Peligros y Alertas Oficiales</summary>
+          <div class="group-body">
+            <div class="group-quick-actions">
+              <button type="button" class="mini-link" onclick="toggleGroupCheckboxes(this, true)">Todas</button>
+              <button type="button" class="mini-link" onclick="toggleGroupCheckboxes(this, false)">Ninguna</button>
+            </div>
+            <label class="layerline">
+              <span class="layer-lbl"><span class="sym-poly" style="background:rgba(14,165,233,0.45); border:1px solid #0284c7;"></span>Susceptibilidad inundación <span class="src-tag">SENAMHI</span></span>
+              <input type="checkbox" id="chkSenamhi">
+            </label>
+            <label class="layerline">
+              <span class="layer-lbl"><span class="sym-dot" style="background:#0284c7;"></span>Puntos críticos hídricos <span class="src-tag">ANA</span></span>
+              <input type="checkbox" id="chkAna">
+            </label>
+            <label class="layerline">
+              <span class="layer-lbl"><span class="sym-poly" style="background:rgba(6,182,212,0.35); border:1px solid #0891b2;"></span>Fajas marginales <span class="src-tag">ANA</span></span>
+              <input type="checkbox" id="chkFaja">
+            </label>
+            <label class="layerline">
+              <span class="layer-lbl"><span class="sym-poly" style="background:rgba(234,88,12,0.4); border:1px solid #ea580c;"></span>Movimientos en masa <span class="src-tag">GeoPerú</span></span>
+              <input type="checkbox" id="chkMasa">
+            </label>
+          </div>
+        </details>
+
+        <!-- 3. REDES VIALES Y LOGÍSTICA (DESACTIVADAS AL INICIAR) -->
+        <details class="layer-group">
+          <summary>Redes Viales y Logística</summary>
+          <div class="group-body">
+            <div class="group-quick-actions">
+              <button type="button" class="mini-link" onclick="toggleGroupCheckboxes(this, true)">Todas</button>
+              <button type="button" class="mini-link" onclick="toggleGroupCheckboxes(this, false)">Ninguna</button>
+            </div>
+            <label class="layerline">
+              <span class="layer-lbl"><span class="sym-line" style="background:#dc2626;"></span>Red Vial Nacional <span class="src-tag">MTC</span></span>
+              <input type="checkbox" id="chkRvn">
+            </label>
+            <label class="layerline">
+              <span class="layer-lbl"><span class="sym-line" style="background:#ea580c;"></span>Red Vial Departamental <span class="src-tag">MVCS / MTC</span></span>
+              <input type="checkbox" id="chkRvd">
+            </label>
+            <label class="layerline">
+              <span class="layer-lbl"><span class="sym-line" style="background:#eab308;"></span>Red Vial Vecinal <span class="src-tag">MVCS / MTC</span></span>
+              <input type="checkbox" id="chkRvv">
+            </label>
+            <label class="layerline">
+              <span class="layer-lbl"><span class="sym-line" style="background:#7c3aed;"></span>Corredores logísticos <span class="src-tag">MVCS · SICCEP</span></span>
+              <input type="checkbox" id="chkCorredores">
+            </label>
+            <label class="layerline">
+              <span class="layer-lbl"><span class="sym-dot" style="background:#0f172a;"></span>Terminales terrestres <span class="src-tag">MTC</span></span>
+              <input type="checkbox" id="chkTerminales">
+            </label>
+            <label class="layerline">
+              <span class="layer-lbl"><span class="sym-dot" style="background:#64748b;"></span>Puentes <span class="src-tag">MTC</span></span>
+              <input type="checkbox" id="chkPuentes">
+            </label>
+          </div>
+        </details>
+
+        <!-- 4. INFRAESTRUCTURA CRÍTICA URBANA (DESACTIVADAS AL INICIAR) -->
+        <details class="layer-group" id="infraGroupDetails">
+          <summary>Infraestructura Crítica Urbana</summary>
+          <div class="group-body">
+            <div class="group-quick-actions">
+              <button type="button" class="mini-link" onclick="toggleGroupCheckboxes(this, true)">Todas</button>
+              <button type="button" class="mini-link" onclick="toggleGroupCheckboxes(this, false)">Ninguna</button>
+            </div>
+            <label class="layerline">
+              <span class="layer-lbl"><span class="sym-dot" style="background:#ef4444;"></span>Establecimientos de salud <span class="src-tag">GeoPerú</span></span>
+              <input type="checkbox" id="chkSalud">
+            </label>
+            <label class="layerline">
+              <span class="layer-lbl"><span class="sym-dot" style="background:#2563eb;"></span>Instituciones educativas <span class="src-tag">GeoPerú</span></span>
+              <input type="checkbox" id="chkEducacion">
+            </label>
+            <label class="layerline">
+              <span class="layer-lbl"><span class="sym-dot" style="background:#15803d;"></span>Comisarías <span class="src-tag">GeoPerú</span></span>
+              <input type="checkbox" id="chkComisarias">
+            </label>
+          </div>
+        </details>
+      </div>
+
+      <!-- REGISTRO EN VIVO Y CARGA DE CAPAS -->
+      <div>
+        <div class="sec-title"><span class="left"><i class="fa-solid fa-tower-broadcast"></i> Registrar Incidencia y Capas</span></div>
+        <div class="card-box muni-grid">
+          <button type="button" class="btn-action" id="btnReportPoint">
+            <i class="fa-solid fa-location-dot"></i> Marcar punto afectado en mapa
+          </button>
+          <button type="button" class="btn-action" id="btnDrawFlood">
+            <i class="fa-solid fa-draw-polygon"></i> Delimitar zona anegada
+          </button>
+          <label class="upload-mini" title="Cargar archivo GeoPackage (.gpkg) o GeoJSON (.geojson)">
+            <span><i class="fa-solid fa-upload"></i> Subir capa (.gpkg / .geojson)</span>
+            <span style="font-weight:600; color:var(--blue);">Subir</span>
+            <input type="file" id="fileUpload" accept=".gpkg,.json,.geojson,application/geo+json,application/geopackage+sqlite3">
+          </label>
+          <a href="https://alertasviales.sutran.gob.pe/" target="_blank" rel="noopener" class="upload-mini" style="text-decoration:none; color:var(--navy); border-style:solid; background:#fff;">
+            <span><i class="fa-solid fa-road-barrier" style="color:var(--orange);"></i> Alertas Viales Nacionales (SUTRAN)</span>
+            <span style="font-weight:600; color:var(--blue);">Abrir ↗</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- ACTIVIDAD EN VIVO -->
+      <div>
+        <div class="sec-title">
+          <span class="left"><span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#16a34a;"></span> Actividad en vivo (<span id="recCount">0</span>)</span>
+          <button type="button" id="btnClearAll" style="border:none;background:none;color:var(--red);font-size:10px;font-weight:600;cursor:pointer;display:none;">Limpiar</button>
+        </div>
+        <div class="card-box live-feed" id="recordsList">
+          <div style="font-size:10px; color:var(--muted); text-align:center; padding:6px 0;">
+            Sin incidencias registradas aún. Usa <b>"Marcar punto afectado en mapa"</b> para alimentar este panel y el Reporte FEN.
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:auto;">
+        <button type="button" class="btn-action primary" id="btnExport">
+          <i class="fa-solid fa-file-export"></i> Descargar GeoJSON consolidado
+        </button>
+      </div>
+    </div>
+
+    <!-- VISTA 2: LEYENDA COMPLETA Y LIMPIA (EN PESTAÑA DEDICADA) -->
+    <div id="leftTabLeyenda" class="hidden" style="display:flex; flex-direction:column; gap:8px;">
+      <div class="card-box">
+        <div class="legend-section">
+          <h4>Incidencias de Movilidad (Puntos)</h4>
+          <div class="leg-row"><span class="sym-dot" style="background:#dc2626;"></span> <span><b>Tránsito interrumpido total:</b> Corte de vía o paso cerrado</span></div>
+          <div class="leg-row"><span class="sym-dot" style="background:#ea580c;"></span> <span><b>Vía anegada:</b> Tránsito restringido / paso lento</span></div>
+          <div class="leg-row"><span class="sym-dot" style="background:#7c3aed;"></span> <span><b>Transporte público:</b> Desvío de ruta o terminal afectado</span></div>
+        </div>
+        <div class="leg-sep"></div>
+        <div class="legend-section">
+          <h4>Vías Urbanas Expuestas (Jerarquía Funcional)</h4>
+          <div class="leg-row"><span class="sym-line" style="background:#dc2626;"></span> <span><b>Prioridad 1 · Eje Troncal:</b> Arteria estructurante (riesgo de aislamiento)</span></div>
+          <div class="leg-row"><span class="sym-line" style="background:#ea580c;"></span> <span><b>Prioridad 2 · Red Colectora:</b> Vías secundarias y terciarias</span></div>
+          <div class="leg-row"><span class="sym-line" style="background:#0b4eb8;"></span> <span><b>Prioridad 3 · Red Local:</b> Calles residenciales (acceso barrial)</span></div>
+        </div>
+        <div class="leg-sep"></div>
+        <div class="legend-section">
+          <h4>Redes Viales e Infraestructura</h4>
+          <div class="leg-row"><span class="sym-line" style="background:#dc2626;"></span> <span>Red Vial Nacional (MTC)</span></div>
+          <div class="leg-row"><span class="sym-line" style="background:#ea580c;"></span> <span>Red Vial Departamental (MVCS / MTC)</span></div>
+          <div class="leg-row"><span class="sym-line" style="background:#eab308;"></span> <span>Red Vial Vecinal (MVCS / MTC)</span></div>
+          <div class="leg-row"><span class="sym-line" style="background:#7c3aed;"></span> <span>Corredores logísticos (MVCS · SICCEP)</span></div>
+          <div class="leg-row"><span class="sym-dot" style="background:#ef4444;"></span> <span>Establecimientos de salud (GeoPerú)</span></div>
+          <div class="leg-row"><span class="sym-dot" style="background:#2563eb;"></span> <span>Instituciones educativas (GeoPerú)</span></div>
+          <div class="leg-row"><span class="sym-dot" style="background:#15803d;"></span> <span>Comisarías (GeoPerú)</span></div>
+        </div>
+        <div class="leg-sep"></div>
+        <div class="legend-section" style="margin-bottom:0;">
+          <h4>Áreas y Límites</h4>
+          <div class="leg-row"><span class="sym-poly" style="background:rgba(11,78,184,0.3); border:1px solid #0b4eb8;"></span> <span>Huella inundable (Sentinel-1 / Sesión)</span></div>
+          <div class="leg-row"><span class="sym-poly" style="border:2px dashed #092a65; background:transparent;"></span> <span>Ámbito urbano oficial (MVCS · SICCEP)</span></div>
+        </div>
+      </div>
     </div>
   </aside>
 
-  <!-- CENTRO: VISOR CARTOGRÁFICO -->
+  <!-- CENTRO: VISOR CARTOGRÁFICO DESPEJADO -->
   <section class="mapwrap" id="mapCaptureArea">
     <div id="map"></div>
     <div class="maptools no-print">
@@ -490,32 +584,34 @@
       <button type="button" class="base-btn" data-base="esri">Satélite</button>
       <button type="button" class="base-btn" data-base="osm">OSM</button>
     </div>
-    <div class="floating-legend">
-      <strong>Leyenda Operativa · Movilidad y GRD</strong>
-      <div class="leg-sub">Símbolos diferenciados por geometría y prioridad:</div>
-      <div class="leg-row"><span class="sym-dot" style="background:#dc2626;"></span> <span><b>Incidencia:</b> Tránsito interrumpido total</span></div>
-      <div class="leg-row"><span class="sym-dot" style="background:#ea580c;"></span> <span><b>Incidencia:</b> Vía anegada / Tránsito lento</span></div>
-      <div class="leg-row"><span class="sym-dot" style="background:#7c3aed;"></span> <span><b>Incidencia:</b> Desvío transporte / Terminal</span></div>
-      <div class="leg-sep"></div>
-      <div class="leg-row"><span class="sym-line" style="background:#dc2626;"></span> <span>Vía expuesta · Prioridad 1 (Eje Troncal)</span></div>
-      <div class="leg-row"><span class="sym-line" style="background:#ea580c;"></span> <span>Vía expuesta · Prioridad 2 (Colectora)</span></div>
-      <div class="leg-row"><span class="sym-line" style="background:#0758c9;"></span> <span>Vía expuesta · Prioridad 3 (Red Local)</span></div>
-      <div class="leg-sep"></div>
-      <div class="leg-row"><span class="sym-poly" style="background:rgba(7,88,201,0.35); border:1px solid #0758c9;"></span> <span>Huella inundable (Sentinel-1 / Sesión)</span></div>
-      <div class="leg-row"><span class="sym-poly" style="border:2px dashed #092a65; background:transparent;"></span> <span>Límite urbano oficial (MVCS · SICCEP)</span></div>
-    </div>
   </section>
 
-  <!-- PANEL DERECHO: CONTEXTO ENFEN + SEMÁFORO CIUDADES + ANALÍTICA -->
+  <!-- PANEL DERECHO: CONTEXTO ENFEN + TARJETAS RESUMEN + CIUDADES + ANALÍTICA -->
   <aside class="details">
     <!-- Bloques exclusivos de Modo Monitoreo FEN -->
     <div id="fenRightBlocks" style="display:flex; flex-direction:column; gap:10px;">
-      <div class="enfen-box">
+      <div class="enfen-banner">
         <div class="enfen-head">
-          <strong><i class="fa-solid fa-water"></i> Contexto ENFEN (Com. 13 Nov)</strong>
-          <a href="https://enfen.imarpe.gob.pe/" target="_blank" rel="noopener">Comunicado ↗</a>
+          <strong><i class="fa-solid fa-cloud-showers-heavy"></i> Alerta ENFEN · El Niño Costero</strong>
+          <a href="https://enfen.imarpe.gob.pe/" target="_blank" rel="noopener">Com. 13 Nov ↗</a>
         </div>
-        <p>El Niño costero se mantendría con <b>magnitud extraordinaria hasta febrero 2027</b>. Lluvias de moderada a extrema intensidad en costa norte.</p>
+        <p>Magnitud extraordinaria prevista hasta <b>febrero 2027</b>. Lluvias fuertes a extremas en costa norte.</p>
+      </div>
+
+      <!-- 3 Tarjetas de resumen rápido de transitabilidad (sobrias) -->
+      <div class="status-trio">
+        <div class="trio-card trio-red">
+          <strong id="cntCortado">0</strong>
+          <span>Interrumpido</span>
+        </div>
+        <div class="trio-card trio-amber">
+          <strong id="cntAnegado">3</strong>
+          <span>Anegado / Rest.</span>
+        </div>
+        <div class="trio-card trio-green">
+          <strong id="cntNormal">1</strong>
+          <span>Vigilancia</span>
+        </div>
       </div>
 
       <div>
@@ -558,9 +654,9 @@
     </div>
 
     <!-- Banner exclusivo de Modo Preparación GRD -->
-    <div id="prepRightBanner" class="card-box hidden" style="border-left:3.5px solid var(--blue); background:#f0f5fd;">
+    <div id="prepRightBanner" class="card-box hidden" style="border-left:3.5px solid var(--blue); background:#f8fafc;">
       <strong style="color:var(--navy); font-size:11.5px; display:block; margin-bottom:3px;"><i class="fa-solid fa-shield-halved"></i> Enfoque Preventivo (Asistencia Técnica)</strong>
-      <p style="font-size:10.5px; color:#34475e; line-height:1.4; margin-bottom:7px;">Evaluación territorial de exposición vial e infraestructura crítica urbana (UN-SPIDER + SICCEP + BID) para planificación municipal.</p>
+      <p style="font-size:10.5px; color:#475569; line-height:1.4; margin-bottom:7px;">Evaluación territorial de exposición vial e infraestructura crítica urbana (UN-SPIDER + SICCEP + BID) para planificación municipal.</p>
       <button type="button" class="btn-action" style="padding:6px 8px; font-size:11px;" onclick="document.getElementById('modalFicha').classList.add('open')">
         <i class="fa-solid fa-file-pdf"></i> Abrir Ficha Técnica Completa
       </button>
@@ -568,7 +664,7 @@
 
     <!-- KPIs Territoriales -->
     <div>
-      <div class="sec-title"><span class="left"><i class="fa-solid fa-chart-pie"></i> Indicadores de Exposición (<span id="kpiCityLabel">Tumbes</span>)</span></div>
+      <div class="sec-title"><span class="left"><i class="fa-solid fa-chart-pie"></i> Exposición Territorial (<span id="kpiCityLabel">Tumbes</span>)</span></div>
       <div class="kpi-grid">
         <div class="kpi-card">
           <strong id="kpiTotalKm">32.96 km</strong>
@@ -619,7 +715,7 @@
   </aside>
 </main>
 
-<!-- MODAL 1: REPORTE SITUACIONAL FEN MEJORADO (CON CONTEXTO SENAMHI, ENFEN Y SUTRAN) -->
+<!-- MODAL 1: REPORTE SITUACIONAL FEN (SITREP) -->
 <div class="modal-bg" id="modalSitrep">
   <div class="modal-card">
     <div class="modal-head">
@@ -628,8 +724,8 @@
         <small id="sitrepDate">PROMOVILIDAD – MTC · Consolidado Operativo de Transitabilidad</small>
       </div>
       <div style="display:flex; gap:6px;" class="no-print">
-        <button type="button" class="btn-ghost highlight" onclick="window.print()"><i class="fa-solid fa-print"></i> Exportar PDF</button>
-        <button type="button" class="btn-ghost" onclick="closeModal('modalSitrep')">✕</button>
+        <button type="button" class="btn-ghost highlight" style="border-color:#cbd5e1;" onclick="window.print()"><i class="fa-solid fa-print"></i> Exportar PDF</button>
+        <button type="button" class="btn-ghost" style="color:var(--navy); border-color:#cbd5e1;" onclick="closeModal('modalSitrep')">✕</button>
       </div>
     </div>
 
@@ -677,8 +773,8 @@
         <small>DFPM – PROMOVILIDAD | Metodología RadarMov-GRD (Estándar UN-SPIDER + Enfoque BID)</small>
       </div>
       <div style="display:flex; gap:6px;" class="no-print">
-        <button type="button" class="btn-ghost highlight" onclick="window.print()"><i class="fa-solid fa-print"></i> Guardar PDF / Imprimir</button>
-        <button type="button" class="btn-ghost" onclick="closeModal('modalFicha')">✕</button>
+        <button type="button" class="btn-ghost highlight" style="border-color:#cbd5e1;" onclick="window.print()"><i class="fa-solid fa-print"></i> Guardar PDF / Imprimir</button>
+        <button type="button" class="btn-ghost" style="color:var(--navy); border-color:#cbd5e1;" onclick="closeModal('modalFicha')">✕</button>
       </div>
     </div>
 
@@ -705,7 +801,7 @@
         <tr><td>Vía Secundaria (<code>secondary</code>)</td><td><b>Prioridad 2 · Alto:</b> Colectora (conectividad interzonal)</td><td><b>0.12 km</b> (124.8 m)</td><td>0.38%</td></tr>
         <tr><td>Vía Terciaria (<code>tertiary</code>)</td><td><b>Prioridad 2 · Alto:</b> Alimentadora de transporte</td><td><b>0.41 km</b> (411.0 m)</td><td>1.25%</td></tr>
         <tr><td>Vía Residencial / Local</td><td><b>Prioridad 3 · Medio:</b> Afectación barrial directa</td><td><b>31.88 km</b> (31,875.6 m)</td><td>96.70%</td></tr>
-        <tr style="background:#f0f5fd;"><td><b>TOTAL RED VIAL EXPUESTA</b></td><td><b>Ámbito urbano SICCEP Tumbes</b></td><td><b>32.96 km (32,962.6 m)</b></td><td><b>100.00%</b></td></tr>
+        <tr style="background:#f8fafc;"><td><b>TOTAL RED VIAL EXPUESTA</b></td><td><b>Ámbito urbano SICCEP Tumbes</b></td><td><b>32.96 km (32,962.6 m)</b></td><td><b>100.00%</b></td></tr>
       </tbody>
     </table>
 
@@ -737,6 +833,26 @@ function bindLogoFallback(imgId, baseName) {
 bindLogoFallback('imgLogoMtc', 'logo_mtc');
 bindLogoFallback('imgLogoProm', 'logo_promovilidad');
 
+// Pestañas del panel izquierdo (Capas | Leyenda)
+window.switchLeftTab = function(tab) {
+  const isCapas = tab === 'capas';
+  document.getElementById('tabCapasBtn').classList.toggle('active', isCapas);
+  document.getElementById('tabLeyendaBtn').classList.toggle('active', !isCapas);
+  document.getElementById('leftTabCapas').classList.toggle('hidden', !isCapas);
+  document.getElementById('leftTabLeyenda').classList.toggle('hidden', isCapas);
+};
+
+// Botones "Todas / Ninguna" por grupo desplegable
+window.toggleGroupCheckboxes = function(btn, checkedState) {
+  const body = btn.closest('.group-body');
+  body.querySelectorAll('input[type=checkbox]').forEach(chk => {
+    if (chk.checked !== checkedState) {
+      chk.checked = checkedState;
+      chk.dispatchEvent(new Event('change'));
+    }
+  });
+};
+
 const SICCEP_URL = 'https://portalgis.vivienda.gob.pe/servergis/rest/services/DGPRVU/Sistema_de_Ciudades_SICCEP/MapServer/17';
 const MVCS_REST_ROOT = 'https://portalgis.vivienda.gob.pe/servergis/rest/services/';
 
@@ -745,7 +861,7 @@ const RISK_CONFIG = {
   primary:      { label: 'Prioridad 1 · Vía Primaria', desc: 'Corredor principal de movilidad', color: '#dc2626', weight: 4, grd: 'muy_alto' },
   secondary:    { label: 'Prioridad 2 · Secundaria', desc: 'Vía colectora (conectividad interzonal)', color: '#ea580c', weight: 3.5, grd: 'alto' },
   tertiary:     { label: 'Prioridad 2 · Terciaria', desc: 'Vía alimentadora de transporte local', color: '#ea580c', weight: 3, grd: 'alto' },
-  residential:  { label: 'Prioridad 3 · Residencial', desc: 'Calle local (afectación barrial directa)', color: '#0758c9', weight: 2.2, grd: 'medio' },
+  residential:  { label: 'Prioridad 3 · Residencial', desc: 'Calle local (afectación barrial directa)', color: '#0b4eb8', weight: 2.2, grd: 'medio' },
   unclassified: { label: 'Prioridad 3 · No clasificada', desc: 'Acceso local menor', color: '#64748b', weight: 2, grd: 'medio' }
 };
 
@@ -847,7 +963,7 @@ let state = {
   municipalRecords: []
 };
 
-// 4. Consultar SICCEP + cargar capas base de la carpeta data/
+// 4. Consultar SICCEP + cargar capas base de data/
 async function loadSiccepCity(cityName) {
   siccepLayer.clearLayers();
   document.getElementById('kpiCityLabel').textContent = cityName;
@@ -890,11 +1006,27 @@ async function initTumbesPilot() {
   if (state.floodFeatures.length || state.roadFeatures.length) {
     setStatus(`Capas base cargadas (${state.roadFeatures.length} tramos viales expuestos).`);
   } else {
-    setStatus('Ámbito Tumbes cargado. Sube tu archivo .gpkg o .geojson en "Registrar Incidencia y Capas".');
+    setStatus('Ámbito Tumbes cargado.');
   }
 }
 
-// 5. Sincronizar desplegable de Ciudades en Alerta con el mapa
+// 5. Sincronizar desplegable de Ciudades en Alerta y tarjetas resumen
+function updateStatusTrio() {
+  let cortado = 0, anegado = 0, normal = 0;
+  document.querySelectorAll('#fenCitiesStatus select').forEach(sel => {
+    if (sel.value === 'st-cortada') cortado++;
+    else if (sel.value === 'st-anegada') anegado++;
+    else normal++;
+  });
+  state.municipalRecords.forEach(r => {
+    if (r.tipo === 'Tránsito interrumpido total') cortado++;
+    else if (r.tipo === 'Vía anegada (tránsito lento)') anegado++;
+  });
+  document.getElementById('cntCortado').textContent = cortado;
+  document.getElementById('cntAnegado').textContent = anegado;
+  document.getElementById('cntNormal').textContent = normal;
+}
+
 window.selectCityFromAlert = function(cityCode) {
   document.querySelectorAll('.fen-city-row').forEach(r => r.classList.remove('active-city'));
   const row = document.getElementById('row-' + cityCode);
@@ -910,10 +1042,11 @@ window.updateCityAlertStatus = function(selectEl) {
   const cityCode = selectEl.dataset.code;
   const statusLabel = selectEl.options[selectEl.selectedIndex].text;
   selectCityFromAlert(cityCode);
+  updateStatusTrio();
   setStatus(`Estado de ${selectEl.dataset.city} actualizado a: "${statusLabel}".`);
 };
 
-// 6. Feed estilo SUTRAN ("Actividad en vivo")
+// 6. Actividad en vivo
 function renderRecordsList() {
   const listEl = document.getElementById('recordsList');
   const countEl = document.getElementById('recCount');
@@ -941,7 +1074,7 @@ function renderRecordsList() {
         <div class="feed-title" style="cursor:pointer;" onclick="zoomRecord('${rec.id}')">${rec.detalle || rec.title}</div>
         <div class="feed-footer">
           <span class="pill-badge ${badgeClass}">${badgeText}</span>
-          <span style="color:var(--muted); font-size:9.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:135px;">${rec.fuente || 'Municipalidad'}</span>
+          <span style="color:var(--muted); font-size:9.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:130px;">${rec.fuente || 'Municipalidad'}</span>
         </div>
       </div>
     `;
@@ -981,12 +1114,13 @@ document.getElementById('btnClearAll').addEventListener('click', () => {
 function refreshDashboard() {
   floodGroup.clearLayers();
   roadsGroup.clearLayers();
+  updateStatusTrio();
 
   let totalAreaHa = 0;
   if (state.floodFeatures.length > 0) {
     const fc = { type: 'FeatureCollection', features: state.floodFeatures };
     L.geoJSON(fc, {
-      style: { color: '#0758c9', weight: 1, fillColor: '#0758c9', fillOpacity: 0.32 }
+      style: { color: '#0b4eb8', weight: 1, fillColor: '#0b4eb8', fillOpacity: 0.32 }
     }).addTo(floodGroup);
     try { totalAreaHa = turf.area(fc) / 10000; } catch (e) {}
   }
@@ -1051,7 +1185,7 @@ function refreshDashboard() {
   const barsCont = document.getElementById('barsContainer');
   const sorted = Object.entries(byType).sort((a, b) => b[1] - a[1]);
   if (sorted.length === 0) {
-    barsCont.innerHTML = '<div style="font-size:10.5px; color:var(--muted);">Sin capa vial preprocesada para esta ciudad. Activa capas WMS o sube tu .gpkg / .geojson.</div>';
+    barsCont.innerHTML = '<div style="font-size:10.5px; color:var(--muted);">Sin capa vial preprocesada para esta ciudad. Activa capas o sube tu .gpkg / .geojson.</div>';
     return;
   }
   barsCont.innerHTML = sorted.map(([t, km]) => {
@@ -1173,7 +1307,7 @@ map.on('click', e => {
   });
 });
 
-// 10. Generar Reporte Situacional FEN Mejorado (SITREP)
+// 10. Generar Reporte Situacional FEN (SITREP)
 document.getElementById('btnSitrep').addEventListener('click', () => {
   const nowStr = new Date().toLocaleString('es-PE', { dateStyle: 'full', timeStyle: 'short' });
   document.getElementById('sitrepDate').textContent = `PROMOVILIDAD – MTC · Corte al ${nowStr}`;
@@ -1206,7 +1340,7 @@ document.getElementById('btnSitrep').addEventListener('click', () => {
   document.getElementById('modalSitrep').classList.add('open');
 });
 
-// 11. Soporte real para cargar GeoPackage (.gpkg via SQLite/sql.js) y GeoJSON (.geojson)
+// 11. Carga de GeoPackage (.gpkg) y GeoJSON (.geojson)
 async function readGeoPackageFile(file) {
   const SQL = await initSqlJs({ locateFile: f => `https://unpkg.com/sql.js@1.10.3/dist/${f}` });
   const buf = new Uint8Array(await file.arrayBuffer());
@@ -1412,7 +1546,7 @@ document.getElementById('modeFenBtn').addEventListener('click', () => {
   document.getElementById('prepRightBanner').classList.add('hidden');
   document.getElementById('btnSitrep').classList.remove('hidden');
   document.getElementById('btnFicha').classList.add('hidden');
-  setStatus('Modo Monitoreo FEN activo: reporte de transitabilidad y alertas climáticas.');
+  setStatus('Modo Monitoreo FEN activo.');
 });
 
 document.getElementById('modePrepBtn').addEventListener('click', () => {
@@ -1423,7 +1557,7 @@ document.getElementById('modePrepBtn').addEventListener('click', () => {
   document.getElementById('btnSitrep').classList.add('hidden');
   document.getElementById('btnFicha').classList.remove('hidden');
   document.getElementById('infraGroupDetails').open = true;
-  setStatus('Modo Preparación GRD activo: Ficha Técnica completa e Infraestructura Crítica Urbana desplegada.');
+  setStatus('Modo Preparación GRD activo.');
 });
 
 document.getElementById('btnFicha').addEventListener('click', () => document.getElementById('modalFicha').classList.add('open'));
