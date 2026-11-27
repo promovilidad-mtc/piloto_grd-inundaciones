@@ -16,9 +16,10 @@
     :root {
       --navy: #092a65;
       --blue: #0758c9;
-      --red: #df1836;
-      --amber: #d97706;
-      --green: #087e59;
+      --red: #dc2626;
+      --orange: #ea580c;
+      --amber: #eab308;
+      --green: #16a34a;
       --purple: #7c3aed;
       --line: #dfe6f0;
       --bg: #f5f8fc;
@@ -45,7 +46,7 @@
     .brand h1 { font-size: 14px; font-weight: 700; color: var(--navy); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .brand small { display: block; font-size: 10.5px; color: var(--blue); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* Selector de Modo Operativo (Preparación vs Emergencia FEN) */
+    /* Selector de Modo Operativo */
     .mode-switch {
       display: flex; background: #edf2f8; padding: 3px; border-radius: 8px; border: 1px solid #d5e0ee; flex: none;
     }
@@ -75,36 +76,38 @@
     /* Workspace de 3 columnas */
     .workspace {
       display: grid;
-      grid-template-columns: 315px minmax(400px, 1fr) 330px;
+      grid-template-columns: 320px minmax(400px, 1fr) 340px;
       height: calc(100vh - 62px);
     }
     .sidebar, .details {
-      background: #fff; overflow-y: auto; padding: 13px; display: flex; flex-direction: column; gap: 12px;
+      background: #fff; overflow-y: auto; padding: 12px 13px; display: flex; flex-direction: column; gap: 11px;
     }
     .sidebar { border-right: 1px solid var(--line); }
     .details { border-left: 1px solid var(--line); }
 
     .sec-title {
       font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
-      color: var(--navy); display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;
+      color: var(--navy); display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;
     }
     .sec-title span.left { display: flex; align-items: center; gap: 6px; }
     .card-box {
-      background: #f8fbff; border: 1px solid #e1e9f4; border-radius: 9px; padding: 9px;
+      background: #f8fbff; border: 1px solid #e1e9f4; border-radius: 9px; padding: 8px 9px;
     }
 
-    /* Switches */
+    /* Switches y símbolos geométricos coherentes con el mapa */
     .layerline {
       display: flex; align-items: center; justify-content: space-between; gap: 8px;
-      padding: 5px 7px; border-radius: 7px; transition: background 0.15s; cursor: pointer;
+      padding: 5px 6px; border-radius: 7px; transition: background 0.15s; cursor: pointer;
     }
     .layerline:hover { background: #eef4fc; }
     .layer-lbl { display: flex; align-items: center; gap: 7px; font-size: 11.5px; font-weight: 500; color: #25374b; }
-    .swatch { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+    .sym-dot { width: 11px; height: 11px; border-radius: 50%; flex: none; border: 1.5px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,0.2); }
+    .sym-line { width: 14px; height: 4px; border-radius: 2px; flex: none; }
+    .sym-poly { width: 13px; height: 11px; border-radius: 2px; flex: none; }
     .geom-tag {
       font-size: 9px; color: var(--muted); background: #edf2f8; padding: 1px 5px; border-radius: 4px; font-weight: 600;
     }
-    .geom-tag.live { background: #fee2e2; color: var(--red); }
+    .geom-tag.live { background: #dbeafe; color: var(--blue); }
     .layerline input[type=checkbox] {
       appearance: none; width: 28px; height: 16px; border-radius: 20px; background: #d5dce5;
       position: relative; flex: none; transition: background 0.15s; cursor: pointer;
@@ -138,11 +141,11 @@
 
     /* Lista de registros */
     .records-list {
-      display: flex; flex-direction: column; gap: 5px; max-height: 145px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 5px; max-height: 135px; overflow-y: auto;
     }
     .record-item {
       display: flex; align-items: center; justify-content: space-between; gap: 6px;
-      background: #fff; border: 1px solid #dce6f3; border-radius: 6px; padding: 6px 8px; font-size: 11px;
+      background: #fff; border: 1px solid #dce6f3; border-radius: 6px; padding: 5px 8px; font-size: 11px;
     }
     .record-info { flex: 1; min-width: 0; }
     .record-info strong { display: block; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -173,41 +176,59 @@
     .floating-legend {
       position: absolute; z-index: 800; left: 12px; bottom: 18px; background: rgba(255,255,255,0.97);
       border: 1px solid var(--line); border-radius: 9px; box-shadow: 0 4px 16px rgba(9,42,101,0.12);
-      padding: 9px 11px; width: 275px; font-size: 10.5px;
+      padding: 9px 11px; width: 280px; font-size: 10.5px;
     }
     .floating-legend strong { display: block; color: var(--navy); margin-bottom: 2px; font-size: 11.5px; }
-    .leg-sub { font-size: 9.5px; color: var(--muted); margin-bottom: 6px; line-height: 1.3; }
-    .leg-row { display: flex; align-items: flex-start; gap: 7px; margin: 4px 0; color: #34475e; line-height: 1.3; }
-    .leg-row .swatch { margin-top: 2px; }
+    .leg-sub { font-size: 9.5px; color: var(--muted); margin-bottom: 5px; line-height: 1.3; }
+    .leg-row { display: flex; align-items: center; gap: 7px; margin: 4px 0; color: #34475e; line-height: 1.25; }
     .leg-sep { height: 1px; background: #e2e8f0; margin: 5px 0; }
 
-    /* Panel derecho: Semáforo FEN + KPIs + Barras */
-    .fen-cities { display: flex; flex-direction: column; gap: 5px; }
+    /* Bloque Contexto ENFEN (Panel Derecho) */
+    .enfen-box {
+      background: #fffbeb; border: 1px solid #fde68a; border-left: 3.5px solid #d97706;
+      border-radius: 8px; padding: 8px 10px; font-size: 11px; color: #78350f;
+    }
+    .enfen-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+    .enfen-head strong { color: #92400e; font-size: 11px; }
+    .enfen-box p { line-height: 1.35; font-size: 10.5px; }
+    .enfen-box a { color: #b45309; font-weight: 600; text-decoration: underline; font-size: 10px; }
+
+    /* Semáforo Ciudades en Alerta */
+    .fen-cities { display: flex; flex-direction: column; gap: 4px; }
     .fen-city-row {
       display: flex; align-items: center; justify-content: space-between; gap: 6px;
-      background: #fff; border: 1px solid #dce6f3; border-radius: 6px; padding: 5px 8px; font-size: 11px;
+      background: #fff; border: 1px solid #dce6f3; border-radius: 6px; padding: 4px 7px; font-size: 11px;
     }
+    .fen-city-row small { display: block; font-size: 9.5px; color: var(--muted); font-weight: 400; }
     .fen-city-row select {
       border: 1px solid #cbd5e1; border-radius: 5px; padding: 3px 5px; font-size: 10.5px; font-weight: 600; outline: none;
     }
     .st-normal { color: var(--green); background: #ecfdf5; }
-    .st-anegada { color: var(--amber); background: #fffbeb; }
+    .st-anegada { color: #b45309; background: #fffbeb; }
     .st-cortada { color: var(--red); background: #fef2f2; }
 
-    .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    /* KPIs y Gráficos GRD */
+    .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .kpi-card {
-      background: #f3f7fd; border: 1px solid #dce6f3; border-radius: 8px; padding: 8px 9px;
+      background: #f3f7fd; border: 1px solid #dce6f3; border-radius: 8px; padding: 7px 9px;
     }
-    .kpi-card strong { display: block; font-size: 15.5px; color: var(--navy); font-weight: 700; }
-    .kpi-card span { font-size: 10px; color: var(--muted); line-height: 1.25; display: block; margin-top: 2px; }
+    .kpi-card strong { display: block; font-size: 15px; color: var(--navy); font-weight: 700; }
+    .kpi-card span { font-size: 9.5px; color: var(--muted); line-height: 1.25; display: block; margin-top: 1px; }
     .kpi-card.alert strong { color: var(--red); }
 
-    .bar-group { display: flex; flex-direction: column; gap: 8px; }
-    .bar-item { font-size: 11px; }
+    .bar-group { display: flex; flex-direction: column; gap: 7px; }
+    .bar-item { font-size: 10.5px; }
     .bar-head { display: flex; justify-content: space-between; margin-bottom: 2px; font-weight: 600; color: var(--navy); }
-    .bar-desc { font-size: 9.5px; color: var(--muted); margin-bottom: 3px; }
     .bar-track { height: 6px; background: #edf2f8; border-radius: 99px; overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 99px; transition: width 0.3s; }
+
+    /* Barra apilada de Semáforo de Riesgo / Impacto GRD */
+    .grd-stacked-bar {
+      display: flex; height: 14px; border-radius: 6px; overflow: hidden; margin: 5px 0 7px; background: #e2e8f0;
+    }
+    .grd-seg { height: 100%; transition: width 0.3s; }
+    .grd-legend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 10px; }
+    .grd-leg-item { display: flex; align-items: center; gap: 5px; color: #34475e; }
 
     .status-pill {
       font-size: 10.5px; color: var(--green); background: #ecfdf5; border: 1px solid #a7f3d0;
@@ -319,44 +340,53 @@
 </header>
 
 <main class="workspace">
-  <!-- PANEL IZQUIERDO: CAPAS Y REGISTRO HÍBRIDO (COORDINADORES DFPM + MUNICIPALIDADES) -->
+  <!-- PANEL IZQUIERDO: CAPAS Y REGISTRO EN VIVO -->
   <aside class="sidebar">
     <div>
-      <div class="sec-title"><span class="left"><i class="fa-solid fa-layer-group"></i> Capas Territoriales y Clima</span></div>
+      <div class="sec-title"><span class="left"><i class="fa-solid fa-layer-group"></i> Capas Territoriales y Alertas</span></div>
       <div class="card-box">
-        <label class="layerline">
-          <span class="layer-lbl"><span class="swatch" style="background:var(--red); border-radius:50%;"></span>Incidencias movilidad FEN <span class="geom-tag">Punto</span></span>
+        <!-- 1. PUNTOS -->
+        <label class="layerline" title="Puntos registrados manualmente o cargados sobre vías/terminales afectados">
+          <span class="layer-lbl"><span class="sym-dot" style="background:var(--purple);"></span>Incidencias movilidad FEN <span class="geom-tag">Punto</span></span>
           <input type="checkbox" id="chkPoints" checked>
         </label>
-        <label class="layerline">
-          <span class="layer-lbl"><span class="swatch" style="background:var(--red);"></span>Red vial expuesta <span class="geom-tag">Línea</span></span>
+        <label class="layerline" title="Puntos de alerta de tránsito en Red Vial Nacional (SUTRAN)">
+          <span class="layer-lbl"><span class="sym-dot" style="background:var(--orange);"></span>Alertas Red Vial Nacional (SUTRAN) <span class="geom-tag live">REST</span></span>
+          <input type="checkbox" id="chkSutran">
+        </label>
+        <!-- 2. LÍNEA -->
+        <label class="layerline" title="Tramos viales urbanos dentro de la huella de inundación">
+          <span class="layer-lbl"><span class="sym-line" style="background:var(--red);"></span>Red vial urbana expuesta <span class="geom-tag">Línea</span></span>
           <input type="checkbox" id="chkRoads" checked>
         </label>
-        <label class="layerline">
-          <span class="layer-lbl"><span class="swatch" style="background:rgba(7,88,201,0.35); border:1px solid #0758c9;"></span>Áreas inundables <span class="geom-tag">Polígono</span></span>
+        <!-- 3. POLÍGONOS -->
+        <label class="layerline" title="Huella de inundación satelital (Sentinel-1) o delimitada en sesión">
+          <span class="layer-lbl"><span class="sym-poly" style="background:rgba(7,88,201,0.35); border:1px solid #0758c9;"></span>Áreas inundables <span class="geom-tag">Polígono</span></span>
           <input type="checkbox" id="chkFlood" checked>
         </label>
-        <label class="layerline">
-          <span class="layer-lbl"><span class="swatch" style="border:2px solid #092a65; background:transparent;"></span>Ámbito urbano SICCEP <span class="geom-tag">Polígono</span></span>
+        <label class="layerline" title="Delimitación oficial de ciudad (MVCS · SICCEP)">
+          <span class="layer-lbl"><span class="sym-poly" style="border:2px dashed #092a65; background:transparent;"></span>Ámbito urbano SICCEP <span class="geom-tag">Polígono</span></span>
           <input type="checkbox" id="chkSiccep" checked>
         </label>
-        <div style="height:1px; background:#e2e8f0; margin:5px 0;"></div>
-        <label class="layerline" title="Servicio WMS oficial SENAMHI - Susceptibilidad a inundación / pronóstico">
-          <span class="layer-lbl"><span class="swatch" style="background:#0ea5e9;"></span>Susceptibilidad / Clima SENAMHI <span class="geom-tag live">WMS</span></span>
+        <div style="height:1px; background:#e2e8f0; margin:4px 0;"></div>
+        <!-- 4. SERVICIOS CLIMÁTICOS E HIDROLÓGICOS -->
+        <label class="layerline" title="Servicio WMS oficial SENAMHI - Avisos meteorológicos de corto plazo / pronóstico">
+          <span class="layer-lbl"><span class="sym-poly" style="background:rgba(234,179,8,0.45); border:1px solid #ca8a04;"></span>Aviso corto plazo SENAMHI <span class="geom-tag live">WMS</span></span>
           <input type="checkbox" id="chkSenamhi">
         </label>
-        <label class="layerline" title="Servicio WMS oficial ANA - Puntos críticos identificados">
-          <span class="layer-lbl"><span class="swatch" style="background:#f59e0b;"></span>Puntos críticos hídricos ANA <span class="geom-tag live">WMS</span></span>
+        <label class="layerline" title="Servicio WMS oficial ANA - Puntos críticos por desborde o inundación">
+          <span class="layer-lbl"><span class="sym-dot" style="background:#0284c7;"></span>Puntos críticos hídricos ANA <span class="geom-tag live">WMS</span></span>
           <input type="checkbox" id="chkAna">
         </label>
       </div>
     </div>
 
+    <!-- BLOQUE DE REGISTRO EN VIVO -->
     <div>
-      <div class="sec-title"><span class="left"><i class="fa-solid fa-tower-broadcast"></i> Reporte Rápido (10 min / Muni)</span></div>
+      <div class="sec-title"><span class="left"><i class="fa-solid fa-tower-broadcast"></i> Registrar Incidencia en Vivo</span></div>
       <div class="card-box muni-grid">
         <button type="button" class="btn-action" id="btnReportPoint">
-          <i class="fa-solid fa-location-dot"></i> Registrar incidencia vial / transporte
+          <i class="fa-solid fa-location-dot"></i> Marcar punto afectado en mapa
         </button>
         <button type="button" class="btn-action" id="btnDrawFlood">
           <i class="fa-solid fa-draw-polygon"></i> Delimitar zona anegada
@@ -366,25 +396,29 @@
           <span style="font-weight:600; color:var(--blue);">Subir</span>
           <input type="file" id="fileUpload" accept=".json,.geojson,application/geo+json">
         </label>
+        <a href="https://gis.sutran.gob.pe/alerta/" target="_blank" rel="noopener" class="upload-mini" style="text-decoration:none; color:var(--navy); border-style:solid; background:#f0f5fd;">
+          <span><i class="fa-solid fa-road-barrier" style="color:var(--orange);"></i> Visor Vías Nacionales SUTRAN</span>
+          <span style="font-weight:600; color:var(--blue);">Abrir ↗</span>
+        </a>
       </div>
     </div>
 
-    <!-- BANDEJA DE INCIDENCIAS REGISTRADAS -->
+    <!-- BANDEJA DE INCIDENCIAS DE LA SESIÓN -->
     <div>
       <div class="sec-title">
-        <span class="left"><i class="fa-solid fa-list-check"></i> Incidencias registradas (<span id="recCount">0</span>)</span>
+        <span class="left"><i class="fa-solid fa-list-check"></i> Registros en sesión (<span id="recCount">0</span>)</span>
         <button type="button" id="btnClearAll" style="border:none;background:none;color:var(--red);font-size:10px;font-weight:600;cursor:pointer;display:none;">Limpiar</button>
       </div>
       <div class="card-box records-list" id="recordsList">
-        <div style="font-size:10.5px; color:var(--muted); text-align:center; padding:5px 0;">
-          Sin incidencias cargadas en esta sesión. Registra puntos desde prensa verificada, llamadas o reportes municipales.
+        <div style="font-size:10px; color:var(--muted); text-align:center; padding:4px 0;">
+          Los puntos marcados se guardan temporalmente aquí para generar el <b>Reporte FEN</b> o descargarlos en <b>GeoJSON</b>.
         </div>
       </div>
     </div>
 
     <div style="margin-top:auto;">
       <button type="button" class="btn-action primary" id="btnExport">
-        <i class="fa-solid fa-file-export"></i> Descargar GeoJSON del turno
+        <i class="fa-solid fa-file-export"></i> Descargar GeoJSON consolidado
       </button>
     </div>
   </aside>
@@ -399,52 +433,63 @@
     </div>
     <div class="floating-legend">
       <strong>Leyenda Operativa · Movilidad y GRD</strong>
-      <div class="leg-sub">Incidencias en vivo + exposición vial por jerarquía funcional:</div>
-      <div class="leg-row"><span class="swatch" style="background:#df1836; border-radius:50%;"></span> <span><b>Tránsito interrumpido total</b> (Corte de vía)</span></div>
-      <div class="leg-row"><span class="swatch" style="background:#d97706; border-radius:50%;"></span> <span><b>Vía anegada</b> (Tránsito restringido / lento)</span></div>
-      <div class="leg-row"><span class="swatch" style="background:#7c3aed; border-radius:50%;"></span> <span><b>Transporte público</b> (Desvío / Terminal)</span></div>
+      <div class="leg-sub">Símbolos diferenciados por tipo de geometría y criticidad:</div>
+      <div class="leg-row"><span class="sym-dot" style="background:#dc2626;"></span> <span><b>Incidencia:</b> Tránsito interrumpido total</span></div>
+      <div class="leg-row"><span class="sym-dot" style="background:#ea580c;"></span> <span><b>Incidencia:</b> Vía anegada / Alerta SUTRAN</span></div>
+      <div class="leg-row"><span class="sym-dot" style="background:#7c3aed;"></span> <span><b>Incidencia:</b> Desvío transporte / Terminal</span></div>
       <div class="leg-sep"></div>
-      <div class="leg-row"><span class="swatch" style="background:#df1836;"></span> <span>Vía expuesta · Prioridad 1 (Eje Troncal)</span></div>
-      <div class="leg-row"><span class="swatch" style="background:#d97706;"></span> <span>Vía expuesta · Prioridad 2 (Colectora)</span></div>
-      <div class="leg-row"><span class="swatch" style="background:#0758c9;"></span> <span>Vía expuesta · Prioridad 3 (Red Local)</span></div>
-      <div class="leg-row"><span class="swatch" style="background:rgba(7,88,201,0.35); border:1px solid #0758c9;"></span> <span>Huella inundable / Límite SICCEP</span></div>
+      <div class="leg-row"><span class="sym-line" style="background:#dc2626;"></span> <span>Vía expuesta · Prioridad 1 (Eje Troncal)</span></div>
+      <div class="leg-row"><span class="sym-line" style="background:#ea580c;"></span> <span>Vía expuesta · Prioridad 2 (Colectora)</span></div>
+      <div class="leg-row"><span class="sym-line" style="background:#0758c9;"></span> <span>Vía expuesta · Prioridad 3 (Red Local)</span></div>
+      <div class="leg-sep"></div>
+      <div class="leg-row"><span class="sym-poly" style="background:rgba(7,88,201,0.35); border:1px solid #0758c9;"></span> <span>Huella inundable (Sentinel-1 / Sesión)</span></div>
+      <div class="leg-row"><span class="sym-poly" style="border:2px dashed #092a65; background:transparent;"></span> <span>Límite urbano oficial (MVCS · SICCEP)</span></div>
     </div>
   </section>
 
-  <!-- PANEL DERECHO: SEMÁFORO DE CIUDADES EN ALERTA + ANALÍTICA -->
+  <!-- PANEL DERECHO: CONTEXTO ENFEN + SEMÁFORO CIUDADES + GRÁFICOS GRD -->
   <aside class="details">
-    <!-- Semáforo rápido para Coordinadores DFPM -->
+    <!-- 1. Contexto Oficial ENFEN -->
+    <div class="enfen-box" id="enfenContextBox">
+      <div class="enfen-head">
+        <strong><i class="fa-solid fa-water"></i> Contexto ENFEN (Com. 13 Nov)</strong>
+        <a href="https://enfen.imarpe.gob.pe/" target="_blank" rel="noopener">Ver comunicado ↗</a>
+      </div>
+      <p id="enfenText">El Niño costero se mantendría con <b>magnitud extraordinaria hasta febrero 2027</b>. Se prevén lluvias de moderada a extrema intensidad en la costa norte.</p>
+    </div>
+
+    <!-- 2. Estado Ciudades en Alerta (Basado en reporte SENAMHI 26-27 Nov) -->
     <div>
-      <div class="sec-title"><span class="left"><i class="fa-solid fa-signal"></i> Estado Ciudades en Alerta (FEN)</span></div>
+      <div class="sec-title"><span class="left"><i class="fa-solid fa-signal"></i> Ciudades en Alerta (Aviso SENAMHI)</span></div>
       <div class="card-box fen-cities" id="fenCitiesStatus">
         <div class="fen-city-row">
-          <b>Piura (117.6 mm)</b>
-          <select class="st-anegada" onchange="this.className=this.value" data-city="Piura">
+          <div><b>Piura</b><small>SENAMHI: 117.6 mm (26-27 nov)</small></div>
+          <select class="st-anegada" onchange="this.className=this.value" data-city="Piura" data-senamhi="Acumulado 117.6 mm · Alerta Extrema">
             <option value="st-anegada" selected>Vías anegadas</option>
             <option value="st-cortada">Tránsito cortado</option>
             <option value="st-normal">Normal</option>
           </select>
         </div>
         <div class="fen-city-row">
-          <b>Tumbes</b>
-          <select class="st-anegada" onchange="this.className=this.value" data-city="Tumbes">
+          <div><b>Tumbes</b><small>SENAMHI: Pronóstico extremo 24h</small></div>
+          <select class="st-anegada" onchange="this.className=this.value" data-city="Tumbes" data-senamhi="Aviso 24h: Intensidad fuerte a extrema">
             <option value="st-anegada" selected>Vías anegadas</option>
             <option value="st-cortada">Tránsito cortado</option>
             <option value="st-normal">Normal</option>
           </select>
         </div>
         <div class="fen-city-row">
-          <b>Sullana</b>
-          <select class="st-anegada" onchange="this.className=this.value" data-city="Sullana">
+          <div><b>Sullana / Talara</b><small>SENAMHI: El Chira 103.0 mm</small></div>
+          <select class="st-anegada" onchange="this.className=this.value" data-city="Sullana" data-senamhi="Est. El Chira 103.0 mm · Alerta">
             <option value="st-anegada" selected>Vías anegadas</option>
             <option value="st-cortada">Tránsito cortado</option>
             <option value="st-normal">Normal</option>
           </select>
         </div>
         <div class="fen-city-row">
-          <b>Chiclayo</b>
-          <select class="st-normal" onchange="this.className=this.value" data-city="Chiclayo">
-            <option value="st-normal" selected>Vigilancia / Normal</option>
+          <div><b>Chiclayo</b><small>SENAMHI: Aviso costa norte</small></div>
+          <select class="st-normal" onchange="this.className=this.value" data-city="Chiclayo" data-senamhi="Aviso 24h: Lluvias moderadas a fuertes">
+            <option value="st-normal" selected>Vigilancia</option>
             <option value="st-anegada">Vías anegadas</option>
             <option value="st-cortada">Tránsito cortado</option>
           </select>
@@ -452,8 +497,9 @@
       </div>
     </div>
 
+    <!-- 3. KPIs Territoriales -->
     <div>
-      <div class="sec-title"><span class="left"><i class="fa-solid fa-chart-pie"></i> Indicadores Territoriales</span></div>
+      <div class="sec-title"><span class="left"><i class="fa-solid fa-chart-pie"></i> Indicadores de Exposición</span></div>
       <div class="kpi-grid">
         <div class="kpi-card">
           <strong id="kpiTotalKm">32.96 km</strong>
@@ -474,18 +520,37 @@
       </div>
     </div>
 
+    <!-- 4. Gráfico de Impacto en Colores Típicos de GRD (INDECI/CENEPRED) -->
     <div>
-      <div class="sec-title"><span class="left"><i class="fa-solid fa-bars-staggered"></i> Exposición por Jerarquía</span></div>
+      <div class="sec-title"><span class="left"><i class="fa-solid fa-layer-group"></i> Nivel de Impacto Operativo (Escala GRD)</span></div>
+      <div class="card-box">
+        <div class="grd-stacked-bar" id="grdStackedBar">
+          <div class="grd-seg" style="width:15%; background:var(--red);" title="Muy Alto"></div>
+          <div class="grd-seg" style="width:25%; background:var(--orange);" title="Alto"></div>
+          <div class="grd-seg" style="width:60%; background:var(--amber);" title="Medio"></div>
+        </div>
+        <div class="grd-legend-grid" id="grdLegendGrid">
+          <div class="grd-leg-item"><span class="swatch" style="background:var(--red);"></span> Muy Alto (Corte/Troncal)</div>
+          <div class="grd-leg-item"><span class="swatch" style="background:var(--orange);"></span> Alto (Colectora/Aneg.)</div>
+          <div class="grd-leg-item"><span class="swatch" style="background:var(--amber);"></span> Medio (Red Local)</div>
+          <div class="grd-leg-item"><span class="swatch" style="background:var(--green);"></span> Bajo (Sin afectación)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Desglose por Jerarquía Vial -->
+    <div>
+      <div class="sec-title"><span class="left"><i class="fa-solid fa-bars-staggered"></i> Desglose por Jerarquía Vial</span></div>
       <div class="card-box bar-group" id="barsContainer"></div>
     </div>
 
     <div class="status-pill" id="statusBox">
-      Modo Monitoreo FEN activo · Listo para consolidar reportes.
+      Monitoreo FEN activo · Listo para consolidar reportes.
     </div>
   </aside>
 </main>
 
-<!-- MODAL 1: REPORTE SITUACIONAL DIARIO FEN (PARA COE-MTC / JEFATURA) -->
+<!-- MODAL 1: REPORTE SITUACIONAL DIARIO FEN (SITREP) -->
 <div class="modal-bg" id="modalSitrep">
   <div class="modal-card">
     <div class="modal-head">
@@ -499,16 +564,16 @@
       </div>
     </div>
 
-    <p style="font-size:12px; line-height:1.5; margin-bottom:10px;">
-      <b>Marco Institucional (MOF/LOF PROMOVILIDAD):</b> Consolidado sectorial sobre el estado de la infraestructura vial urbana y continuidad de los servicios de transporte público en ciudades bajo alerta meteorológica SENAMHI.
-    </p>
+    <div class="disclaimer-box" style="margin-top:0;">
+      <b>Contexto ENFEN Vigente (Comunicado 13 Nov):</b> El Niño costero se mantendría con magnitud extraordinaria hasta febrero 2027. En el marco del MOF/LOF de PROMOVILIDAD, este reporte consolida la afectación en vías urbanas y transporte público en ciudades bajo alerta.
+    </div>
 
-    <div class="sec-title"><span class="left">1. Estado Situacional por Ciudad Priorizada</span></div>
+    <div class="sec-title"><span class="left">1. Estado Situacional por Ciudad en Alerta</span></div>
     <table class="ficha-table" id="sitrepCitiesTable">
       <thead>
         <tr>
           <th>Ciudad</th>
-          <th>Contexto Climático (SENAMHI)</th>
+          <th>Reporte / Aviso SENAMHI</th>
           <th>Estado de Transitabilidad Urbana</th>
           <th>Incidencias Registradas</th>
         </tr>
@@ -516,7 +581,7 @@
       <tbody></tbody>
     </table>
 
-    <div class="sec-title"><span class="left">2. Detalle de Incidencias Reportadas (Coordinadores / Municipalidades)</span></div>
+    <div class="sec-title"><span class="left">2. Detalle de Incidencias Registradas en el Turno</span></div>
     <table class="ficha-table" id="sitrepIncidentsTable">
       <thead>
         <tr>
@@ -528,14 +593,10 @@
       </thead>
       <tbody></tbody>
     </table>
-
-    <div class="disclaimer-box">
-      <b>Nota operativa:</b> Los reportes marcados como <i>"Monitoreo de prensa / redes"</i> corresponden a levantamiento rápido de alerta temprana realizado por coordinadores territoriales y se encuentran sujetos a validación oficial de la Gerencia de Transporte Municipal o COER.
-    </div>
   </div>
 </div>
 
-<!-- MODAL 2: FICHA TÉCNICA PILOTO TUMBES (PREPARACIÓN) -->
+<!-- MODAL 2: FICHA TÉCNICA PILOTO TUMBES -->
 <div class="modal-bg" id="modalFicha">
   <div class="modal-card">
     <div class="modal-head">
@@ -567,10 +628,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr><td>Vía Troncal (<code>trunk</code>)</td><td><b>Prioridad 1 · Alta:</b> Eje estructurante (riesgo de aislamiento)</td><td><b>0.55 km</b> (551.2 m)</td><td>1.67%</td></tr>
-        <tr><td>Vía Secundaria (<code>secondary</code>)</td><td><b>Prioridad 2 · Media:</b> Colectora (conectividad interzonal)</td><td><b>0.12 km</b> (124.8 m)</td><td>0.38%</td></tr>
-        <tr><td>Vía Terciaria (<code>tertiary</code>)</td><td><b>Prioridad 2 · Media:</b> Alimentadora de transporte</td><td><b>0.41 km</b> (411.0 m)</td><td>1.25%</td></tr>
-        <tr><td>Vía Residencial / Local</td><td><b>Prioridad 3 · Local:</b> Afectación barrial directa</td><td><b>31.88 km</b> (31,875.6 m)</td><td>96.70%</td></tr>
+        <tr><td>Vía Troncal (<code>trunk</code>)</td><td><b>Prioridad 1 · Muy Alto:</b> Eje estructurante (riesgo de aislamiento)</td><td><b>0.55 km</b> (551.2 m)</td><td>1.67%</td></tr>
+        <tr><td>Vía Secundaria (<code>secondary</code>)</td><td><b>Prioridad 2 · Alto:</b> Colectora (conectividad interzonal)</td><td><b>0.12 km</b> (124.8 m)</td><td>0.38%</td></tr>
+        <tr><td>Vía Terciaria (<code>tertiary</code>)</td><td><b>Prioridad 2 · Alto:</b> Alimentadora de transporte</td><td><b>0.41 km</b> (411.0 m)</td><td>1.25%</td></tr>
+        <tr><td>Vía Residencial / Local</td><td><b>Prioridad 3 · Medio:</b> Afectación barrial directa</td><td><b>31.88 km</b> (31,875.6 m)</td><td>96.70%</td></tr>
         <tr style="background:#f0f5fd;"><td><b>TOTAL RED VIAL EXPUESTA</b></td><td><b>Ámbito urbano SICCEP Tumbes</b></td><td><b>32.96 km (32,962.6 m)</b></td><td><b>100.00%</b></td></tr>
       </tbody>
     </table>
@@ -609,37 +670,35 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 <script>
-// Respaldo automático de extensión de logos (.png / .jpg / .svg)
+// Respaldo automático de extensión de logos
 function bindLogoFallback(imgId, baseName) {
   const img = document.getElementById(imgId);
   const exts = ['.png', '.jpg', '.jpeg', '.svg', '.webp'];
   let idx = 0;
   img.onerror = function() {
     idx++;
-    if (idx < exts.length) {
-      img.src = baseName + exts[idx];
-    } else {
-      img.style.display = 'none';
-    }
+    if (idx < exts.length) img.src = baseName + exts[idx];
+    else img.style.display = 'none';
   };
 }
 bindLogoFallback('imgLogoMtc', 'logo_mtc');
 bindLogoFallback('imgLogoProm', 'logo_promovilidad');
 
 const SICCEP_URL = 'https://portalgis.vivienda.gob.pe/servergis/rest/services/DGPRVU/Sistema_de_Ciudades_SICCEP/MapServer/17';
+const SUTRAN_REST_URL = 'https://gis.sutran.gob.pe/arcgis/rest/services/Alerta/MapServer/0';
 
 const RISK_CONFIG = {
-  trunk:        { label: 'Prioridad 1 · Eje Troncal', desc: 'Arteria estructurante (riesgo de aislamiento)', color: '#df1836', weight: 4.5 },
-  primary:      { label: 'Prioridad 1 · Vía Primaria', desc: 'Corredor principal de movilidad', color: '#df1836', weight: 4 },
-  secondary:    { label: 'Prioridad 2 · Secundaria', desc: 'Vía colectora (conectividad zonal)', color: '#d97706', weight: 3.5 },
-  tertiary:     { label: 'Prioridad 2 · Terciaria', desc: 'Vía alimentadora local', color: '#f59e0b', weight: 3 },
-  residential:  { label: 'Prioridad 3 · Residencial', desc: 'Calle local (afectación barrial directa)', color: '#0758c9', weight: 2.2 },
-  unclassified: { label: 'Prioridad 3 · No clasificada', desc: 'Acceso local menor', color: '#64748b', weight: 2 }
+  trunk:        { label: 'Prioridad 1 · Eje Troncal', color: '#dc2626', weight: 4.5, grd: 'muy_alto' },
+  primary:      { label: 'Prioridad 1 · Vía Primaria', color: '#dc2626', weight: 4, grd: 'muy_alto' },
+  secondary:    { label: 'Prioridad 2 · Secundaria', color: '#ea580c', weight: 3.5, grd: 'alto' },
+  tertiary:     { label: 'Prioridad 2 · Terciaria', color: '#ea580c', weight: 3, grd: 'alto' },
+  residential:  { label: 'Prioridad 3 · Residencial', color: '#0758c9', weight: 2.2, grd: 'medio' },
+  unclassified: { label: 'Prioridad 3 · No clasificada', color: '#64748b', weight: 2, grd: 'medio' }
 };
 
 const INCIDENT_COLORS = {
-  'Tránsito interrumpido total': '#df1836',
-  'Vía anegada (tránsito lento)': '#d97706',
+  'Tránsito interrumpido total': '#dc2626',
+  'Vía anegada (tránsito lento)': '#ea580c',
   'Desvío de transporte público': '#7c3aed',
   'Terminal / Paradero afectado': '#7c3aed'
 };
@@ -662,9 +721,9 @@ document.querySelectorAll('.base-btn').forEach(btn => {
   });
 });
 
-// 2. Capas WMS Oficiales en Vivo (SENAMHI y ANA)
-const wmsSenamhi = L.tileLayer.wms('https://espacialg.geoperu.gob.pe/geoserver/geoperu/peru_inundacion_group_/wms', {
-  layers: 'geoperu:peru_inundacion_group_', format: 'image/png', transparent: true, opacity: 0.55, attribution: 'SENAMHI / GeoPerú'
+// 2. Servicios WMS Oficiales en Vivo (SENAMHI y ANA)
+const wmsSenamhi = L.tileLayer.wms('https://idesep.senamhi.gob.pe/geoserver/g_aviso/wms', {
+  layers: 'g_aviso:view_aviso', format: 'image/png', transparent: true, opacity: 0.55, attribution: 'SENAMHI IDESEP'
 });
 const wmsAna = L.tileLayer.wms('https://geosnirh.ana.gob.pe/server/services/Público/PuntosCriticos/MapServer/WMSServer', {
   layers: '0', format: 'image/png', transparent: true, opacity: 0.85, attribution: 'ANA'
@@ -672,6 +731,7 @@ const wmsAna = L.tileLayer.wms('https://geosnirh.ana.gob.pe/server/services/Púb
 
 // 3. Grupos de capas ordenados (Puntos -> Líneas -> Polígonos)
 const pointsGroup = L.layerGroup().addTo(map);
+const sutranGroup = L.layerGroup().addTo(map);
 const roadsGroup = L.layerGroup().addTo(map);
 const floodGroup = L.layerGroup().addTo(map);
 const drawnFloodItems = new L.FeatureGroup().addTo(map);
@@ -685,7 +745,38 @@ let state = {
   municipalRecords: []
 };
 
-// 4. Consultar SICCEP
+// 4. Consultar Alertas Viales SUTRAN (Red Vial Nacional)
+async function loadSutranAlerts() {
+  sutranGroup.clearLayers();
+  setStatus('Consultando alertas de tránsito en Red Vial Nacional (SUTRAN)...');
+  try {
+    const url = `${SUTRAN_REST_URL}/query?` + new URLSearchParams({
+      f: 'geojson', where: '1=1', outFields: '*', outSR: '4326', returnGeometry: 'true'
+    });
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.features && data.features.length > 0) {
+      L.geoJSON(data, {
+        pointToLayer: (f, ll) => {
+          const est = String(f.properties?.ESTADO || f.properties?.estado || '').toUpperCase();
+          const col = est.includes('INTERRUMPIDO') ? '#dc2626' : '#ea580c';
+          return L.circleMarker(ll, { radius: 6.5, fillColor: col, color: '#fff', weight: 1.5, fillOpacity: 0.95 });
+        },
+        onEachFeature: (f, l) => {
+          const p = f.properties || {};
+          l.bindPopup(`<b>SUTRAN · Red Vial Nacional</b><br>Estado: <b>${p.ESTADO || p.estado || 'Alerta'}</b><br>Vía: ${p.VIA || p.CARRETERA || 'Red Nacional'}<br>Detalle: ${p.DESCRIPCION || p.MOTIVO || 'Ver visor SUTRAN'}`);
+        }
+      }).addTo(sutranGroup);
+      setStatus(`Alertas SUTRAN cargadas (${data.features.length} puntos en Red Vial Nacional).`);
+    } else {
+      setStatus('Servicio SUTRAN consultado. Usa "Visor Vías Nacionales SUTRAN ↗" para ver el mapa completo.');
+    }
+  } catch (e) {
+    setStatus('El servidor SUTRAN bloqueó la lectura directa (CORS). Usa el botón "Visor Vías Nacionales SUTRAN ↗".');
+  }
+}
+
+// 5. Consultar SICCEP
 async function loadSiccepCity(cityName) {
   siccepLayer.clearLayers();
   setStatus(`Consultando ámbito urbano SICCEP para ${cityName}...`);
@@ -699,14 +790,14 @@ async function loadSiccepCity(cityName) {
     if (data.features && data.features.length > 0) {
       siccepLayer.addData(data);
       if (siccepLayer.getBounds().isValid()) map.fitBounds(siccepLayer.getBounds().pad(0.08));
-      setStatus(`Ámbito SICCEP activo: ${cityName}. Listo para monitoreo FEN o análisis.`);
+      setStatus(`Ámbito SICCEP activo: ${cityName}.`);
     }
   } catch (e) {
     setStatus(`Operando con capas locales para ${cityName}.`);
   }
 }
 
-// 5. Bandeja de incidencias
+// 6. Bandeja de incidencias
 function renderRecordsList() {
   const listEl = document.getElementById('recordsList');
   const countEl = document.getElementById('recCount');
@@ -716,8 +807,8 @@ function renderRecordsList() {
   clearBtn.style.display = state.municipalRecords.length > 0 ? 'inline' : 'none';
 
   if (state.municipalRecords.length === 0) {
-    listEl.innerHTML = `<div style="font-size:10.5px; color:var(--muted); text-align:center; padding:5px 0;">
-      Sin incidencias cargadas en esta sesión. Registra puntos desde prensa verificada, llamadas o reportes municipales.
+    listEl.innerHTML = `<div style="font-size:10px; color:var(--muted); text-align:center; padding:4px 0;">
+      Los puntos marcados se guardan temporalmente aquí para generar el <b>Reporte FEN</b> o descargarlos en <b>GeoJSON</b>.
     </div>`;
     return;
   }
@@ -765,7 +856,7 @@ document.getElementById('btnClearAll').addEventListener('click', () => {
   refreshDashboard();
 });
 
-// 6. Actualizar Dashboard
+// 7. Actualizar Dashboard y Gráfico de Impacto GRD
 function refreshDashboard() {
   floodGroup.clearLayers();
   roadsGroup.clearLayers();
@@ -786,6 +877,7 @@ function refreshDashboard() {
 
   let totalKm = 0;
   let criticalKm = 0;
+  let grdCounts = { muy_alto: 0, alto: 0, medio: 0 };
   const byType = {};
 
   if (state.roadFeatures.length > 0) {
@@ -798,16 +890,37 @@ function refreshDashboard() {
       onEachFeature: (feat, layer) => {
         const p = feat.properties;
         const t = p.tipo_via || p.highway || 'unclassified';
+        const cfg = RISK_CONFIG[t] || RISK_CONFIG.unclassified;
         const km = p.longitud_m ? (Number(p.longitud_m) / 1000) : turf.length(feat, { units: 'kilometers' });
         totalKm += km;
         if (t === 'trunk' || t === 'primary') criticalKm += km;
         byType[t] = (byType[t] || 0) + km;
+        grdCounts[cfg.grd] = (grdCounts[cfg.grd] || 0) + km;
 
-        const cfg = RISK_CONFIG[t] || RISK_CONFIG.unclassified;
         const name = Array.isArray(p.name) ? p.name.join(' / ') : (p.name || 'Tramo vial expuesto');
         layer.bindPopup(`<b>${name}</b><br>${cfg.label}<br>Longitud expuesta: ${(km * 1000).toFixed(1)} m`);
       }
     }).addTo(roadsGroup);
+  }
+
+  // Sumar incidencias puntuales al gráfico de impacto GRD
+  state.municipalRecords.forEach(r => {
+    if (r.tipo === 'Tránsito interrumpido total') grdCounts.muy_alto += 1;
+    else if (r.tipo === 'Vía anegada (tránsito lento)') grdCounts.alto += 1;
+    else grdCounts.medio += 0.5;
+  });
+
+  const sumGrd = grdCounts.muy_alto + grdCounts.alto + grdCounts.medio;
+  const barEl = document.getElementById('grdStackedBar');
+  if (sumGrd > 0) {
+    const pMA = Math.max((grdCounts.muy_alto / sumGrd) * 100, grdCounts.muy_alto > 0 ? 8 : 0);
+    const pA  = Math.max((grdCounts.alto / sumGrd) * 100, grdCounts.alto > 0 ? 8 : 0);
+    const pM  = Math.max(100 - pMA - pA, 0);
+    barEl.innerHTML = `
+      <div class="grd-seg" style="width:${pMA}%; background:var(--red);" title="Muy Alto"></div>
+      <div class="grd-seg" style="width:${pA}%; background:var(--orange);" title="Alto"></div>
+      <div class="grd-seg" style="width:${pM}%; background:var(--amber);" title="Medio"></div>
+    `;
   }
 
   document.getElementById('kpiTotalKm').textContent = `${totalKm.toFixed(2)} km`;
@@ -818,7 +931,7 @@ function refreshDashboard() {
   const barsCont = document.getElementById('barsContainer');
   const sorted = Object.entries(byType).sort((a, b) => b[1] - a[1]);
   if (sorted.length === 0) {
-    barsCont.innerHTML = '<div style="font-size:10.5px; color:var(--muted);">Sin capa vial preprocesada para esta ciudad. Registra incidencias puntuales en el mapa.</div>';
+    barsCont.innerHTML = '<div style="font-size:10.5px; color:var(--muted);">Sin capa vial preprocesada para esta ciudad. Marca incidencias puntuales en el mapa.</div>';
     return;
   }
   barsCont.innerHTML = sorted.map(([t, km]) => {
@@ -827,17 +940,16 @@ function refreshDashboard() {
     return `
       <div class="bar-item">
         <div class="bar-head">
-          <span style="display:flex;align-items:center;gap:6px;"><span class="swatch" style="background:${cfg.color}"></span>${cfg.label}</span>
+          <span style="display:flex;align-items:center;gap:6px;"><span class="sym-line" style="background:${cfg.color}"></span>${cfg.label}</span>
           <b>${km.toFixed(2)} km (${pct}%)</b>
         </div>
-        <div class="bar-desc">${cfg.desc}</div>
         <div class="bar-track"><div class="bar-fill" style="width:${Math.max(pct, 3)}%; background:${cfg.color}"></div></div>
       </div>
     `;
   }).join('');
 }
 
-// 7. Cargar Piloto Tumbes
+// 8. Cargar Piloto Tumbes
 async function initTumbesPilot() {
   await loadSiccepCity('TUMBES');
   try {
@@ -853,9 +965,9 @@ async function initTumbesPilot() {
   }
 }
 
-// 8. Dibujar zona anegada
+// 9. Dibujar zona anegada
 const polygonDrawer = new L.Draw.Polygon(map, {
-  shapeOptions: { color: '#df1836', fillColor: '#df1836', fillOpacity: 0.28, weight: 2 }
+  shapeOptions: { color: '#dc2626', fillColor: '#dc2626', fillOpacity: 0.28, weight: 2 }
 });
 
 document.getElementById('btnDrawFlood').addEventListener('click', () => {
@@ -874,7 +986,7 @@ map.on(L.Draw.Event.CREATED, e => {
   const fecha = new Date().toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' });
 
   gj.properties = { id, ciudad, origen: 'Levantamiento Rápido FEN', tipo: 'Zona anegada delimitada', area_ha: Number(areaHa), fecha };
-  layer.bindPopup(`<b>Zona anegada (${ciudad})</b><br>Superficie: ${areaHa} ha<br>Registro: ${fecha}<br><button type="button" onclick="deleteRecord('${id}')" style="margin-top:6px;padding:4px 8px;background:#df1836;color:#fff;border:none;border-radius:4px;cursor:pointer;">Eliminar</button>`);
+  layer.bindPopup(`<b>Zona anegada (${ciudad})</b><br>Superficie: ${areaHa} ha<br>Registro: ${fecha}<br><button type="button" onclick="deleteRecord('${id}')" style="margin-top:6px;padding:4px 8px;background:#dc2626;color:#fff;border:none;border-radius:4px;cursor:pointer;">Eliminar</button>`);
   drawnFloodItems.addLayer(layer);
 
   state.municipalRecords.push({
@@ -885,7 +997,7 @@ map.on(L.Draw.Event.CREATED, e => {
   setStatus(`Zona anegada agregada (${areaHa} ha).`);
 });
 
-// 9. Registrar incidencia vial / transporte
+// 10. Registrar incidencia en vivo
 let reportMode = false;
 const btnReport = document.getElementById('btnReportPoint');
 
@@ -902,7 +1014,7 @@ map.on('click', e => {
   const form = document.createElement('div');
   form.className = 'popup-form';
   form.innerHTML = `
-    <strong style="color:var(--navy); font-size:12px;">Registrar Incidencia FEN</strong>
+    <strong style="color:var(--navy); font-size:12px;">Registrar Incidencia en Vivo</strong>
     <label>Estado de transitabilidad</label>
     <select id="incTipo">
       <option value="Tránsito interrumpido total">Tránsito interrumpido total (Corte)</option>
@@ -929,7 +1041,7 @@ map.on('click', e => {
     const ciudad = document.getElementById('citySelector').value;
     const fecha = new Date().toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' });
     const id = 'pt_' + Date.now();
-    const color = INCIDENT_COLORS[tipo] || '#df1836';
+    const color = INCIDENT_COLORS[tipo] || '#dc2626';
 
     const feat = {
       type: 'Feature',
@@ -939,7 +1051,7 @@ map.on('click', e => {
 
     const marker = L.circleMarker([lat, lng], {
       radius: 7.5, fillColor: color, color: '#fff', weight: 2, fillOpacity: 1
-    }).bindPopup(`<b>${tipo}</b><br>Ciudad: ${ciudad}<br>Lugar: ${detalle}<br>Fuente: <i>${fuente}</i><br>Hora: ${fecha}<br><button type="button" onclick="deleteRecord('${id}')" style="margin-top:6px;padding:4px 8px;background:#df1836;color:#fff;border:none;border-radius:4px;cursor:pointer;">Eliminar</button>`)
+    }).bindPopup(`<b>${tipo}</b><br>Ciudad: ${ciudad}<br>Lugar: ${detalle}<br>Fuente: <i>${fuente}</i><br>Hora: ${fecha}<br><button type="button" onclick="deleteRecord('${id}')" style="margin-top:6px;padding:4px 8px;background:#dc2626;color:#fff;border:none;border-radius:4px;cursor:pointer;">Eliminar</button>`)
       .addTo(pointsGroup);
 
     state.municipalRecords.push({
@@ -956,7 +1068,7 @@ map.on('click', e => {
   });
 });
 
-// 10. Generar Reporte Situacional Diario (SITREP) dinámico
+// 11. Generar Reporte Situacional Diario (SITREP)
 document.getElementById('btnSitrep').addEventListener('click', () => {
   const nowStr = new Date().toLocaleString('es-PE', { dateStyle: 'full', timeStyle: 'short' });
   document.getElementById('sitrepDate').textContent = `PROMOVILIDAD – MTC · Corte al ${nowStr}`;
@@ -966,16 +1078,15 @@ document.getElementById('btnSitrep').addEventListener('click', () => {
   citiesBody.innerHTML = Array.from(rows).map(row => {
     const sel = row.querySelector('select');
     const cityName = sel.dataset.city;
+    const senamhiInfo = sel.dataset.senamhi;
     const statusText = sel.options[sel.selectedIndex].text;
     const count = state.municipalRecords.filter(r => r.ciudad.toUpperCase().includes(cityName.toUpperCase())).length;
-    const clima = cityName === 'Piura' ? 'Acumulado 117.6 mm · Alerta Extrema' :
-                  (cityName === 'Tumbes' || cityName === 'Sullana' || cityName === 'Chiclayo') ? 'Pronóstico intensidad fuerte a extrema (24h)' : 'Monitoreo continuo';
-    return `<tr><td><b>${cityName}</b></td><td>${clima}</td><td><b>${statusText}</b></td><td>${count} incidencia(s)</td></tr>`;
+    return `<tr><td><b>${cityName}</b></td><td>${senamhiInfo}</td><td><b>${statusText}</b></td><td>${count} incidencia(s)</td></tr>`;
   }).join('');
 
   const incBody = document.querySelector('#sitrepIncidentsTable tbody');
   if (state.municipalRecords.length === 0) {
-    incBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--muted);">No se han registrado incidencias puntuales en esta sesión. (Use "Registrar incidencia vial" en el panel izquierdo).</td></tr>`;
+    incBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--muted);">No se han registrado incidencias puntuales en esta sesión.</td></tr>`;
   } else {
     incBody.innerHTML = state.municipalRecords.map(r => `
       <tr>
@@ -990,7 +1101,7 @@ document.getElementById('btnSitrep').addEventListener('click', () => {
   document.getElementById('modalSitrep').classList.add('open');
 });
 
-// 11. Subir GeoJSON, Captura PNG y Exportar
+// 12. Subir GeoJSON, Captura PNG y Exportar
 document.getElementById('fileUpload').addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
@@ -1046,8 +1157,12 @@ document.getElementById('btnExport').addEventListener('click', () => {
   a.click();
 });
 
-// 12. Toggles de capas y modos
+// 13. Toggles de capas y modos
 document.getElementById('chkPoints').addEventListener('change', e => e.target.checked ? map.addLayer(pointsGroup) : map.removeLayer(pointsGroup));
+document.getElementById('chkSutran').addEventListener('change', e => {
+  if (e.target.checked) { map.addLayer(sutranGroup); loadSutranAlerts(); }
+  else map.removeLayer(sutranGroup);
+});
 document.getElementById('chkRoads').addEventListener('change', e => e.target.checked ? map.addLayer(roadsGroup) : map.removeLayer(roadsGroup));
 document.getElementById('chkFlood').addEventListener('change', e => {
   if (e.target.checked) { map.addLayer(floodGroup); map.addLayer(drawnFloodItems); }
@@ -1071,13 +1186,13 @@ document.getElementById('citySelector').addEventListener('change', e => {
 document.getElementById('modeFenBtn').addEventListener('click', () => {
   document.getElementById('modeFenBtn').classList.add('active', 'fen');
   document.getElementById('modePrepBtn').classList.remove('active');
-  setStatus('Modo Monitoreo FEN activo: prioriza reporte de transitabilidad y alertas climáticas.');
+  setStatus('Modo Monitoreo FEN activo.');
 });
 
 document.getElementById('modePrepBtn').addEventListener('click', () => {
   document.getElementById('modePrepBtn').classList.add('active');
   document.getElementById('modeFenBtn').classList.remove('active', 'fen');
-  setStatus('Modo Preparación RadarMov-GRD activo: análisis espacial preventivo.');
+  setStatus('Modo Preparación GRD activo.');
 });
 
 document.getElementById('btnCapacitacion').addEventListener('click', () => document.getElementById('modalCapacitacion').classList.add('open'));
