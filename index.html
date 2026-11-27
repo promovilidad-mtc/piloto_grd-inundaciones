@@ -556,9 +556,9 @@
       <div>
         <div class="sec-title"><span class="left"><i class="fa-solid fa-tower-broadcast"></i> Registrar Incidencia y Capas</span></div>
         <div class="card-box muni-grid">
-          <button type="button" class="btn-action" id="btnReportPoint">
-            <i class="fa-solid fa-location-dot"></i> Marcar punto afectado en mapa
-          </button>
+          <a href="reporte.html?city=TUMBES" id="btnOpenFormLink" class="btn-action" style="text-decoration:none;">
+            <i class="fa-solid fa-location-dot"></i> Registrar punto (Formulario)
+          </a>
           <button type="button" class="btn-action" id="btnDrawFlood">
             <i class="fa-solid fa-draw-polygon"></i> Delimitar zona anegada
           </button>
@@ -688,37 +688,21 @@
       <div>
         <div class="sec-title"><span class="left"><i class="fa-solid fa-signal"></i> Ciudades en Alerta (Aviso SENAMHI)</span></div>
         <div class="card-box fen-cities" id="fenCitiesStatus">
-          <div class="fen-city-row" id="row-PIURA">
-            <div class="city-link" onclick="selectCityFromAlert('PIURA')"><b>Piura</b><small>SENAMHI: 117.6 mm (26-27 nov)</small></div>
-            <select class="st-anegada" onchange="updateCityAlertStatus(this)" data-city="Piura" data-code="PIURA" data-senamhi="Acumulado 117.6 mm · Alerta Extrema">
-              <option value="st-anegada" selected>Vías anegadas</option>
-              <option value="st-cortada">Tránsito cortado</option>
-              <option value="st-normal">Normal</option>
-            </select>
+          <div class="fen-city-row" id="row-PIURA" data-city="Piura" data-code="PIURA" data-base="anegada" data-senamhi="Acumulado 117.6 mm · Alerta Extrema" onclick="selectCityFromAlert('PIURA')" style="cursor:pointer;">
+            <div class="city-link"><b>Piura</b><small>SENAMHI: 117.6 mm (26-27 nov)</small></div>
+            <span class="pill-badge pb-amber" id="badge-PIURA">Restringida</span>
           </div>
-          <div class="fen-city-row active-city" id="row-TUMBES">
-            <div class="city-link" onclick="selectCityFromAlert('TUMBES')"><b>Tumbes</b><small>SENAMHI: Pronóstico extremo 24h</small></div>
-            <select class="st-anegada" onchange="updateCityAlertStatus(this)" data-city="Tumbes" data-code="TUMBES" data-senamhi="Aviso 24h: Intensidad fuerte a extrema">
-              <option value="st-anegada" selected>Vías anegadas</option>
-              <option value="st-cortada">Tránsito cortado</option>
-              <option value="st-normal">Normal</option>
-            </select>
+          <div class="fen-city-row active-city" id="row-TUMBES" data-city="Tumbes" data-code="TUMBES" data-base="anegada" data-senamhi="Aviso 24h: Intensidad fuerte a extrema" onclick="selectCityFromAlert('TUMBES')" style="cursor:pointer;">
+            <div class="city-link"><b>Tumbes</b><small>SENAMHI: Pronóstico extremo 24h</small></div>
+            <span class="pill-badge pb-amber" id="badge-TUMBES">Restringida</span>
           </div>
-          <div class="fen-city-row" id="row-SULLANA">
-            <div class="city-link" onclick="selectCityFromAlert('SULLANA')"><b>Sullana / Talara</b><small>SENAMHI: El Chira 103.0 mm</small></div>
-            <select class="st-anegada" onchange="updateCityAlertStatus(this)" data-city="Sullana" data-code="SULLANA" data-senamhi="Est. El Chira 103.0 mm · Alerta">
-              <option value="st-anegada" selected>Vías anegadas</option>
-              <option value="st-cortada">Tránsito cortado</option>
-              <option value="st-normal">Normal</option>
-            </select>
+          <div class="fen-city-row" id="row-SULLANA" data-city="Sullana" data-code="SULLANA" data-base="anegada" data-senamhi="Est. El Chira 103.0 mm · Alerta" onclick="selectCityFromAlert('SULLANA')" style="cursor:pointer;">
+            <div class="city-link"><b>Sullana / Talara</b><small>SENAMHI: El Chira 103.0 mm</small></div>
+            <span class="pill-badge pb-amber" id="badge-SULLANA">Restringida</span>
           </div>
-          <div class="fen-city-row" id="row-CHICLAYO-LAMBAYEQUE">
-            <div class="city-link" onclick="selectCityFromAlert('CHICLAYO-LAMBAYEQUE')"><b>Chiclayo</b><small>SENAMHI: Aviso costa norte</small></div>
-            <select class="st-normal" onchange="updateCityAlertStatus(this)" data-city="Chiclayo" data-code="CHICLAYO-LAMBAYEQUE" data-senamhi="Aviso 24h: Lluvias moderadas a fuertes">
-              <option value="st-normal" selected>Vigilancia</option>
-              <option value="st-anegada">Vías anegadas</option>
-              <option value="st-cortada">Tránsito cortado</option>
-            </select>
+          <div class="fen-city-row" id="row-CHICLAYO-LAMBAYEQUE" data-city="Chiclayo" data-code="CHICLAYO-LAMBAYEQUE" data-base="normal" data-senamhi="Aviso 24h: Lluvias moderadas a fuertes" onclick="selectCityFromAlert('CHICLAYO-LAMBAYEQUE')" style="cursor:pointer;">
+            <div class="city-link"><b>Chiclayo</b><small>SENAMHI: Aviso costa norte</small></div>
+            <span class="pill-badge pb-green" id="badge-CHICLAYO-LAMBAYEQUE">Vigilancia</span>
           </div>
         </div>
       </div>
@@ -1208,15 +1192,31 @@ async function initTumbesPilot() {
 // 7. Sincronizar desplegable de Ciudades en Alerta y tarjetas resumen
 function updateStatusTrio() {
   let cortado = 0, anegado = 0, normal = 0;
-  document.querySelectorAll('#fenCitiesStatus select').forEach(sel => {
-    if (sel.value === 'st-cortada') cortado++;
-    else if (sel.value === 'st-anegada') anegado++;
-    else normal++;
+  document.querySelectorAll('#fenCitiesStatus .fen-city-row').forEach(row => {
+    const code = row.dataset.code;
+    const base = row.dataset.base;
+    const badgeEl = document.getElementById('badge-' + code);
+    const cityRecs = state.municipalRecords.filter(r => String(r.ciudad || '').toUpperCase().includes(code.split('-')[0]));
+
+    let status = base;
+    if (cityRecs.some(r => r.tipo === 'Intransitable' || r.tipo === 'Tránsito interrumpido total')) status = 'cortada';
+    else if (cityRecs.some(r => r.tipo === 'Restringida' || r.tipo === 'Vía anegada (tránsito lento)')) status = 'anegada';
+
+    if (status === 'cortada') {
+      cortado++;
+      badgeEl.className = 'pill-badge pb-red';
+      badgeEl.textContent = 'Intransitable';
+    } else if (status === 'anegada') {
+      anegado++;
+      badgeEl.className = 'pill-badge pb-amber';
+      badgeEl.textContent = 'Restringida';
+    } else {
+      normal++;
+      badgeEl.className = 'pill-badge pb-green';
+      badgeEl.textContent = 'Vigilancia';
+    }
   });
-  state.municipalRecords.forEach(r => {
-    if (r.tipo === 'Tránsito interrumpido total') cortado++;
-    else if (r.tipo === 'Vía anegada (tránsito lento)') anegado++;
-  });
+
   document.getElementById('cntCortado').textContent = cortado;
   document.getElementById('cntAnegado').textContent = anegado;
   document.getElementById('cntNormal').textContent = normal;
@@ -1225,7 +1225,7 @@ function updateStatusTrio() {
 window.selectCityFromAlert = function(cityCode) {
   document.querySelectorAll('.fen-city-row').forEach(r => r.classList.remove('active-city'));
   const row = document.getElementById('row-' + cityCode);
-  if (row) row.classList.add('active-city');
+  if (row) row.classList.add('active-city'); const fLink = document.getElementById('btnOpenFormLink'); if (fLink) fLink.href = 'reporte.html?city=' + encodeURIComponent(city);
 
   const sel = document.getElementById('citySelector');
   sel.value = cityCode;
@@ -1406,8 +1406,6 @@ const polygonDrawer = new L.Draw.Polygon(map, {
 });
 
 document.getElementById('btnDrawFlood').addEventListener('click', () => {
-  reportMode = false;
-  document.getElementById('btnReportPoint').classList.remove('active');
   polygonDrawer.enable();
   setStatus('Haz clic en el mapa para delimitar la zona anegada. Doble clic para cerrar.');
 });
@@ -1436,7 +1434,7 @@ map.on(L.Draw.Event.CREATED, e => {
 let reportMode = false;
 const btnReport = document.getElementById('btnReportPoint');
 
-btnReport.addEventListener('click', () => {
+if (btnReport) btnReport.addEventListener('click', () => {
   reportMode = !reportMode;
   btnReport.classList.toggle('active', reportMode);
   map.getContainer().style.cursor = reportMode ? 'crosshair' : '';
@@ -1511,10 +1509,9 @@ document.getElementById('btnSitrep').addEventListener('click', () => {
   const citiesBody = document.querySelector('#sitrepCitiesTable tbody');
   const rows = document.querySelectorAll('#fenCitiesStatus .fen-city-row');
   citiesBody.innerHTML = Array.from(rows).map(row => {
-    const sel = row.querySelector('select');
-    const cityName = sel.dataset.city;
-    const senamhiInfo = sel.dataset.senamhi;
-    const statusText = sel.options[sel.selectedIndex].text;
+    const cityName = row.dataset.city;
+    const senamhiInfo = row.dataset.senamhi;
+    const statusText = row.querySelector('.pill-badge').textContent;
     const count = state.municipalRecords.filter(r => String(r.ciudad || '').toUpperCase().includes(cityName.toUpperCase())).length;
     return `<tr><td><b>${cityName}</b></td><td>${senamhiInfo}</td><td><b>${statusText}</b></td><td>${count} incidencia(s)</td></tr>`;
   }).join('');
@@ -1723,7 +1720,7 @@ document.getElementById('citySelector').addEventListener('change', e => {
   const city = e.target.value;
   document.querySelectorAll('.fen-city-row').forEach(r => r.classList.remove('active-city'));
   const row = document.getElementById('row-' + city);
-  if (row) row.classList.add('active-city');
+  if (row) row.classList.add('active-city'); const fLink = document.getElementById('btnOpenFormLink'); if (fLink) fLink.href = 'reporte.html?city=' + encodeURIComponent(city);
 
   if (city === 'TUMBES') initTumbesPilot();
   else {
@@ -1761,8 +1758,107 @@ window.closeModal = function(id) { document.getElementById(id).classList.remove(
 
 function setStatus(msg) { document.getElementById('statusBox').textContent = msg; }
 
+
+const GOOGLE_SHEET_CSV_URL = ""; // Pega aquí el enlace CSV publicado de tu Google Sheet
+
+function parseCsvRows(csvText) {
+  const rows = [];
+  let row = [], cell = '', inQuotes = false;
+  for (let i = 0; i < csvText.length; i++) {
+    const ch = csvText[i], next = csvText[i + 1];
+    if (ch === '"' && inQuotes && next === '"') { cell += '"'; i++; }
+    else if (ch === '"') { inQuotes = !inQuotes; }
+    else if (ch === ',' && !inQuotes) { row.push(cell.trim()); cell = ''; }
+    else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+      if (cell !== '' || row.length > 0) { row.push(cell.trim()); rows.push(row); row = []; cell = ''; }
+    } else { cell += ch; }
+  }
+  if (cell !== '' || row.length > 0) { row.push(cell.trim()); rows.push(row); }
+  return rows;
+}
+
+function addIncidentToMap(item, isExternal = false) {
+  const lat = parseFloat(item.lat), lng = parseFloat(item.lng);
+  if (isNaN(lat) || isNaN(lng)) return;
+
+  const estVia = item.estado_via || 'Restringida';
+  const tp = item.transporte_publico || 'Desviado';
+  const hex = estVia === 'Intransitable' ? '#dc2626' : (estVia === 'Restringida' ? '#ea580c' : '#16a34a');
+  const badge = estVia === 'Intransitable' ? 'pb-red' : (estVia === 'Restringida' ? 'pb-amber' : 'pb-green');
+  const id = item.id || ('sheet_' + Math.random().toString(36).slice(2, 9));
+  const ciudad = String(item.ciudad || 'TUMBES').toUpperCase();
+  const hora = item.fecha_hora ? item.fecha_hora.replace('T', ' ') : 'Reciente';
+  const detalle = `${item.via_referencia || 'Punto reportado'}${item.distrito ? ' (' + item.distrito + ')' : ''}`;
+
+  const feat = {
+    type: 'Feature',
+    geometry: { type: 'Point', coordinates: [lng, lat] },
+    properties: {
+      id, ciudad, distrito: item.distrito || '', via_referencia: item.via_referencia || '',
+      estado_via: estVia, transporte_publico: tp, rutas_afectadas: item.rutas_afectadas || '',
+      reportante: item.reportante || '', fuente: item.fuente || '', fecha_hora: hora, foto_url: item.foto_url || ''
+    }
+  };
+
+  const photoHtml = item.foto_url
+    ? `<div style="margin-top:6px;"><a href="${item.foto_url}" target="_blank" rel="noopener"><img src="${item.foto_url}" style="width:100%;max-height:130px;object-fit:cover;border-radius:6px;border:1px solid #cbd5e1;" alt="Evidencia"></a></div>`
+    : '';
+
+  const marker = L.circleMarker([lat, lng], {
+    radius: 7.5, fillColor: hex, color: '#fff', weight: 2, fillOpacity: 1
+  }).bindPopup(`
+    <div style="min-width:210px;font-size:11.5px;line-height:1.4;">
+      <strong style="color:#092a65;">${detalle}</strong><br>
+      <span style="display:inline-block;margin:3px 0;padding:1px 6px;border-radius:4px;background:${hex};color:#fff;font-weight:600;font-size:10px;">Vía: ${estVia}</span>
+      <span style="display:inline-block;margin:3px 0;padding:1px 6px;border-radius:4px;background:#f1f5f9;color:#1e293b;font-weight:600;font-size:10px;">TP: ${tp}</span><br>
+      <b>Ciudad:</b> ${ciudad}<br>
+      <b>Rutas afectadas:</b> ${item.rutas_afectadas || 'No especificada'}<br>
+      <b>Reporta:</b> ${item.reportante || 'Equipo DFPM'}<br>
+      <b>Fuente:</b> <i>${item.fuente || 'Verificación'}</i> · ${hora}
+      ${photoHtml}
+    </div>
+  `).addTo(pointsGroup);
+
+  state.municipalRecords.push({
+    id, kind: 'point', ciudad, tipo: estVia, transporte_publico: tp,
+    rutas_afectadas: item.rutas_afectadas || '', reportante: item.reportante || '',
+    fuente: `${item.reportante || ''} (${item.fuente || ''})`, detalle, hora,
+    badgeClass: badge, badgeText: `${estVia} · TP ${tp}`, feature: feat, layer: marker
+  });
+}
+
+async function loadFormIncidents() {
+  // 1. Cargar reportes guardados localmente desde reporte.html
+  try {
+    const localItems = JSON.parse(localStorage.getItem('radarmov_fen_reports') || '[]');
+    localItems.forEach(it => addIncidentToMap(it, false));
+  } catch (e) {}
+
+  // 2. Cargar reportes en vivo desde Google Sheets (CSV publicado)
+  if (GOOGLE_SHEET_CSV_URL) {
+    try {
+      const res = await fetch(GOOGLE_SHEET_CSV_URL);
+      const text = await res.text();
+      const rows = parseCsvRows(text);
+      if (rows.length > 1) {
+        const headers = rows[0].map(h => h.toLowerCase().trim());
+        for (let i = 1; i < rows.length; i++) {
+          const obj = {};
+          headers.forEach((h, idx) => { obj[h] = rows[i][idx] || ''; });
+          addIncidentToMap(obj, true);
+        }
+      }
+    } catch (e) {
+      setStatus('No se pudo leer la hoja de Google Sheets. Verifica el enlace CSV publicado.');
+    }
+  }
+  renderRecordsList();
+  refreshDashboard();
+}
+
 // Arranque
 initTumbesPilot();
+loadFormIncidents();
 </script>
 </body>
 </html>

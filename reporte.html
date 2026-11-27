@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reporte de Incidencia en Movilidad Urbana FEN | PROMOVILIDAD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --navy: #092a65;
+      --blue: #0b4eb8;
+      --red: #dc2626;
+      --orange: #ea580c;
+      --green: #16a34a;
+      --line: #e2e8f0;
+      --bg: #f1f5f9;
+      --text: #1e293b;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', Arial, sans-serif; }
+    body { background: var(--bg); color: var(--text); font-size: 13.5px; line-height: 1.45; }
+
+    .topbar {
+      background: linear-gradient(105deg, #071e49 0%, #092a65 55%, #0e469e 100%);
+      color: #fff; padding: 12px 18px; border-bottom: 3px solid var(--red);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 10px; }
+    .logos { display: flex; align-items: center; gap: 8px; background: #fff; padding: 4px 8px; border-radius: 6px; }
+    .logos img { height: 26px; width: auto; object-fit: contain; }
+    .topbar h1 { font-size: 14.5px; font-weight: 700; }
+    .topbar small { display: block; font-size: 11px; color: #bfdbfe; }
+    .btn-back {
+      color: #fff; text-decoration: none; font-size: 11.5px; font-weight: 600;
+      background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.25);
+      padding: 6px 11px; border-radius: 7px; white-space: nowrap;
+    }
+    .btn-back:hover { background: rgba(255,255,255,0.25); }
+
+    .container { max-width: 720px; margin: 18px auto 36px; padding: 0 14px; }
+    .card {
+      background: #fff; border: 1px solid var(--line); border-radius: 12px;
+      padding: 20px; box-shadow: 0 4px 18px rgba(15,23,42,0.05);
+    }
+    .section-hdr {
+      font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--navy); border-bottom: 1px solid var(--line); padding-bottom: 6px; margin: 18px 0 12px;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .section-hdr:first-of-type { margin-top: 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 12px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+    .field label span.req { color: var(--red); }
+    .field input[type=text], .field input[type=datetime-local], .field select, .field textarea {
+      width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 7px;
+      font-size: 13px; color: var(--text); background: #fff; outline: none; transition: border 0.15s;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--blue); }
+
+    /* Opciones tipo tarjeta para Estado de vía y Transporte público */
+    .radio-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .rc-item { position: relative; }
+    .rc-item input { position: absolute; opacity: 0; }
+    .rc-box {
+      display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      padding: 9px 6px; border: 1.5px solid #cbd5e1; border-radius: 8px; cursor: pointer;
+      font-size: 11.5px; font-weight: 600; color: #475569; background: #f8fafc; transition: all 0.15s;
+    }
+    .rc-box i { font-size: 14px; margin-bottom: 4px; }
+    .rc-item input:checked + .rc-box.st-ok { border-color: var(--green); background: #f0fdf4; color: #15803d; }
+    .rc-item input:checked + .rc-box.st-warn { border-color: var(--orange); background: #fffbeb; color: #b45309; }
+    .rc-item input:checked + .rc-box.st-bad { border-color: var(--red); background: #fef2f2; color: #b91c1c; }
+
+    /* GPS y Mini Mapa */
+    .gps-bar { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .btn-gps {
+      border: 1px solid var(--blue); background: #eff6ff; color: var(--blue); padding: 7px 11px;
+      border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-gps:hover { background: #dbeafe; }
+    #miniMap { height: 220px; width: 100%; border-radius: 8px; border: 1px solid #cbd5e1; z-index: 1; }
+    .hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* Foto */
+    .photo-drop {
+      border: 1.5px dashed #cbd5e1; border-radius: 8px; padding: 12px; text-align: center;
+      background: #f8fafc; cursor: pointer; display: block;
+    }
+    .photo-drop:hover { border-color: var(--blue); }
+    .photo-drop input { display: none; }
+    #photoPreview { max-height: 160px; border-radius: 7px; margin-top: 8px; display: none; max-width: 100%; }
+
+    .btn-submit {
+      width: 100%; background: var(--navy); color: #fff; border: none; padding: 11px 16px;
+      border-radius: 8px; font-size: 13.5px; font-weight: 700; cursor: pointer; margin-top: 8px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-submit:hover { background: var(--blue); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .alert-msg {
+      padding: 11px 13px; border-radius: 8px; font-size: 12px; margin-top: 12px; display: none;
+    }
+    .alert-msg.ok { background: #f0fdf4; border: 1px solid #bbf7d0; color: #15803d; display: block; }
+    .alert-msg.err { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; display: block; }
+
+    @media (max-width: 600px) {
+      .grid-2, .radio-cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="logos">
+      <img id="logoMtc" src="logo_mtc.png" alt="MTC">
+      <img id="logoProm" src="logo_promovilidad.png" alt="PROMOVILIDAD">
+    </div>
+    <div>
+      <h1>Registro de Incidencia en Movilidad Urbana (FEN)</h1>
+      <small>Monitor Territorial · PROMOVILIDAD – MTC</small>
+    </div>
+  </div>
+  <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Volver al Visor</a>
+</header>
+
+<div class="container">
+  <form class="card" id="incidentForm">
+    <div class="section-hdr"><i class="fa-regular fa-clock"></i> 1. Fecha, Hora y Ubicación Territorial</div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label>Fecha y hora del reporte <span class="req">*</span></label>
+        <input type="datetime-local" id="fFechaHora" required>
+      </div>
+      <div class="field">
+        <label>Quién reporta <span class="req">*</span></label>
+        <select id="fReportante" required>
+          <option value="Equipo DFPM - PROMOVILIDAD">Equipo DFPM – PROMOVILIDAD</option>
+          <option value="Municipalidad / Gerencia de Transporte">Municipalidad / Gerencia de Transporte</option>
+          <option value="COER / Defensa Civil">COER / Defensa Civil</option>
+          <option value="Ciudadano / Operador de Transporte">Ciudadano / Operador de Transporte</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label>Ciudad (Ámbito SICCEP) <span class="req">*</span></label>
+        <select id="fCiudad" required>
+          <option value="TUMBES">Tumbes</option>
+          <option value="PIURA">Piura</option>
+          <option value="SULLANA">Sullana</option>
+          <option value="TALARA">Talara</option>
+          <option value="CHICLAYO-LAMBAYEQUE">Chiclayo - Lambayeque</option>
+          <option value="TRUJILLO">Trujillo</option>
+          <option value="OTRA">Otra ciudad</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Distrito <span class="req">*</span></label>
+        <input type="text" id="fDistrito" placeholder="Ej. Castilla, Tumbes, Veintiséis de Octubre" required>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Vía y referencia exacta <span class="req">*</span></label>
+      <input type="text" id="fViaRef" placeholder="Ej. Av. Sánchez Cerro cruce con Av. Gullman / Puente Bolognesi" required>
+    </div>
+
+    <div class="field">
+      <label>Ubicación GPS en el mapa <span class="req">*</span></label>
+      <div class="gps-bar">
+        <button type="button" class="btn-gps" id="btnUseGps"><i class="fa-solid fa-location-crosshairs"></i> Usar mi ubicación GPS actual</button>
+        <span id="gpsStatus" style="font-size:11.5px; color:var(--muted); align-self:center;">O haz clic / arrastra el marcador en el mapa</span>
+      </div>
+      <div id="miniMap"></div>
+      <div class="grid-2" style="margin-top:8px;">
+        <div>
+          <input type="text" id="fLat" placeholder="Latitud (ej. -3.5665)" required readonly>
+        </div>
+        <div>
+          <input type="text" id="fLng" placeholder="Longitud (ej. -80.4515)" required readonly>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-hdr"><i class="fa-solid fa-road-barrier"></i> 2. Estado de la Vía y Transporte Público</div>
+
+    <div class="field">
+      <label>Estado de la vía <span class="req">*</span></label>
+      <div class="radio-cards">
+        <label class="rc-item">
+          <input type="radio" name="estadoVia" value="Transitable">
+          <span class="rc-box st-ok"><i class="fa-solid fa-circle-check"></i>Transitable</span>
+        </label>
+        <label class="rc-item">
+          <input type="radio" name="estadoVia" value="Restringida" checked>
+          <span class="rc-box st-warn"><i class="fa-solid fa-triangle-exclamation"></i>Restringida</span>
+        </label>
+        <label class="rc-item">
+          <input type="radio" name="estadoVia" value="Intransitable">
+          <span class="rc-box st-bad"><i class="fa-solid fa-ban"></i>Intransitable</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Transporte público <span class="req">*</span></label>
+      <div class="radio-cards">
+        <label class="rc-item">
+          <input type="radio" name="transportePub" value="Normal">
+          <span class="rc-box st-ok"><i class="fa-solid fa-bus"></i>Normal</span>
+        </label>
+        <label class="rc-item">
+          <input type="radio" name="transportePub" value="Desviado" checked>
+          <span class="rc-box st-warn"><i class="fa-solid fa-route"></i>Desviado</span>
+        </label>
+        <label class="rc-item">
+          <input type="radio" name="transportePub" value="Suspendido">
+          <span class="rc-box st-bad"><i class="fa-solid fa-circle-xmark"></i>Suspendido</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Rutas afectadas (líneas, empresas o corredores)</label>
+      <input type="text" id="fRutas" placeholder="Ej. Ruta Troncal Norte-Sur, Línea 14, Colectivos a Zarumilla">
+    </div>
+
+    <div class="section-hdr"><i class="fa-solid fa-camera"></i> 3. Evidencia Fotográfica y Fuente</div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label>Fuente / Medio de verificación <span class="req">*</span></label>
+        <input type="text" id="fFuente" placeholder="Ej. Verificación en campo, Reporte Muni, Prensa local" required>
+      </div>
+      <div class="field">
+        <label>Fotografía de evidencia (opcional)</label>
+        <label class="photo-drop">
+          <i class="fa-solid fa-cloud-arrow-up" style="color:var(--blue); font-size:16px;"></i>
+          <div style="font-size:11.5px; font-weight:600; color:var(--navy); margin-top:3px;">Tomar foto o subir imagen</div>
+          <input type="file" id="fFoto" accept="image/*" capture="environment">
+          <img id="photoPreview" alt="Vista previa">
+        </label>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-submit" id="btnSubmit">
+      <i class="fa-solid fa-paper-plane"></i> Enviar Reporte al Monitor FEN
+    </button>
+
+    <div class="alert-msg" id="formMsg"></div>
+  </form>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// =========================================================================
+// CONFIGURACIÓN DE CONEXIÓN A GOOGLE SHEETS (APPS SCRIPT WEB APP URL)
+// Pega aquí la URL que obtengas al implementar tu Google Apps Script:
+const APPS_SCRIPT_URL = "";
+// =========================================================================
+
+// Respaldo logos
+['logoMtc', 'logoProm'].forEach((id, i) => {
+  const el = document.getElementById(id);
+  el.onerror = () => el.style.display = 'none';
+});
+
+// Autorrellenar fecha y hora local actual
+const now = new Date();
+now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+document.getElementById('fFechaHora').value = now.toISOString().slice(0, 16);
+
+// Leer parámetros URL (?city=PIURA&lat=-5.19&lng=-80.63) si viene desde el visor
+const params = new URLSearchParams(window.location.search);
+if (params.get('city')) {
+  const sel = document.getElementById('fCiudad');
+  if ([...sel.options].some(o => o.value === params.get('city'))) sel.value = params.get('city');
+}
+
+const CITY_CENTERS = {
+  'TUMBES': [-3.5665, -80.4515],
+  'PIURA': [-5.1945, -80.6328],
+  'SULLANA': [-4.9039, -80.6853],
+  'TALARA': [-4.5772, -81.2719],
+  'CHICLAYO-LAMBAYEQUE': [-6.7714, -79.8409],
+  'TRUJILLO': [-8.1116, -79.0287],
+  'OTRA': [-9.19, -75.015]
+};
+
+const initCoords = (params.get('lat') && params.get('lng'))
+  ? [parseFloat(params.get('lat')), parseFloat(params.get('lng'))]
+  : (CITY_CENTERS[document.getElementById('fCiudad').value] || [-3.5665, -80.4515]);
+
+// Mini-mapa interactivo para ubicar el punto
+const miniMap = L.map('miniMap').setView(initCoords, 14);
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Esri'
+}).addTo(miniMap);
+
+let marker = L.marker(initCoords, { draggable: true }).addTo(miniMap);
+function setCoords(lat, lng) {
+  document.getElementById('fLat').value = Number(lat).toFixed(6);
+  document.getElementById('fLng').value = Number(lng).toFixed(6);
+  marker.setLatLng([lat, lng]);
+}
+setCoords(initCoords[0], initCoords[1]);
+
+miniMap.on('click', e => setCoords(e.latlng.lat, e.latlng.lng));
+marker.on('dragend', () => {
+  const ll = marker.getLatLng();
+  setCoords(ll.lat, ll.lng);
+});
+
+document.getElementById('fCiudad').addEventListener('change', e => {
+  const c = CITY_CENTERS[e.target.value];
+  if (c) {
+    miniMap.setView(c, 13);
+    setCoords(c[0], c[1]);
+  }
+});
+
+// Botón GPS del dispositivo
+document.getElementById('btnUseGps').addEventListener('click', () => {
+  const st = document.getElementById('gpsStatus');
+  if (!navigator.geolocation) {
+    st.textContent = 'Tu navegador no soporta GPS.';
+    return;
+  }
+  st.textContent = 'Obteniendo ubicación GPS...';
+  navigator.geolocation.getCurrentPosition(pos => {
+    const { latitude, longitude } = pos.coords;
+    miniMap.setView([latitude, longitude], 16);
+    setCoords(latitude, longitude);
+    st.textContent = 'Ubicación GPS capturada.';
+  }, () => {
+    st.textContent = 'No se pudo obtener GPS. Marca el punto en el mapa.';
+  }, { enableHighAccuracy: true, timeout: 8000 });
+});
+
+// Vista previa y compresión ligera de imagen (para guardar en Drive/Sheets sin pesar megas)
+let compressedPhotoBase64 = "";
+document.getElementById('fFoto').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const maxW = 900;
+      const scale = Math.min(1, maxW / img.width);
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      compressedPhotoBase64 = canvas.toDataURL('image/jpeg', 0.75);
+      const prev = document.getElementById('photoPreview');
+      prev.src = compressedPhotoBase64;
+      prev.style.display = 'inline-block';
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+// Envío del formulario
+document.getElementById('incidentForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('btnSubmit');
+  const msg = document.getElementById('formMsg');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando reporte...';
+
+  const payload = {
+    fecha_hora: document.getElementById('fFechaHora').value,
+    reportante: document.getElementById('fReportante').value,
+    ciudad: document.getElementById('fCiudad').value,
+    distrito: document.getElementById('fDistrito').value,
+    via_referencia: document.getElementById('fViaRef').value,
+    lat: document.getElementById('fLat').value,
+    lng: document.getElementById('fLng').value,
+    estado_via: document.querySelector('input[name="estadoVia"]:checked').value,
+    transporte_publico: document.querySelector('input[name="transportePub"]:checked').value,
+    rutas_afectadas: document.getElementById('fRutas').value || 'No especificada',
+    fuente: document.getElementById('fFuente').value,
+    foto_base64: compressedPhotoBase64
+  };
+
+  // Guardar también copia local en localStorage para visualización inmediata en el mismo navegador
+  const localQueue = JSON.parse(localStorage.getItem('radarmov_fen_reports') || '[]');
+  localQueue.push({ ...payload, id: 'rep_' + Date.now() });
+  localStorage.setItem('radarmov_fen_reports', JSON.stringify(localQueue));
+
+  if (!APPS_SCRIPT_URL) {
+    msg.className = 'alert-msg ok';
+    msg.innerHTML = `<b>Reporte guardado localmente.</b> Para que todos los usuarios lo vean en tiempo real, pega tu URL de Google Apps Script en <code>reporte.html</code>. <a href="index.html" style="font-weight:700; color:#15803d;">Volver al visor →</a>`;
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Reporte al Monitor FEN';
+    return;
+  }
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    msg.className = 'alert-msg ok';
+    msg.innerHTML = `<b>¡Reporte enviado con éxito a Google Sheets!</b> Ya figura en la base de monitoreo. <a href="index.html" style="font-weight:700; color:#15803d;">Ver en el visor →</a>`;
+    document.getElementById('incidentForm').reset();
+    document.getElementById('photoPreview').style.display = 'none';
+    compressedPhotoBase64 = "";
+  } catch (err) {
+    msg.className = 'alert-msg err';
+    msg.textContent = 'Error de red al enviar a Google Sheets, pero el reporte quedó respaldado localmente.';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar Reporte al Monitor FEN';
+  }
+});
+</script>
+</body>
+</html>
