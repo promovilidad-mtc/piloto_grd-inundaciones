@@ -32,44 +32,56 @@
 
     /* Cabecera sobria con degradado institucional MTC / PROMOVILIDAD */
     .mast {
-      height: 62px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
-      padding: 0 20px;
+      height: 62px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 0 18px;
       background: linear-gradient(105deg, #071e49 0%, #092a65 52%, #0e469e 100%);
       color: #fff;
       border-bottom: 2px solid var(--red);
     }
-    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .brand { display: flex; align-items: center; gap: 11px; min-width: 0; }
     .logos-inst {
       display: flex; align-items: center; gap: 8px; background: #fff;
-      padding: 4px 10px; border-radius: 7px; flex: none;
+      padding: 4px 9px; border-radius: 7px; flex: none;
     }
-    .logos-inst img { height: 30px; width: auto; max-width: 130px; object-fit: contain; display: block; }
+    .logos-inst img { height: 28px; width: auto; max-width: 120px; object-fit: contain; display: block; }
     .brand-title { min-width: 0; }
-    .brand h1 { font-size: 14px; font-weight: 700; color: #fff; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .brand small { display: block; font-size: 10.5px; color: #bfdbfe; font-weight: 400; }
+    .brand h1 { font-size: 13.5px; font-weight: 700; color: #fff; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .brand small { display: block; font-size: 10px; color: #bfdbfe; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* Selector de Modo Operativo sobrio sobre cabecera oscura */
+    /* Buscador rápido en cabecera */
+    .search-box {
+      display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.13);
+      border: 1px solid rgba(255,255,255,0.22); border-radius: 7px; padding: 4px 9px;
+      width: 210px; flex: none;
+    }
+    .search-box i { color: #93c5fd; font-size: 11px; }
+    .search-box input {
+      border: none; background: transparent; color: #fff; font-size: 11px; width: 100%; outline: none;
+    }
+    .search-box input::placeholder { color: #cbd5e1; }
+
+    /* Selector de Modo Operativo sobrio */
     .mode-switch {
       display: flex; background: rgba(255,255,255,0.12); padding: 3px; border-radius: 8px;
       border: 1px solid rgba(255,255,255,0.18); flex: none;
     }
     .mode-btn {
-      border: none; background: transparent; padding: 5px 10px; border-radius: 6px;
+      border: none; background: transparent; padding: 5px 9px; border-radius: 6px;
       font-size: 11px; font-weight: 600; color: #e2e8f0; cursor: pointer; display: flex; align-items: center; gap: 5px;
       transition: all 0.15s;
     }
     .mode-btn.active { background: #fff; color: var(--navy); box-shadow: 0 1px 3px rgba(0,0,0,0.18); }
     .mode-btn.active.fen { background: var(--red); color: #fff; }
 
-    .mast-actions { display: flex; align-items: center; gap: 7px; flex: none; }
+    .mast-actions { display: flex; align-items: center; gap: 6px; flex: none; }
     .city-pill {
       display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.14);
-      border: 1px solid rgba(255,255,255,0.22); padding: 5px 9px; border-radius: 7px; color: #fff; font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.22); padding: 5px 8px; border-radius: 7px; color: #fff; font-weight: 600;
     }
-    .city-pill select { border: none; background: transparent; color: #fff; font-weight: 600; outline: none; cursor: pointer; font-size: 11.5px; }
+    .city-pill select { border: none; background: transparent; color: #fff; font-weight: 600; outline: none; cursor: pointer; font-size: 11px; }
     .city-pill select option { color: var(--navy); background: #fff; }
     .btn-ghost {
-      border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.1); color: #fff; padding: 6px 10px;
+      border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.1); color: #fff; padding: 6px 9px;
       border-radius: 7px; font-weight: 600; font-size: 11px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
       text-decoration: none; transition: all 0.15s;
     }
@@ -160,7 +172,7 @@
     .layerline input[type=checkbox]:checked { background: var(--blue); }
     .layerline input[type=checkbox]:checked::before { left: 13px; }
 
-    /* Leyenda integrada en pestaña (sin tapar el mapa) */
+    /* Leyenda integrada en pestaña */
     .legend-section { margin-bottom: 10px; }
     .legend-section h4 { font-size: 11px; font-weight: 700; color: var(--navy); margin-bottom: 5px; }
     .leg-row { display: flex; align-items: center; gap: 8px; margin: 5px 0; font-size: 11px; color: #334155; line-height: 1.3; }
@@ -202,20 +214,44 @@
     .pb-green { background: #dcfce7; color: #15803d; }
     .pb-purple { background: #f3e8ff; color: #6d28d9; }
 
-    /* Mapa central despejado */
+    /* Mapa central y barra de Línea de Tiempo sobria */
     .mapwrap { position: relative; min-width: 0; height: 100%; }
     #map { width: 100%; height: 100%; background: #e6eef8; }
 
     .maptools {
       position: absolute; z-index: 800; right: 12px; top: 12px; background: rgba(255,255,255,0.95);
       border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 2px 10px rgba(15,23,42,0.08);
-      padding: 4px; display: flex; gap: 3px;
+      padding: 4px; display: flex; gap: 3px; align-items: center;
     }
     .base-btn {
       border: none; background: transparent; color: var(--muted); padding: 4px 8px;
       border-radius: 5px; font-size: 11px; font-weight: 600; cursor: pointer;
     }
     .base-btn.active { background: var(--navy); color: #fff; }
+    .tl-toggle-btn {
+      border-left: 1px solid var(--line); padding-left: 7px; margin-left: 2px;
+      color: var(--navy); display: inline-flex; align-items: center; gap: 4px;
+    }
+    .tl-toggle-btn.active { background: #eff6ff; color: var(--blue); border-radius: 5px; padding: 4px 8px; }
+
+    /* Barra flotante de Modo Línea de Tiempo (compacta y sobria) */
+    .timeline-bar {
+      position: absolute; z-index: 800; left: 50%; bottom: 18px; transform: translateX(-50%);
+      background: rgba(255,255,255,0.97); border: 1px solid var(--line); border-radius: 10px;
+      box-shadow: 0 4px 18px rgba(15,23,42,0.12); padding: 9px 14px; width: min(520px, calc(100% - 32px));
+      display: none; flex-direction: column; gap: 6px;
+    }
+    .timeline-bar.open { display: flex; }
+    .tl-head { display: flex; align-items: center; justify-content: space-between; font-size: 11px; }
+    .tl-head strong { color: var(--navy); display: flex; align-items: center; gap: 6px; }
+    .tl-controls { display: flex; align-items: center; gap: 10px; }
+    .tl-play {
+      border: 1px solid #cbd5e1; background: #f8fafc; color: var(--navy); width: 26px; height: 26px;
+      border-radius: 6px; cursor: pointer; display: grid; place-items: center; font-size: 10px; flex: none;
+    }
+    .tl-play:hover { background: #e2e8f0; }
+    .tl-controls input[type=range] { flex: 1; accent-color: var(--navy); cursor: pointer; }
+    .tl-label { font-size: 10.5px; font-weight: 600; color: var(--blue); min-width: 95px; text-align: right; }
 
     /* Panel derecho sobrio */
     .enfen-banner {
@@ -229,7 +265,7 @@
     .enfen-banner a { color: #93c5fd; font-weight: 600; text-decoration: none; font-size: 10px; }
     .enfen-banner a:hover { text-decoration: underline; }
 
-    /* 3 Tarjetas de resumen rápido estilo SUTRAN (compactas) */
+    /* 3 Tarjetas de resumen rápido */
     .status-trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
     .trio-card {
       border-radius: 8px; padding: 7px 6px; text-align: center; border: 1px solid transparent;
@@ -327,6 +363,11 @@
       .no-print { display: none !important; }
     }
 
+    @media (max-width: 1280px) {
+      .search-box { width: 155px; }
+      .brand small { display: none; }
+    }
+
     @media (max-width: 1050px) {
       html, body { overflow: auto; height: auto; }
       .mast { height: auto; flex-wrap: wrap; padding: 8px 14px; }
@@ -347,6 +388,20 @@
       <h1>Monitor de Movilidad Urbana FEN y Asistencia Territorial</h1>
       <small>Continuidad de Servicios Urbanos y Gestión del Riesgo · PROMOVILIDAD</small>
     </div>
+  </div>
+
+  <!-- Buscador rápido de ciudad o incidencia -->
+  <div class="search-box" title="Buscar ciudad (Piura, Tumbes, Sullana...) o incidencia registrada">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" id="quickSearchInput" placeholder="Buscar ciudad o vía..." list="citiesDatalist">
+    <datalist id="citiesDatalist">
+      <option value="Tumbes">
+      <option value="Piura">
+      <option value="Sullana">
+      <option value="Talara">
+      <option value="Chiclayo">
+      <option value="Trujillo">
+    </datalist>
   </div>
 
   <!-- Selector de Modo Operativo -->
@@ -411,7 +466,7 @@
           </div>
         </details>
 
-        <!-- 2. PELIGROS Y ALERTAS OFICIALES (DESACTIVADAS AL INICIAR) -->
+        <!-- 2. PELIGROS Y ALERTAS OFICIALES -->
         <details class="layer-group">
           <summary>Peligros y Alertas Oficiales</summary>
           <div class="group-body">
@@ -438,7 +493,7 @@
           </div>
         </details>
 
-        <!-- 3. REDES VIALES Y LOGÍSTICA (DESACTIVADAS AL INICIAR) -->
+        <!-- 3. REDES VIALES Y LOGÍSTICA -->
         <details class="layer-group">
           <summary>Redes Viales y Logística</summary>
           <div class="group-body">
@@ -473,7 +528,7 @@
           </div>
         </details>
 
-        <!-- 4. INFRAESTRUCTURA CRÍTICA URBANA (DESACTIVADAS AL INICIAR) -->
+        <!-- 4. INFRAESTRUCTURA CRÍTICA URBANA -->
         <details class="layer-group" id="infraGroupDetails">
           <summary>Infraestructura Crítica Urbana</summary>
           <div class="group-body">
@@ -539,7 +594,7 @@
       </div>
     </div>
 
-    <!-- VISTA 2: LEYENDA COMPLETA Y LIMPIA (EN PESTAÑA DEDICADA) -->
+    <!-- VISTA 2: LEYENDA COMPLETA Y LIMPIA -->
     <div id="leftTabLeyenda" class="hidden" style="display:flex; flex-direction:column; gap:8px;">
       <div class="card-box">
         <div class="legend-section">
@@ -576,13 +631,29 @@
     </div>
   </aside>
 
-  <!-- CENTRO: VISOR CARTOGRÁFICO DESPEJADO -->
+  <!-- CENTRO: VISOR CARTOGRÁFICO + MODO LÍNEA DE TIEMPO -->
   <section class="mapwrap" id="mapCaptureArea">
     <div id="map"></div>
     <div class="maptools no-print">
       <button type="button" class="base-btn active" data-base="carto">Calles</button>
       <button type="button" class="base-btn" data-base="esri">Satélite</button>
       <button type="button" class="base-btn" data-base="osm">OSM</button>
+      <button type="button" class="base-btn tl-toggle-btn" id="btnToggleTimeline" title="Reproducir secuencia cronológica de alertas">
+        <i class="fa-solid fa-clock-rotate-left"></i> Línea de tiempo
+      </button>
+    </div>
+
+    <!-- Barra sobria de Modo Línea de Tiempo -->
+    <div class="timeline-bar no-print" id="timelineBar">
+      <div class="tl-head">
+        <strong><i class="fa-solid fa-clock-rotate-left" style="color:var(--blue);"></i> Modo línea de tiempo · Secuencia de alertas</strong>
+        <button type="button" onclick="toggleTimelineBar(false)" style="border:none;background:none;color:var(--muted);cursor:pointer;font-size:12px;">✕</button>
+      </div>
+      <div class="tl-controls">
+        <button type="button" class="tl-play" id="btnTlPlay" title="Reproducir / Pausar"><i class="fa-solid fa-play"></i></button>
+        <input type="range" id="tlSlider" min="0" max="0" value="0">
+        <span class="tl-label" id="tlStatusLabel">Todas (0/0)</span>
+      </div>
     </div>
   </section>
 
@@ -598,7 +669,7 @@
         <p>Magnitud extraordinaria prevista hasta <b>febrero 2027</b>. Lluvias fuertes a extremas en costa norte.</p>
       </div>
 
-      <!-- 3 Tarjetas de resumen rápido de transitabilidad (sobrias) -->
+      <!-- 3 Tarjetas de resumen rápido -->
       <div class="status-trio">
         <div class="trio-card trio-red">
           <strong id="cntCortado">0</strong>
@@ -881,9 +952,9 @@ const bases = {
 };
 let activeBase = bases.carto.addTo(map);
 
-document.querySelectorAll('.base-btn').forEach(btn => {
+document.querySelectorAll('.base-btn[data-base]').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.base-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.base-btn[data-base]').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     map.removeLayer(activeBase);
     activeBase = bases[btn.dataset.base].addTo(map);
@@ -963,7 +1034,131 @@ let state = {
   municipalRecords: []
 };
 
-// 4. Consultar SICCEP + cargar capas base de data/
+// 4. Buscador rápido de ciudad o vía registrada
+const CITY_MAP = {
+  'tumbes': 'TUMBES',
+  'piura': 'PIURA',
+  'sullana': 'SULLANA',
+  'talara': 'TALARA',
+  'chiclayo': 'CHICLAYO-LAMBAYEQUE',
+  'lambayeque': 'CHICLAYO-LAMBAYEQUE',
+  'trujillo': 'TRUJILLO'
+};
+
+document.getElementById('quickSearchInput').addEventListener('change', e => {
+  const q = e.target.value.trim().toLowerCase();
+  if (!q) return;
+
+  for (const [key, code] of Object.entries(CITY_MAP)) {
+    if (q.includes(key)) {
+      selectCityFromAlert(code);
+      return;
+    }
+  }
+
+  const foundRec = state.municipalRecords.find(r =>
+    String(r.detalle || '').toLowerCase().includes(q) || String(r.ciudad || '').toLowerCase().includes(q)
+  );
+  if (foundRec) {
+    zoomRecord(foundRec.id);
+    setStatus(`Ubicado: ${foundRec.detalle}`);
+    return;
+  }
+
+  setStatus(`Sin coincidencias exactas para "${e.target.value}". Prueba con Tumbes, Piura, Sullana, Talara, Chiclayo o Trujillo.`);
+});
+
+// 5. Modo Línea de Tiempo (reproducción cronológica de alertas)
+let tlTimer = null;
+
+window.toggleTimelineBar = function(forceState) {
+  const bar = document.getElementById('timelineBar');
+  const btn = document.getElementById('btnToggleTimeline');
+  const open = typeof forceState === 'boolean' ? forceState : !bar.classList.contains('open');
+  bar.classList.toggle('open', open);
+  btn.classList.toggle('active', open);
+  if (!open) {
+    stopTimelinePlay();
+    applyTimelineStep(state.municipalRecords.length);
+  } else {
+    syncTimelineSlider(true);
+  }
+};
+
+document.getElementById('btnToggleTimeline').addEventListener('click', () => toggleTimelineBar());
+
+function syncTimelineSlider(resetToEnd = false) {
+  const slider = document.getElementById('tlSlider');
+  const total = state.municipalRecords.length;
+  slider.max = total;
+  if (resetToEnd || Number(slider.value) > total) slider.value = total;
+  applyTimelineStep(Number(slider.value));
+}
+
+function applyTimelineStep(step) {
+  const total = state.municipalRecords.length;
+  const label = document.getElementById('tlStatusLabel');
+
+  state.municipalRecords.forEach((rec, idx) => {
+    const visible = idx < step;
+    if (rec.kind === 'polygon') {
+      if (visible && !drawnFloodItems.hasLayer(rec.layer)) drawnFloodItems.addLayer(rec.layer);
+      if (!visible && drawnFloodItems.hasLayer(rec.layer)) drawnFloodItems.removeLayer(rec.layer);
+    } else {
+      if (visible && !pointsGroup.hasLayer(rec.layer)) pointsGroup.addLayer(rec.layer);
+      if (!visible && pointsGroup.hasLayer(rec.layer)) pointsGroup.removeLayer(rec.layer);
+    }
+  });
+
+  if (total === 0) {
+    label.textContent = 'Sin registros aún';
+  } else if (step === 0) {
+    label.textContent = `Inicio (0/${total})`;
+  } else {
+    const currentRec = state.municipalRecords[step - 1];
+    label.textContent = `${currentRec.hora || 'Hoy'} (${step}/${total})`;
+  }
+}
+
+function stopTimelinePlay() {
+  if (tlTimer) {
+    clearInterval(tlTimer);
+    tlTimer = null;
+  }
+  document.getElementById('btnTlPlay').innerHTML = '<i class="fa-solid fa-play"></i>';
+}
+
+document.getElementById('tlSlider').addEventListener('input', e => {
+  stopTimelinePlay();
+  applyTimelineStep(Number(e.target.value));
+});
+
+document.getElementById('btnTlPlay').addEventListener('click', () => {
+  const total = state.municipalRecords.length;
+  if (total === 0) {
+    setStatus('Registra o importa incidencias para reproducir la línea de tiempo.');
+    return;
+  }
+  if (tlTimer) {
+    stopTimelinePlay();
+    return;
+  }
+  const slider = document.getElementById('tlSlider');
+  if (Number(slider.value) >= total) slider.value = 0;
+  document.getElementById('btnTlPlay').innerHTML = '<i class="fa-solid fa-pause"></i>';
+
+  tlTimer = setInterval(() => {
+    let next = Number(slider.value) + 1;
+    if (next > total) {
+      stopTimelinePlay();
+      return;
+    }
+    slider.value = next;
+    applyTimelineStep(next);
+  }, 1100);
+});
+
+// 6. Consultar SICCEP + cargar capas base de data/
 async function loadSiccepCity(cityName) {
   siccepLayer.clearLayers();
   document.getElementById('kpiCityLabel').textContent = cityName;
@@ -1010,7 +1205,7 @@ async function initTumbesPilot() {
   }
 }
 
-// 5. Sincronizar desplegable de Ciudades en Alerta y tarjetas resumen
+// 7. Sincronizar desplegable de Ciudades en Alerta y tarjetas resumen
 function updateStatusTrio() {
   let cortado = 0, anegado = 0, normal = 0;
   document.querySelectorAll('#fenCitiesStatus select').forEach(sel => {
@@ -1046,7 +1241,7 @@ window.updateCityAlertStatus = function(selectEl) {
   setStatus(`Estado de ${selectEl.dataset.city} actualizado a: "${statusLabel}".`);
 };
 
-// 6. Actividad en vivo
+// 8. Actividad en vivo
 function renderRecordsList() {
   const listEl = document.getElementById('recordsList');
   const countEl = document.getElementById('recCount');
@@ -1054,6 +1249,7 @@ function renderRecordsList() {
 
   countEl.textContent = state.municipalRecords.length;
   clearBtn.style.display = state.municipalRecords.length > 0 ? 'inline' : 'none';
+  syncTimelineSlider(true);
 
   if (state.municipalRecords.length === 0) {
     listEl.innerHTML = `<div style="font-size:10px; color:var(--muted); text-align:center; padding:6px 0;">
@@ -1110,7 +1306,7 @@ document.getElementById('btnClearAll').addEventListener('click', () => {
   refreshDashboard();
 });
 
-// 7. Actualizar Dashboard y Desglose Detallado
+// 9. Actualizar Dashboard y Desglose Detallado
 function refreshDashboard() {
   floodGroup.clearLayers();
   roadsGroup.clearLayers();
@@ -1204,7 +1400,7 @@ function refreshDashboard() {
   }).join('');
 }
 
-// 8. Dibujar zona anegada
+// 10. Dibujar zona anegada
 const polygonDrawer = new L.Draw.Polygon(map, {
   shapeOptions: { color: '#dc2626', fillColor: '#dc2626', fillOpacity: 0.28, weight: 2 }
 });
@@ -1236,7 +1432,7 @@ map.on(L.Draw.Event.CREATED, e => {
   setStatus(`Zona anegada agregada (${areaHa} ha).`);
 });
 
-// 9. Registrar incidencia en vivo
+// 11. Registrar incidencia en vivo
 let reportMode = false;
 const btnReport = document.getElementById('btnReportPoint');
 
@@ -1307,7 +1503,7 @@ map.on('click', e => {
   });
 });
 
-// 10. Generar Reporte Situacional FEN (SITREP)
+// 12. Generar Reporte Situacional FEN (SITREP)
 document.getElementById('btnSitrep').addEventListener('click', () => {
   const nowStr = new Date().toLocaleString('es-PE', { dateStyle: 'full', timeStyle: 'short' });
   document.getElementById('sitrepDate').textContent = `PROMOVILIDAD – MTC · Corte al ${nowStr}`;
@@ -1340,7 +1536,7 @@ document.getElementById('btnSitrep').addEventListener('click', () => {
   document.getElementById('modalSitrep').classList.add('open');
 });
 
-// 11. Carga de GeoPackage (.gpkg) y GeoJSON (.geojson)
+// 13. Carga de GeoPackage (.gpkg) y GeoJSON (.geojson)
 async function readGeoPackageFile(file) {
   const SQL = await initSqlJs({ locateFile: f => `https://unpkg.com/sql.js@1.10.3/dist/${f}` });
   const buf = new Uint8Array(await file.arrayBuffer());
@@ -1484,7 +1680,7 @@ document.getElementById('btnExport').addEventListener('click', () => {
   a.click();
 });
 
-// 12. Enlazar switches de capas WMS y REST
+// 14. Enlazar switches de capas WMS y REST
 function bindWmsToggle(chkId, layerObj, label) {
   document.getElementById(chkId).addEventListener('change', e => {
     if (e.target.checked) {
